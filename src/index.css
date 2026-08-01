@@ -1,0 +1,224 @@
+@import "tailwindcss";
+
+/* ---- fonts ------------------------------------------------------------- */
+
+/* variable file — one download covers the whole weight axis */
+@font-face {
+  font-family: "Cormorant Garamond";
+  src: url("/fonts/CormorantGaramond-var.woff2") format("woff2-variations");
+  font-weight: 300 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Martian Mono";
+  src: url("/fonts/MartianMono-400.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}
+
+/* ---- tokens (see design.md) -------------------------------------------- */
+
+@theme {
+  /* ---- Ohio State brand palette (source of truth) ---- */
+  --color-scarlet: #ba0c2f; /* PMS 200 */
+  --color-scarlet-dark-40: #70071c;
+  --color-scarlet-dark-60: #4a0513;
+
+  --color-gray: #a7b1b7; /* PMS 429 */
+  --color-gray-light-20: #bfc6cb;
+  --color-gray-light-40: #cfd4d8;
+  --color-gray-light-60: #dfe3e5;
+  --color-gray-light-80: #eff1f2;
+  --color-gray-light-90: #f6f7f8;
+  --color-gray-dark-20: #868e92;
+  --color-gray-dark-40: #646a6e;
+  --color-gray-dark-60: #3f4443;
+  --color-gray-dark-80: #212325;
+
+  --color-white: #ffffff;
+
+  --font-display: "Cormorant Garamond", ui-serif, Georgia, serif;
+  --font-mono: "Martian Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* hero title — donor uses 3.25rem mobile / 10rem desktop, tracking 0 */
+  --text-hero: clamp(3.25rem, 8vw + 0.5rem, 10rem);
+  --text-hero--line-height: 0.9375;
+  --text-hero--letter-spacing: -0.01em;
+
+  /* display: fluid. text: fixed. */
+  --text-display-xl: clamp(3.5rem, 3.8835vw + 2rem, 18.75rem);
+  --text-display-xl--line-height: 0.83;
+  --text-display-xl--letter-spacing: -0.02em;
+
+  --text-display-l: clamp(2.5rem, 2.08333vw + 1.5rem, 8.125rem);
+  --text-display-l--line-height: 0.9;
+  --text-display-l--letter-spacing: -0.02em;
+
+  --text-display-m: clamp(2rem, 1.11111vw + 1.25rem, 4.5rem);
+  --text-display-m--line-height: 0.94;
+  --text-display-m--letter-spacing: -0.015em;
+
+  --text-heading: 1.875rem;
+  --text-heading--line-height: 1.15;
+  --text-heading--letter-spacing: -0.005em;
+
+  --text-body-l: 1.375rem;
+  --text-body-l--line-height: 1.5;
+  --text-body: 1.25rem;
+  --text-body--line-height: 1.55;
+  --text-body-s: 1.125rem;
+  --text-body-s--line-height: 1.6;
+
+  --text-label: 0.75rem;
+  --text-label--line-height: 1.2;
+  --text-label--letter-spacing: 0.05em;
+  --text-label-s: 0.6875rem;
+  --text-label-s--line-height: 1.2;
+  --text-label-s--letter-spacing: 0.05em;
+
+  /* one curve, three durations */
+  --ease-default: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ---- base -------------------------------------------------------------- */
+
+@layer base {
+  body {
+    background: var(--color-gray-light-90);
+    color: var(--color-scarlet);
+    font-family: var(--font-display);
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection {
+    background: var(--color-scarlet);
+    color: var(--color-white);
+  }
+}
+
+/* mono uppercase label — the only uppercase on the site */
+@utility label {
+  font-family: var(--font-mono);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* 6 columns small, 12 large — gap 40 → 60px (donor: --spacing * 10 / 15) */
+@utility grid-page {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  column-gap: 2.5rem;
+}
+@media (min-width: 640px) {
+  .grid-page {
+    column-gap: 3.125rem;
+  }
+}
+@media (min-width: 1024px) {
+  .grid-page {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: 3.75rem;
+  }
+}
+
+/* hero: named areas put hairlines between the title lines */
+.hero-grid {
+  display: grid;
+  grid-template-areas:
+    "title1"
+    "title2"
+    "tagline";
+}
+@media (min-width: 1024px) {
+  .hero-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-areas:
+      ".      .      line1 line2"
+      ".      .      line1 tagline"
+      "title1 title1 title1 line3"
+      "title2 title2 title2 title2"
+      ".      .      line4  line5";
+  }
+}
+
+/* word-mask reveal — see lib/anim.ts */
+/* padding lets descenders render; the extra travel in anim.ts keeps the
+   mask closed while the word is parked below. */
+.word {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  padding-bottom: 0.18em;
+  margin-bottom: -0.18em;
+}
+.word > span {
+  display: inline-block;
+  will-change: transform;
+}
+
+/* the hero flips its words in 3D — the word mask would crop the rotation */
+.hero-title .word {
+  overflow: visible;
+}
+
+/* donor's exact descender fix for masked lines */
+.line-split {
+  margin-bottom: -0.1em;
+  padding-bottom: 0.1em;
+}
+
+/* char split — kerning off so per-glyph transforms don't reflow */
+.split-text {
+  font-kerning: none;
+  text-rendering: optimizeSpeed;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .word > span {
+    transform: none !important;
+  }
+  .team-card,
+  .team-card *,
+  .team-bio,
+  .team-bio *,
+  .service-row * {
+    transition-duration: 0ms !important;
+  }
+}
+
+/* unpublished issue plates — the dither language at print-dot scale */
+/* Checkerboard of two square dot sizes on a 24px tile — squares, so the
+   field reads as pixels rather than halftone. Small squares tile the whole
+   plate; the large ones ride a pseudo-element so a mask can lift them out of
+   the three rows the label sits on, which keeps the text legible. */
+.dot-grid {
+  position: relative;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect x='12' y='0' width='2' height='2' fill='%23ba0c2f' fill-opacity='0.28'/%3E%3Crect x='0' y='12' width='2' height='2' fill='%23ba0c2f' fill-opacity='0.28'/%3E%3C/svg%3E");
+  background-size: 24px 24px;
+}
+.dot-grid::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect x='0' y='0' width='4' height='4' fill='%23ba0c2f' fill-opacity='0.28'/%3E%3Crect x='12' y='12' width='4' height='4' fill='%23ba0c2f' fill-opacity='0.28'/%3E%3C/svg%3E");
+  background-size: 24px 24px;
+  /* 36px clear band = three 12px rows, centred on the label */
+  --band: linear-gradient(
+    to bottom,
+    black calc(50% - 18px),
+    transparent calc(50% - 18px),
+    transparent calc(50% + 18px),
+    black calc(50% + 18px)
+  );
+  mask-image: var(--band);
+  -webkit-mask-image: var(--band);
+}
+
+/* tilted process card */
+.tilt-card {
+  background: var(--color-white);
+  color: var(--color-scarlet);
+  padding: 1.25rem 1.5rem 2rem;
+  box-shadow: 0 12px 40px -24px rgb(186 12 47 / 0.45);
+}
