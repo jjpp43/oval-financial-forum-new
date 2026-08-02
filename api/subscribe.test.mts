@@ -55,4 +55,43 @@ assert.equal(
   500,
 );
 
+// honeypot: answered 200, but nothing was sent to Brevo
+globalThis.fetch = okFetch;
+sent = null;
+assert.equal(
+  (
+    await call({
+      method: "POST",
+      body: { email: "a@b.co", company: "spam corp" },
+      headers: { "x-forwarded-for": "9.9.9.9" },
+    })
+  ).code,
+  200,
+);
+assert.equal(sent, null);
+
+// rate limit: 6th attempt from one IP inside the window is refused
+const ip = { "x-forwarded-for": "5.5.5.5" };
+for (let i = 0; i < 5; i++) {
+  assert.equal(
+    (await call({ method: "POST", body: { email: `a${i}@b.co` }, headers: ip })).code,
+    200,
+  );
+}
+assert.equal(
+  (await call({ method: "POST", body: { email: "a6@b.co" }, headers: ip })).code,
+  429,
+);
+// a different IP still gets through
+assert.equal(
+  (
+    await call({
+      method: "POST",
+      body: { email: "b@b.co" },
+      headers: { "x-forwarded-for": "6.6.6.6" },
+    })
+  ).code,
+  200,
+);
+
 console.log("api/subscribe: ok");

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 /**
  * Subscribe field — bordered box plus a solid square submit. Used by the hero
@@ -24,6 +24,10 @@ export default function NewsletterField({
     "idle",
   );
   const [error, setError] = useState("");
+  // honeypot — hidden from people, irresistible to form-filling bots
+  const [company, setCompany] = useState("");
+  // native <dialog>: Escape, focus trap and the backdrop come for free
+  const modal = useRef<HTMLDialogElement>(null);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,7 +38,7 @@ export default function NewsletterField({
       const res = await fetch("/api/subscribe", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, company }),
       });
       const data = (await res.json().catch(() => ({}))) as { error?: string };
 
@@ -49,6 +53,7 @@ export default function NewsletterField({
       setError("Could not reach the server");
       setState("error");
     }
+    modal.current?.showModal();
   };
 
   return (
@@ -57,6 +62,16 @@ export default function NewsletterField({
         <label htmlFor={id} className="sr-only">
           Email address
         </label>
+        <input
+          type="text"
+          name="company"
+          tabIndex={-1}
+          autoComplete="off"
+          aria-hidden
+          value={company}
+          onChange={(e) => setCompany(e.target.value)}
+          className="pointer-events-none absolute h-0 w-0 opacity-0"
+        />
         <input
           id={id}
           type="email"
@@ -90,13 +105,42 @@ export default function NewsletterField({
       </div>
 
       {/* the hint doubles as the status line, so the box never shifts height */}
-      <p id={hintId} aria-live="polite" className="label text-label-s mt-3 text-white">
+      <p
+        id={hintId}
+        aria-live="polite"
+        className="label text-label-s mt-3 text-white"
+      >
         {state === "done"
-          ? "You are on the list — thanks."
+          ? "You are on the list."
           : state === "error"
             ? error
             : hint}
       </p>
+
+      {/* result modal — same copy as the status line, but unmissable */}
+      <dialog
+        ref={modal}
+        className="dither-weak m-auto w-[min(28rem,calc(100vw-3rem))] border border-white bg-scarlet p-8 text-white backdrop:bg-gray-dark-40/60"
+      >
+        <h2 className="text-heading font-semibold">
+          {state === "done"
+            ? "You are on the list!"
+            : "That did not go through"}
+        </h2>
+        <p className="label text-label-s mt-4 leading-relaxed">
+          {state === "done"
+            ? "Thank you for subscribing to our newsletter! The next issue will land in your inbox."
+            : error}
+        </p>
+        <button
+          type="button"
+          autoFocus
+          onClick={() => modal.current?.close()}
+          className="label text-label-s mt-8 w-full bg-white py-3 text-scarlet transition-opacity duration-200 hover:opacity-80"
+        >
+          {state === "done" ? "Close" : "Try again"}
+        </button>
+      </dialog>
     </form>
   );
 }
