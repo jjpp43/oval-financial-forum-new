@@ -219,7 +219,10 @@ export default function Services() {
                   gamma={1.5}
                   white={0.9}
                   dither
-                  ditherWidth={600}
+                  // plates draw at ~230px: dithering at 240 puts one dot on
+                  // one pixel. At 600 the browser downscales 1-bit art, and
+                  // that interference is what reads as harsh.
+                  ditherWidth={880}
                 />
               </div>
             ))}

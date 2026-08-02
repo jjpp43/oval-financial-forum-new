@@ -153,7 +153,10 @@ export const archive = {
       date: "Published : 07/19/2026",
       blurb:
         "The Fed's third hold of the year, what the futures market is pricing, and why the labour data keeps contradicting itself.",
-      pdf: "/issues/2026-06.pdf",
+      // `html` is the issue to read in the browser, `pdf` the file the
+      // download button hands over — both live in public/newsletter/
+      html: "/newsletter/2026/june-2026.html",
+      pdf: "/newsletter/2026/june-2026.pdf",
       cover: "/img/june.jpg",
     }
   ],

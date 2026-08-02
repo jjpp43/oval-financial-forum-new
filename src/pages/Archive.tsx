@@ -55,7 +55,7 @@ export default function Archive() {
             key={issue.number}
             className="issue-row grid-page group border-t border-scarlet/25 py-10 lg:py-14"
           >
-            <div className="col-span-6 flex items-baseline justify-between lg:col-span-2">
+            <div className="col-span-6 flex items-baseline justify-between lg:col-span-1 lg:col-start-1">
               <span className="label text-label-s text-gray-dark-40">
                 {issue.number}
               </span>
@@ -64,7 +64,17 @@ export default function Archive() {
               </span>
             </div>
 
-            <div className="col-span-6 mt-6 lg:col-span-4 lg:mt-0">
+            {/* cover sits left of the copy from lg up. It has to come before
+                the copy in the DOM too: grid auto-placement is sparse, so an
+                item starting at column 2 after the cursor has passed column 6
+                would be pushed to a new row. */}
+            {issue.cover && (
+              <div className="col-span-6 mt-8 aspect-square overflow-hidden lg:col-span-3 lg:col-start-2 lg:mt-0 lg:w-4/5 lg:justify-self-end lg:self-center">
+                <Duotone src={issue.cover} />
+              </div>
+            )}
+
+            <div className="col-span-6 mt-6 lg:col-span-8 lg:col-start-5 lg:mt-0 lg:self-center">
               <h2 className="text-heading">{issue.title}</h2>
               <p className="label text-label-s mt-2 hidden text-gray-dark-40 lg:block">
                 {issue.date}
@@ -72,21 +82,27 @@ export default function Archive() {
               <p className="label text-label-s mt-5 leading-relaxed text-gray-dark-40">
                 {issue.blurb}
               </p>
-              <a
-                href={issue.pdf}
-                target="_blank"
-                rel="noreferrer"
-                className="label text-label-s mt-6 inline-block bg-scarlet px-5 py-3 text-white transition-opacity duration-200 hover:opacity-80"
-              >
-                Read issue (PDF)
-              </a>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <a
+                  href={issue.html}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="label text-label-s inline-block bg-scarlet px-5 py-3 text-white transition-opacity duration-200 hover:opacity-80"
+                >
+                  Read issue
+                </a>
+                {/* `download` hands the file over instead of opening a viewer;
+                    same origin, so the browser honours it */}
+                <a
+                  href={issue.pdf}
+                  download
+                  className="label text-label-s inline-block border border-scarlet px-5 py-3 text-scarlet transition-colors duration-200 hover:bg-scarlet hover:text-white"
+                >
+                  Download PDF
+                </a>
+              </div>
             </div>
 
-            {issue.cover && (
-              <div className="col-span-6 mt-8 aspect-4/5 overflow-hidden lg:col-span-3 lg:col-start-9 lg:mt-0">
-                <Duotone src={issue.cover} />
-              </div>
-            )}
           </article>
         ))}
       </section>
