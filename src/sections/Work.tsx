@@ -115,12 +115,20 @@ export default function Work() {
       {/* ---- the issue row ------------------------------------------------
           one flat row — no stagger. The client name reserves two lines so the
           plates below it start at the same height whether the name wraps. */}
-      <div className="work-grid mt-20 grid items-start gap-x-15 gap-y-16 md:grid-cols-2 lg:mt-32 lg:grid-cols-4">
+      <div
+        className={`work-grid mx-auto mt-20 grid grid-cols-2 items-start gap-x-6 gap-y-16 md:gap-x-15 lg:mt-32 ${
+          // one column per issue, up to the full four-wide row; a short row
+          // stays centred at the width it would have had inside a full one
+          {
+            1: "lg:max-w-1/4 lg:grid-cols-1",
+            2: "lg:max-w-1/2 lg:grid-cols-2",
+            3: "lg:max-w-3/4 lg:grid-cols-3",
+            4: "lg:grid-cols-4",
+          }[Math.min(work.items.length, 4)]
+        }`}
+      >
         {work.items.map((item, i) => (
-          <article
-            key={item.sector}
-            className="work-item flex flex-col"
-          >
+          <article key={item.sector} className="work-item flex flex-col">
             <div className="flex items-baseline justify-between border-b border-scarlet/25 pb-2">
               <span className="label text-label-s text-gray-dark-40"></span>
               <span className="label text-label-s text-gray-dark-40">
@@ -128,11 +136,11 @@ export default function Work() {
               </span>
             </div>
 
-            <h3 className="text-heading mt-5 min-h-[2lh]">{item.client}</h3>
+            <h3 className="text-heading mt-7 min-h-[2lh]">{item.client}</h3>
 
             {/* unpublished issues keep the plate, lose the picture */}
             {"soon" in item ? (
-              <div className="dot-grid mt-5 grid aspect-4/5 place-items-center border border-scarlet/25">
+              <div className="dot-grid grid aspect-4/5 place-items-center border border-scarlet/25">
                 <span
                   className="soon-label label text-label-s text-gray-dark-40"
                   data-month={item.soon}
@@ -141,7 +149,7 @@ export default function Work() {
                 </span>
               </div>
             ) : (
-              <div className="mt-5 aspect-4/5 overflow-hidden">
+              <div className="aspect-4/5 overflow-hidden">
                 <Duotone src={`/img/p${(i % 5) + 1}.jpg`} />
               </div>
             )}

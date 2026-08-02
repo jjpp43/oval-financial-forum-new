@@ -1,14 +1,16 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type CSSProperties } from "react";
 import gsap from "gsap";
 import { approach } from "../content";
 import { splitChars } from "../lib/anim";
 
 // scattered placement + tilt per card, mirroring the donor's loose stack
+// scatter is horizontal only — the gap between cards is uniform (flex gap
+// below), so the stack reads as an even rhythm
 const PLACEMENT = [
-  { rotate: -1.5, x: "6%", mt: "0rem" },
-  { rotate: 2.5, x: "22%", mt: "3rem" },
-  { rotate: -2, x: "2%", mt: "3rem" },
-  { rotate: 1.5, x: "18%", mt: "2rem" },
+  { rotate: -1.5, x: "6%" },
+  { rotate: 2.5, x: "22%" },
+  { rotate: -2, x: "2%" },
+  { rotate: 1.5, x: "18%" },
 ];
 
 /* =============================================================================
@@ -195,7 +197,7 @@ export default function Approach() {
 
       <p className="label text-label-s col-span-6 mt-10 text-gray-dark-40 lg:col-span-3 lg:mt-20"></p>
 
-      <div className="relative isolate col-span-6 mt-12 flex flex-col lg:col-span-6 lg:col-start-7 lg:mt-0">
+      <div className="relative isolate col-span-6 mt-12 flex flex-col gap-12 lg:col-span-6 lg:col-start-7 lg:mt-0">
         {/* loose curve behind the stack, measured through the card centres in
             layout(). The clip rect grows on scroll — a dashed stroke can't
             also be draw-on animated with dashoffset, the dashes have it. */}
@@ -224,12 +226,15 @@ export default function Approach() {
           return (
             <div
               key={s.title}
-              className="tilt-card w-full max-w-[26rem]"
-              style={{
-                transform: `rotate(${p.rotate}deg)`,
-                marginLeft: p.x,
-                marginTop: p.mt,
-              }}
+              // the scatter offset only exists from lg up — narrow columns have
+              // no room for it, and the section clips whatever hangs off
+              className="tilt-card ml-0 w-full max-w-[26rem] lg:ml-[var(--card-x)]"
+              style={
+                {
+                  transform: `rotate(${p.rotate}deg)`,
+                  "--card-x": p.x,
+                } as CSSProperties
+              }
             >
               <div className="flex items-baseline justify-between">
                 <span className="text-heading font-semibold">{s.title}</span>

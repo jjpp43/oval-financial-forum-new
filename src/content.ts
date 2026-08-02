@@ -46,7 +46,6 @@ export const intro = {
 
 export const services = {
   eyebrow: "What we do",
-  headline: "Six things, done properly.",
   items: [
     {
       title: "Market Overview",
@@ -106,11 +105,9 @@ export const work = {
       body: "",
       tone: "ink",
     },
-    // only one issue is out — the rest of the row holds its place until the
-    // next editions land
+    // only one issue is out, so the row shows it plus the next one due. The
+    // grid takes one column per item, up to 4 — add editions here as they land.
     { client: "", sector: "Vol.2", year: "", role: "", body: "", tone: "ink", soon: "July 2026" },
-    { client: "", sector: "Vol.3", year: "", role: "", body: "", tone: "ink", soon: "August 2026" },
-    { client: "", sector: "Vol.4", year: "", role: "", body: "", tone: "ink", soon: "September 2026" },
   ],
   soonLabel: "Coming up soon!",
 };

@@ -4,6 +4,14 @@ import Duotone from "../components/Duotone";
 import { services } from "../content";
 import { splitChars } from "../lib/anim";
 
+/* The overlapping page stack beside the accordion. Positions are percentages
+   of the collage box; the third plate sits over the other two. */
+const PLATES = [
+  { src: "/img/ex1.png", left: "0%", top: "0%", z: 1 },
+  { src: "/img/ex2.png", left: "58%", top: "10%", z: 2 },
+  { src: "/img/ex3.png", left: "23%", top: "44%", z: 3 },
+];
+
 /** One accordion line in the "We Present" list — hover or focus opens it. */
 function Row({
   index,
@@ -129,11 +137,54 @@ export default function Services() {
       },
     );
 
+    // the stack deals itself in — each plate slides in from its own side,
+    // one after the next in paint order
+    const plates = gsap.fromTo(
+      el.querySelectorAll(".plate"),
+      {
+        y: 140,
+        xPercent: (i) => [-45, 45, 0][i] ?? 0,
+        scale: 0.9,
+        autoAlpha: 0,
+      },
+      {
+        y: 0,
+        xPercent: 0,
+        scale: 1,
+        autoAlpha: 1,
+        duration: 1.1,
+        ease: "power3.out",
+        stagger: 0.2,
+        scrollTrigger: { trigger: el, start: "top 70%", once: true },
+      },
+    );
+
+    // then they drift at slightly different rates, so the overlaps breathe as
+    // the section passes — yPercent, so it composes with the entry's y
+    const drift = gsap.fromTo(
+      el.querySelectorAll(".plate"),
+      { yPercent: (i) => [14, -14, 7][i] ?? 0 },
+      {
+        yPercent: (i) => [-14, 14, -7][i] ?? 0,
+        ease: "none",
+        scrollTrigger: {
+          trigger: el,
+          start: "top bottom",
+          end: "bottom top",
+          scrub: 0.9,
+        },
+      },
+    );
+
     return () => {
       reveal.scrollTrigger?.kill();
       reveal.kill();
       spread.scrollTrigger?.kill();
       spread.kill();
+      plates.scrollTrigger?.kill();
+      plates.kill();
+      drift.scrollTrigger?.kill();
+      drift.kill();
     };
   }, []);
 
@@ -153,13 +204,26 @@ export default function Services() {
 
       {/* ---- left: plate + caption · right: accordion, then the CTA ------- */}
       <div className="grid-page mt-20 lg:mt-32">
-        <div className="col-span-6 lg:col-span-4">
-          <div className="aspect-3/4 w-full max-w-64 overflow-hidden">
-            <Duotone src="/img/p2.jpg" />
+        <div className="col-span-6 lg:col-span-5">
+          {/* three pages overlapping in a loose stack — percentages of one
+              box, so the whole collage scales with the column */}
+          <div className="relative aspect-[1022/960] w-full">
+            {PLATES.map((p) => (
+              <div
+                key={p.src}
+                className="plate absolute h-[56%] w-[42%] overflow-hidden"
+                style={{ left: p.left, top: p.top, zIndex: p.z }}
+              >
+                <Duotone
+                  src={p.src}
+                  gamma={1.5}
+                  white={0.9}
+                  dither
+                  ditherWidth={600}
+                />
+              </div>
+            ))}
           </div>
-          <p className="label text-label-s mt-4 text-gray-dark-40">
-            {services.headline}
-          </p>
         </div>
 
         <ul className="col-span-6 mt-12 border-b border-scarlet/25 lg:col-span-6 lg:col-start-7 lg:mt-0">

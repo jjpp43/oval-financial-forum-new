@@ -264,7 +264,14 @@ export function useRise<T extends HTMLElement>(delay = 0) {
 export function useLenis() {
   useEffect(() => {
     if (reduced()) return;
-    const lenis = new Lenis({ duration: 1.1, smoothWheel: true });
+    // long coast after each wheel notch — `duration` is seconds to settle,
+    // `wheelMultiplier` the distance one notch asks for. Use `lerp` instead of
+    // `duration` if you ever want catch-up physics rather than a timed ease.
+    const lenis = new Lenis({
+      duration: 1.6,
+      wheelMultiplier: 0.9,
+      smoothWheel: true,
+    });
 
     lenis.on("scroll", ScrollTrigger.update);
     const raf = (time: number) => lenis.raf(time * 1000);

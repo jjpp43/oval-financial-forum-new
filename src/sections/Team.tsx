@@ -1,21 +1,28 @@
 import { Fragment, useEffect, useRef, useState } from "react";
-import Duotone from "../components/Duotone";
 import { team } from "../content";
 import { useCharReveal } from "../lib/anim";
 
 type Member = (typeof team.members)[number];
 
-/** Column count of the /team grid, mirroring the Tailwind breakpoints below. */
-function useColumns() {
-  const read = () =>
-    window.innerWidth >= 1024 ? 5 : window.innerWidth >= 768 ? 2 : 1;
-  const [cols, setCols] = useState(read);
+/** Column count of the grid, mirroring the Tailwind breakpoints below. */
+const readCols = (bare: boolean) =>
+  window.innerWidth >= 1024
+    ? bare
+      ? 5
+      : 3
+    : bare || window.innerWidth >= 768
+      ? 2
+      : 1;
+
+function useColumns(bare: boolean) {
+  const [cols, setCols] = useState(() => readCols(bare));
 
   useEffect(() => {
-    const onResize = () => setCols(read());
+    const onResize = () => setCols(readCols(bare));
+    onResize();
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
-  }, []);
+  }, [bare]);
 
   return cols;
 }
@@ -51,7 +58,7 @@ function edges(col: number, cols: number) {
 /**
  * One member cell. `large` is the /team variant (full-width 3:4 portrait,
  * clickable, opens the bio strip); without it you get the home page's small
- * duotone thumb beside the name.
+ * square thumb beside the name.
  */
 function Card({
   member,
@@ -77,25 +84,14 @@ function Card({
           large ? "aspect-3/4 w-full" : "aspect-square w-24 lg:w-28"
         }`}
       >
-        {/* /team shows the portraits straight; the home thumbs stay duotone */}
-        {large ? (
-          <img
-            src={member.photo}
-            alt={member.name}
-            className="h-full w-full object-cover"
-            style={{
-              objectPosition: "focus" in member ? member.focus : "center",
-            }}
-          />
-        ) : (
-          <Duotone
-            src={member.photo}
-            gamma={1.1}
-            style={{
-              objectPosition: "focus" in member ? member.focus : "center",
-            }}
-          />
-        )}
+        <img
+          src={member.photo}
+          alt={member.name}
+          className="h-full w-full object-cover"
+          style={{
+            objectPosition: "focus" in member ? member.focus : "center",
+          }}
+        />
       </div>
 
       <div className="flex min-w-0 flex-col justify-center">
@@ -117,9 +113,11 @@ function Card({
     </div>
   );
 
-  // on /team the scarlet fill is reserved for the open card, so it reads as
-  // one block with the bio strip below it
-  const shell = `team-card group w-full border-t border-scarlet/20 text-left transition-colors duration-400 ease-in-out ${
+  // On /team the scarlet fill is reserved for the open card, so it reads as
+  // one block with the bio strip below it. flex, not block: a <button> centres
+  // its content box vertically whatever its display, so a card with a short
+  // name would float in the middle of a taller row.
+  const shell = `team-card group flex flex-col w-full border-t border-scarlet/20 text-left transition-colors duration-400 ease-in-out ${
     large ? "cursor-pointer" : "hover:bg-scarlet"
   } ${open ? "bg-scarlet" : ""}`;
 
@@ -203,7 +201,7 @@ function Strip({
 export default function Team({ bare = false }: { bare?: boolean }) {
   const headline = useCharReveal<HTMLHeadingElement>();
   const [openIndex, setOpenIndex] = useState<number | null>(null);
-  const cols = useColumns();
+  const cols = useColumns(bare);
 
   // one strip per row; the open card's row is the only one with a height
   const rows: Member[][] = [];
@@ -226,7 +224,7 @@ export default function Team({ bare = false }: { bare?: boolean }) {
 
       <div
         className={`grid border-b border-scarlet/20 md:grid-cols-2 ${
-          bare ? "lg:grid-cols-5" : "mt-16 lg:mt-24 lg:grid-cols-3"
+          bare ? "grid-cols-2 lg:grid-cols-5" : "mt-16 lg:mt-24 lg:grid-cols-3"
         }`}
       >
         {rows.map((row, r) => (

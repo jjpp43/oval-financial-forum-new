@@ -19,11 +19,9 @@ import { intro } from "../content";
  *   screen left                                          screen right
  *   ┌───────────────────────────────────────────────────────────────┐
  *   │                    (no rectangle — solid blue)                │  R1
- *   │                    (no rectangle — solid blue)                │  R2
- *   │████ R3 w17 ▶│                                                 │
- *   │████████ R4 w34 ────▶│                                         │
- *   │████████████ R5 w50 ───────▶│                                  │
- *   │████████████████ R6 w67 ──────────▶│                           │
+ *   │████ R2 w17 ▶│                                                 │
+ *   │████████ R3 w34 ────▶│                                         │
+ *   │████████████ R4 w50 ───────▶│                                  │
  *   └───────────────────────────────────────────────────────────────┘
  *     ↑ bone rectangles, each wider than the last
  *
@@ -44,8 +42,6 @@ const RECTANGLES = [
   { width: 17, delay: 0.0, duration: 0.8, from: 1, ease: "power3.out" }, // R2
   { width: 34, delay: 0.09, duration: 0.8, from: 1, ease: "power3.out" }, // R3
   { width: 50, delay: 0.18, duration: 0.8, from: 1, ease: "power3.out" }, // R4
-  { width: 67, delay: 0.27, duration: 0.8, from: 1, ease: "power3.out" }, // R5
-  { width: 84, delay: 0.36, duration: 0.8, from: 1, ease: "power3.out" }, // R6
 ];
 
 /** Height of the stepped band. Bump these to make the staircase taller. */
@@ -135,7 +131,7 @@ export default function Intro() {
   return (
     <section ref={root} className="relative overflow-hidden">
       {/* solid body, copy sits top-right */}
-      <div className="grid-page bg-scarlet px-6 pt-28 pb-24 text-white lg:px-15 lg:pt-36 lg:pb-32">
+      <div className="grid-page bg-scarlet px-6 pt-28 text-white lg:px-15 lg:pt-36 lg:pb-4">
         <p className="slab-copy label text-label-m col-span-6 opacity-50 lg:col-span-4">
           {intro.eyebrow}
         </p>

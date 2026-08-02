@@ -83,7 +83,10 @@ export default function Hero() {
           className="hero-title block font-semibold leading-[0.9] tracking-[-0.01em] whitespace-nowrap"
           // perspective on the line, not the glyph — without it rotationX
           // flattens into a vertical squash with no depth
-          style={{ fontSize: "clamp(2rem, 8.2vw, 9rem)", perspective: "600px" }}
+          style={{
+            fontSize: "clamp(3.2rem, 8.2vw, 9rem)",
+            perspective: "600px",
+          }}
         >
           {line}
         </span>
