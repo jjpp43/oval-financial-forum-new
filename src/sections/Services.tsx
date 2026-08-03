@@ -216,8 +216,8 @@ export default function Services() {
               >
                 <Duotone
                   src={p.src}
-                  gamma={1.5}
-                  white={0.9}
+                  gamma={1.7}
+                  white={1}
                   dither
                   // plates draw at ~230px: dithering at 240 puts one dot on
                   // one pixel. At 600 the browser downscales 1-bit art, and

@@ -1,7 +1,7 @@
 # Oval Financial Forum — site
 
 Marketing site for OFF, an Ohio State student organisation that publishes a
-monthly financial newsletter. Single page, no router.
+monthly financial newsletter. Static SPA plus one serverless function.
 
 Directory is still named `agency-landing` from when this began as an agency
 landing-page study. The project is no longer that.
@@ -15,8 +15,12 @@ landing-page study. The project is no longer that.
 - Lenis smooth scroll, wired to GSAP's ticker
 - `three` / `@react-three/fiber` / `@react-three/drei` are installed but
   **unused** — no WebGL anywhere. Remove them if nothing needs 3D
+- Deployed on Vercel from `main`. `api/` holds Node serverless functions;
+  Vite has no server runtime, so a dev-only middleware in `vite.config.ts`
+  mounts them into `npm run dev` (see Backend)
 
-Commands: `npm run dev`, `npm run build`, `npm run lint` (oxlint).
+Commands: `npm run dev`, `npm run build`, `npm run lint` (oxlint),
+`node api/subscribe.test.mts` (handler self-check).
 
 ## Layout
 
@@ -29,10 +33,15 @@ src/
   components/        Nav, Stairs, ScrollReset, PageHead, NewsletterField, Duotone
   sections/          Hero, Intro, Services, Approach, Work, Team, Footer
   pages/             Archive, TeamPage, Apply
+api/
+  subscribe.ts       POST { email } → Brevo contact; honeypot + rate limit
+  subscribe.test.mts assert-based self-check, stubs fetch
 public/
   fonts/             CormorantGaramond-var, MartianMono-400
   team/              9 real member portraits
-  img/               banners (archive/team/joinus), logo_dark, p1–p5 placeholders
+  img/               banners (archive/team/joinus), logo_dark, ex1–ex3
+                     (Services plates), p1–p5 placeholders
+  newsletter/2026/   june-2026.html + .pdf — the published issue
 ```
 
 Home section order: Hero → Intro → Services → Approach → Work → Team → Footer.
@@ -64,6 +73,10 @@ anything visual.
 - **Anything animating above the fold waits on `curtainGone`** (from
   `lib/anim.ts`), never a guessed `delay:` — the Stairs curtain covers the
   first ~2.2s.
+- **Newsletter issues are hand-built HTML** under `public/newsletter/`, not
+  React. Their stylesheet mirrors the site's tokens by hand — same palette,
+  same two fonts (self-hosted from `/fonts/`), flat and square, one easing
+  curve. Keep the `@media print` block working: it produces the PDF.
 - Verify visually. `npm run dev` then screenshot in headless Chrome —
   several bugs here (blanked paragraphs, glued words, unreadable contrast)
   passed both build and lint and were only visible in a render. For *motion*,
@@ -85,6 +98,31 @@ Full list with explanations in design.md §7. The short version:
    StrictMode's killed first timeline leaves it animating 0 → 0. Use `fromTo`
    on anything paused at load.
 6. `.word` is an overflow-hidden mask; 3D rotation inside one is cropped flat.
+7. Grid auto-placement is **sparse**: an item with an explicit `col-start`
+   behind the cursor is pushed to a new row. Left-hand items must come first
+   in the DOM — `order-*` reorders placement but does not rewind the cursor.
+   See the Archive cover (`pages/Archive.tsx`).
+8. A stretched `<button>` centres its content box vertically whatever its
+   `display`. Team cards need `flex flex-col` on the shell, or a short card
+   floats mid-row.
+9. `Duotone`'s `ditherWidth` above the plate's on-screen width makes the
+   browser downscale 1-bit art; the interference reads as harsh noise. Match
+   it to the rendered size.
+
+## Backend — the subscribe endpoint
+
+`POST /api/subscribe { email, company }` → Brevo `POST /v3/contacts` with
+`updateEnabled: true`, so a returning address re-lists instead of erroring.
+
+- Env: `BREVO_API_KEY`, `BREVO_LIST_ID` (comma-separated ids; the live list
+  is **5**). Both in `.env.local` (gitignored) and in Vercel's env vars.
+- `company` is a honeypot — hidden from people, so anything in it is a bot.
+  The handler answers `200` and sends nothing to Brevo.
+- Rate limit: 5 per IP per 10 min, 60 per instance. **In-memory**, so it only
+  covers one warm lambda — marked with a `ponytail:` comment. Vercel's
+  firewall or Turnstile is the next rung if it draws real traffic.
+- `NewsletterField` reports the result in a native `<dialog>` (Escape, focus
+  trap and backdrop come free) and keeps the hint line as a quieter echo.
 
 ## Current state
 
@@ -93,9 +131,11 @@ curtain, sliding staircase, hover-expand accordion, tilted cards that
 straighten at viewport centre, team grid with expandable bios, dithered
 duotone hero with flip-board wordmark, sub-page banners (photo + dither,
 panel drop → scramble headline → line wipe → page rises), dotted "coming
-soon" issue plates, newsletter fields (non-functional).
+soon" issue plates, three-plate overlapping collage in Services, mobile
+hamburger menu, centre-out hover fills on the nav, working newsletter signup,
+and the June issue online at `/newsletter/2026/june-2026.html`.
 
-Builds and lints clean.
+Builds and lints clean; `node api/subscribe.test.mts` passes.
 
 ## Known issues / next up
 
@@ -103,19 +143,23 @@ Builds and lints clean.
       offsets are cached before webfonts and canvases settle. Fix is
       `ScrollTrigger.refresh()` on `document.fonts.ready`, `window.load`, and
       a body `ResizeObserver`. Was implemented once, currently not in tree.
-- [ ] **Mobile untested** below 1024px.
-- [ ] **Newsletter forms post nowhere** — both `preventDefault` only.
+- [ ] **Mobile** — home, /team and /archive checked at 390px; /apply and the
+      newsletter issue below 640px are still unverified.
 - [ ] **Leftover agency links** — Services' "View all services" and Work's
       "View all projects" point at anchors that go nowhere.
 - [ ] **Placeholder images** — `public/img/p1–p5.jpg` are Picsum stock; only
       the June cover still uses one.
+- [ ] **Issue HTML is 1.3 MB** — six inline base64 images. Extract them to
+      `public/img/` before the archive grows.
 - [ ] Two team portraits are non-square and rely on a `focus` crop hint;
       proper square headshots would read better at 112px.
 - [ ] Nothing on `/team` links to `/apply` any more — only the nav does.
 - [ ] Unused: `src/assets/hero.png`, `public/favicon.svg`, and the three.js
       dependency set.
-- [ ] No OG work, no deploy target. Favicon is deliberately blank (`data:`
-      icon in `index.html`).
+- [ ] No OG work. Favicon is deliberately blank (`data:` icon in
+      `index.html`).
+- [ ] Git remote still points at `oval-financial-forum-test`; GitHub
+      redirects every push to `-new`.
 
 ## Progress log
 
@@ -135,3 +179,9 @@ Append one line per session: date — area — what landed.
 - 2026-08-01 — team — /team grid to 5 columns; bio modal replaced with full-row expansion strip (MemberModal deleted)
 - 2026-08-01 — banners — photo backgrounds + faint dither on /archive, /team, /apply mastheads; PageHead load sequence (panel drops, text line-wipes, page rises), gated on the Stairs curtain via `curtainGone`
 - 2026-08-01 — motion — banner headlines scramble (ScrambleTextPlugin); hero wordmark flips word by word; Approach cards straighten at viewport centre; unpublished issue plates cycle "Coming up soon!" against their due month
+- 2026-08-02 — mobile — hamburger menu below md; Approach scatter offset scoped to lg; /team two columns; Work two columns; card rows top-aligned (stretched-button centring)
+- 2026-08-02 — nav — centre-out white fill on hover for section links and Apply, arrow that grows the Apply button, mark rotates and magnifies
+- 2026-08-02 — services — single plate replaced with three overlapping duotone/dither plates (ex1–ex3), staggered entry + scrubbed drift; Lenis to a heavier glide
+- 2026-08-02 — backend — Brevo signup wired (`api/subscribe.ts`), result modal, honeypot + per-IP rate limit, dev-only Vite middleware so `/api` works in `npm run dev`
+- 2026-08-02 — newsletter — June issue published under `public/newsletter/2026/`; its stylesheet rebuilt on the site's tokens; /archive links to the HTML and offers a direct PDF download
+- 2026-08-02 — work — June cover on the Work card, whole card links to the issue, arrow plate in the cover's bottom-left that widens on hover; real Instagram/LinkedIn URLs in the footer

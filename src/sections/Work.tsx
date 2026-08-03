@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import gsap from "gsap";
 import Duotone from "../components/Duotone";
 import { work } from "../content";
@@ -11,6 +11,21 @@ import { splitChars } from "../lib/anim";
  * month it is due. Copy: `work` in content.ts — an item with `soon` is
  * unpublished, and the value is the month shown.
  * ========================================================================== */
+function Card({ href, children }: { href?: string; children: ReactNode }) {
+  const cls = "work-item flex flex-col";
+  // the issue is a static file under public/, not a router route — a plain
+  // anchor in a new tab, same as /archive's "Read issue". No hover opacity on
+  // the shell: GSAP's reveal leaves an inline opacity that beats a utility
+  // class, so the hover cue lives on a child instead.
+  return href ? (
+    <a href={href} target="_blank" rel="noreferrer" className={`${cls} group`}>
+      {children}
+    </a>
+  ) : (
+    <article className={cls}>{children}</article>
+  );
+}
+
 export default function Work() {
   const root = useRef<HTMLElement>(null);
 
@@ -128,7 +143,9 @@ export default function Work() {
         }`}
       >
         {work.items.map((item, i) => (
-          <article key={item.sector} className="work-item flex flex-col">
+          // a published issue makes the whole card its own link to the issue;
+          // an unpublished one has nowhere to go, so it stays a plain div
+          <Card key={item.sector} href={"href" in item ? item.href : undefined}>
             <div className="flex items-baseline justify-between border-b border-scarlet/25 pb-2">
               <span className="label text-label-s text-gray-dark-40"></span>
               <span className="label text-label-s text-gray-dark-40">
@@ -149,15 +166,38 @@ export default function Work() {
                 </span>
               </div>
             ) : (
-              <div className="aspect-4/5 overflow-hidden">
-                <Duotone src={`/img/p${(i % 5) + 1}.jpg`} />
+              <div className="relative aspect-4/5 overflow-hidden">
+                <Duotone
+                  src={
+                    "cover" in item ? item.cover : `/img/p${(i % 5) + 1}.jpg`
+                  }
+                />
+                {/* the card itself is the link — this is the affordance, not a
+                    second control, so it stays a span and out of the a11y tree */}
+                {"href" in item && (
+                  <span
+                    aria-hidden
+                    className="absolute bottom-0 left-0 grid aspect-square w-12 place-items-center border-1 border-gray-dark-10 bg-white text-scarlet transition-[width] duration-500 group-hover:w-16"
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      className="h-4 w-4"
+                      fill="none"
+                      aria-hidden
+                    >
+                      <path
+                        d="M7 17L17 7M17 7H8M17 7v9"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </span>
+                )}
               </div>
             )}
-
-            <p className="label text-label-s mt-4 leading-relaxed text-gray-dark-40">
-              {item.role}
-            </p>
-          </article>
+          </Card>
         ))}
       </div>
 

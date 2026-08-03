@@ -104,6 +104,8 @@ export const work = {
       role: "Identity, site, design system",
       body: "",
       tone: "ink",
+      cover: "/img/june.jpg",
+      href: "/newsletter/2026/june-2026.html",
     },
     // only one issue is out, so the row shows it plus the next one due. The
     // grid takes one column per item, up to 4 — add editions here as they land.
