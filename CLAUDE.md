@@ -158,8 +158,6 @@ Builds and lints clean; `node api/subscribe.test.mts` passes.
       dependency set.
 - [ ] No OG work. Favicon is deliberately blank (`data:` icon in
       `index.html`).
-- [ ] Git remote still points at `oval-financial-forum-test`; GitHub
-      redirects every push to `-new`.
 
 ## Progress log
 
