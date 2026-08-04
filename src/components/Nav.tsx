@@ -40,9 +40,9 @@ export default function Nav() {
         <span className="relative flex h-6 w-6 items-center justify-center">
           <span
             aria-hidden
-            className="absolute inset-0 scale-0 rounded-full bg-white transition-[scale] duration-300 group-hover:scale-100"
+            className="absolute inset-0 scale-0 rounded-full bg-white transition-[scale] duration-200 group-hover:scale-100"
           />
-          <Mark className="relative h-4 w-4 transition-[color,rotate] duration-300 group-hover:rotate-180 group-hover:text-scarlet" />
+          <Mark className="relative h-4 w-4 transition-[color,rotate] duration-200 group-hover:rotate-180 group-hover:text-scarlet" />
         </span>
         <span className="label text-label-s">{studio.name}</span>
       </Link>
@@ -54,11 +54,11 @@ export default function Nav() {
           <Link
             key={n.href}
             to={n.href}
-            className="label text-label-s group relative flex items-center overflow-hidden px-4 text-white transition-colors duration-300 hover:text-scarlet"
+            className="label text-label-s group relative flex items-center overflow-hidden px-4 text-white transition-colors duration-200 hover:text-scarlet"
           >
             <span
               aria-hidden
-              className="absolute inset-0 scale-y-0 bg-white transition-transform duration-300 group-hover:scale-y-100"
+              className="absolute inset-0 scale-y-0 bg-white transition-transform duration-200 group-hover:scale-y-100"
             />
             <span className="relative">{n.label}</span>
           </Link>
@@ -76,7 +76,7 @@ export default function Nav() {
         >
           <span
             aria-hidden
-            className="absolute -top-4 -bottom-4 left-0 right-0 scale-y-0 bg-white transition-transform duration-300 group-hover:scale-y-100"
+            className="absolute -top-4 -bottom-4 left-0 right-0 scale-y-0 bg-white transition-transform duration-200 group-hover:scale-y-100"
           />
           {/* the arrow has no width until hover, so the button grows into it */}
           <span className="relative flex items-center">
@@ -87,7 +87,7 @@ export default function Nav() {
               fill="none"
               stroke="currentColor"
               strokeWidth="1.5"
-              className="ml-0 h-3 w-0 shrink-0 opacity-0 transition-[width,margin,opacity] duration-300 group-hover:ml-2 group-hover:w-3 group-hover:opacity-100"
+              className="ml-0 h-3 w-0 shrink-0 opacity-0 transition-[width,margin,opacity] duration-200 group-hover:ml-2 group-hover:w-3 group-hover:opacity-100"
             >
               <path d="M1 6h9M6.5 2.5 10 6l-3.5 3.5" />
             </svg>

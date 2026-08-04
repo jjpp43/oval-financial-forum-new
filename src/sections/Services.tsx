@@ -27,6 +27,9 @@ function Row({
   onOpen: () => void;
 }) {
   const panel = useRef<HTMLDivElement>(null);
+  // sweeping the cursor down the list used to open every row it crossed. A
+  // short hold before opening reads as intent instead of a trail of panels.
+  const intent = useRef<number>(0);
 
   useEffect(() => {
     const el = panel.current;
@@ -45,7 +48,10 @@ function Row({
   return (
     <li
       className="service-row group border-t border-scarlet/25"
-      onMouseEnter={onOpen}
+      onMouseEnter={() => {
+        intent.current = window.setTimeout(onOpen, 80);
+      }}
+      onMouseLeave={() => clearTimeout(intent.current)}
     >
       <h3>
         {/* still a button: hover opens it, but keyboard and touch need a

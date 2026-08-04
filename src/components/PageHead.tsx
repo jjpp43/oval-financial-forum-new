@@ -55,7 +55,7 @@ export default function PageHead({
     tl.fromTo(
       el,
       { yPercent: -100 },
-      { yPercent: 0, duration: 0.6, ease: "expo.out" },
+      { yPercent: 0, duration: 0.45, ease: "expo.out" },
     )
       // typewriter: each letter simply appears, no cursor. autoAlpha toggles
       // visibility, so the line holds its final width and nothing reflows.
@@ -65,20 +65,23 @@ export default function PageHead({
           autoAlpha: 1,
           duration: 0,
           ease: "none",
-          stagger: 0.04,
+          stagger: 0.02,
         },
-        "+=0.15",
+        "+=0.1",
       )
       .fromTo(
         lines,
         { yPercent: 110 },
-        { yPercent: 0, duration: 0.85, ease: "expo.out", stagger: 0.08 },
+        { yPercent: 0, duration: 0.6, ease: "expo.out", stagger: 0.05 },
       )
+      // a route change has no curtain over this, so the page body cannot wait
+      // for the banner to finish — it starts rising while the lines are still
+      // wiping. The whole sequence lands ~1.1s in rather than ~2.7s.
       .fromTo(
         below,
         { y: 24, autoAlpha: 0 },
-        { y: 0, autoAlpha: 1, duration: 0.7, ease: "expo.out" },
-        "-=0.3",
+        { y: 0, autoAlpha: 1, duration: 0.5, ease: "expo.out" },
+        "-=0.45",
       );
 
     let cancelled = false;

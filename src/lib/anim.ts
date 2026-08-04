@@ -13,6 +13,10 @@ gsap.registerPlugin(ScrollTrigger, ScrambleTextPlugin);
  *   curtainGone / liftCurtain             load-curtain handshake
  *   useLenis                              smooth scroll, wired to GSAP
  * Every hook early-returns under prefers-reduced-motion.
+ * No `will-change` anywhere: GSAP's default force3D:"auto" promotes an element
+ * for the length of its tween and drops back to a 2D transform on completion.
+ * A hand-set will-change never expires, and every heading here is dozens of
+ * spans — they would all hold a composited layer for the whole session.
  * ========================================================================== */
 
 let lift: () => void;
@@ -111,7 +115,6 @@ export function splitChars(el: HTMLElement): HTMLElement[] {
       const span = document.createElement("span");
       span.className = "char";
       span.style.display = "inline-block";
-      span.style.willChange = "transform";
       span.textContent = ch;
       holder.appendChild(span);
       chars.push(span);
@@ -188,7 +191,6 @@ export function splitLines(el: HTMLElement): HTMLElement[] {
     mask.style.overflow = "hidden";
     const inner = document.createElement("span");
     inner.style.display = "block";
-    inner.style.willChange = "transform";
     inner.textContent = group.map((s) => s.textContent).join(" ");
     mask.appendChild(inner);
     el.appendChild(mask);

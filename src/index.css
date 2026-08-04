@@ -153,7 +153,6 @@
 }
 .word > span {
   display: inline-block;
-  will-change: transform;
 }
 
 /* the hero flips its words in 3D — the word mask would crop the rotation */

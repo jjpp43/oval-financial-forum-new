@@ -211,7 +211,7 @@ export default function Work() {
                 {issue.html && (
                   <span
                     aria-hidden
-                    className="absolute bottom-0 left-0 grid aspect-square w-12 place-items-center border-1 border-gray-dark-10 bg-white text-scarlet transition-[width] duration-500 group-hover:w-16"
+                    className="absolute bottom-0 left-0 grid aspect-square w-12 place-items-center border-1 border-gray-dark-10 bg-white text-scarlet transition-[width] duration-200 group-hover:w-16"
                   >
                     <svg
                       viewBox="0 0 24 24"

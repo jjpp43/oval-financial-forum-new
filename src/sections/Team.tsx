@@ -72,7 +72,7 @@ function Card({
 }) {
   const body = (
     <div
-      className={`flex p-4 transition-[padding-left] duration-500 group-hover:pl-6 ${
+      className={`flex p-4 transition-[padding-left] duration-200 group-hover:pl-6 ${
         large ? "flex-col gap-5" : "items-stretch gap-5"
       }`}
     >
@@ -114,7 +114,7 @@ function Card({
   // one block with the bio strip below it. flex, not block: a <button> centres
   // its content box vertically whatever its display, so a card with a short
   // name would float in the middle of a taller row.
-  const shell = `team-card group flex flex-col w-full border-t border-scarlet/20 text-left transition-colors duration-400 ease-in-out ${
+  const shell = `team-card group flex flex-col w-full border-t border-scarlet/20 text-left transition-colors duration-200 ${
     large ? "cursor-pointer" : "hover:bg-scarlet"
   } ${open ? "bg-scarlet" : ""}`;
 
