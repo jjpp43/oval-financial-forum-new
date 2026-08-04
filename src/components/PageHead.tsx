@@ -105,7 +105,7 @@ export default function PageHead({
           {/* same dithered plate as the hero, held at low opacity — texture
               over the photo instead of replacing it */}
           <div className="absolute inset-0 opacity-50">
-            <Duotone src={bg} gamma={2.2} dither ditherWidth={360} />
+            <Duotone src={bg} gamma={2.2} dither ditherWidth={440} />
           </div>
 
           {/* scarlet wash keeps the photo legible while white type holds AA */}

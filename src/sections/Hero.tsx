@@ -64,7 +64,7 @@ export default function Hero() {
     >
       {/* ---- background: dithered plate + scarlet gradients ---------------- */}
       <div className="absolute inset-0 -z-10">
-        <Duotone src="/img/p1.jpg" gamma={1.5} dither ditherWidth={460} />
+        <Duotone src="/img/bg2.jpeg" gamma={1.3} dither ditherWidth={640} />
         <div className="absolute inset-0 bg-gradient-to-t from-scarlet via-scarlet/65 to-scarlet/50" />
         <div className="absolute inset-x-0 top-0 h-56 bg-gradient-to-b from-scarlet via-scarlet/70 to-transparent" />
       </div>

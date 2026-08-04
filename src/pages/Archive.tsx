@@ -50,7 +50,7 @@ export default function Archive() {
         eyebrow={archive.eyebrow}
         headline={archive.headline}
         intro={archive.intro}
-        bg="/img/archiveBanner.jpg"
+        bg="/img/archiveBanner3.jpeg"
       />
 
       <section
@@ -126,7 +126,6 @@ export default function Archive() {
                 )}
               </div>
             </div>
-
           </article>
         ))}
       </section>

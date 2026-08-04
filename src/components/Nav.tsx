@@ -3,19 +3,14 @@ import { Link } from "react-router-dom";
 import { nav, studio } from "../content";
 import { track } from "../lib/analytics";
 
-/** Crosshair mark — also used at footer scale. */
+/** OFF mark — inlined from public/img/LOGO.svg so it can take currentColor. */
 export function Mark({ className = "" }: { className?: string }) {
   return (
-    <svg viewBox="0 0 100 100" className={className} aria-hidden>
-      <circle
-        cx="50"
-        cy="50"
-        r="34"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="11"
+    <svg viewBox="0 0 600 600" className={className} aria-hidden>
+      <path
+        fill="currentColor"
+        d="M300 0C377.573 0 448.269 29.4428 501.523 77.7627L447.352 131.934L167.278 499.952C192.42 547.556 242.42 580 300 580C382.843 580 450 512.843 450 430V171.713L522.711 99.001C570.749 152.195 600 222.681 600 300C600 465.685 465.685 600 300 600C222.681 600 152.195 570.749 99.001 522.711L154.484 467.227L433.208 100.981C408.23 52.8691 357.955 20 300 20C217.157 20 150 87.1573 150 170V429.287L77.7627 501.523C29.4428 448.269 0 377.573 0 300C0 134.315 134.315 0 300 0Z"
       />
-      <path d="M50 2v96M2 50h96" stroke="currentColor" strokeWidth="11" />
     </svg>
   );
 }
@@ -35,8 +30,20 @@ export default function Nav() {
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 flex items-center justify-between border-b border-white bg-scarlet px-6 py-4 text-white lg:px-15">
-      <Link to="/" className={`${LINK} group flex items-center gap-3`}>
-        <Mark className="h-3.5 w-3.5 transition-transform duration-300 group-hover:scale-125 group-hover:rotate-90" />
+      {/* not LINK — the shared hover fade would wash out the circle fill */}
+      <Link
+        to="/"
+        className="label text-label-s group flex items-center gap-3 text-white"
+      >
+        {/* white circle grows out of the centre and the mark inverts into it —
+            same centre-out fill the section links use */}
+        <span className="relative flex h-6 w-6 items-center justify-center">
+          <span
+            aria-hidden
+            className="absolute inset-0 scale-0 rounded-full bg-white transition-[scale] duration-300 group-hover:scale-100"
+          />
+          <Mark className="relative h-4 w-4 transition-[color,rotate] duration-300 group-hover:rotate-180 group-hover:text-scarlet" />
+        </span>
         <span className="label text-label-s">{studio.name}</span>
       </Link>
 
