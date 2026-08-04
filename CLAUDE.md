@@ -46,7 +46,8 @@ api/
 production-website/  the Sanity Studio — separate project, own package.json
   schemaTypes/       teamMember + newsletterIssue; `npx sanity deploy` to ship
 scripts/
-  migrate-team.mts   one-shot import of the 9 members from the old project
+  migrate-team.mts   one-shot import of the 9 members into Sanity
+  seed-june-issue.mts  ditto for the June edition and its three files
 public/
   fonts/             CormorantGaramond-var, MartianMono-400
   team/              9 real member portraits
@@ -165,7 +166,10 @@ the section quietly falls back to `content.ts`. Both hooks also ignore an empty
 response, so an outage or an unpopulated type degrades to the hardcoded copy
 instead of blanking a section.
 
-**The dataset is still empty.** Everything on screen today is the fallback.
+Both types are populated: 9 members at `order` 10–90, and the June edition
+with its cover, HTML and PDF uploaded. `scripts/` holds the two one-shot
+seeders that put them there — they read from `src/content.ts` and `public/`,
+skip what already exists, and want `SANITY_EDIT_API_KEY` in `.env.local`.
 
 Gotchas:
 
@@ -197,10 +201,14 @@ Builds and lints clean; `node api/subscribe.test.mts` passes.
 
 ## Known issues / next up
 
-- [ ] **The CMS is empty** — schema is deployed, no documents. Run
-      `node --env-file=.env.local scripts/migrate-team.mts` with a
-      `SANITY_WRITE_TOKEN` to bring the 9 members over, then enter the June
-      issue by hand and upload its HTML + PDF.
+- [ ] **No "coming up soon" plate** — the CMS holds one issue, so the home
+      row is a single card. The placeholder is not hardcoded any more: create
+      a `newsletterIssue` with `volume: 2` and `dueMonth`, no `publishedAt`,
+      and it comes back.
+- [ ] **The June issue exists twice** — in the CMS as uploads, and still in
+      `public/newsletter/2026/` as the `content.ts` fallback. The site serves
+      the CMS copy, so the 1.3 MB file in the repo is now dead weight on every
+      deploy. Decide whether the fallback is worth its size.
 - [ ] **Mobile** — home, /team and /archive checked at 390px; /apply and the
       newsletter issue below 640px are still unverified.
 - [ ] **Leftover agency links** — Services' "View all services" and Work's
