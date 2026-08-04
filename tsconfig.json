@@ -1,7 +1,20 @@
 {
+  /* Solution file — `tsc -b` builds the three projects below and compiles
+     nothing itself. The compilerOptions here exist for Vercel: it compiles
+     api/*.ts as serverless functions on its own and reads this file, not the
+     referenced projects, so without `types` it cannot resolve `process`. */
+  "compilerOptions": {
+    "target": "es2023",
+    "lib": ["ES2023"],
+    "types": ["node"],
+    "module": "nodenext",
+    "skipLibCheck": true,
+    "noEmit": true
+  },
   "files": [],
   "references": [
     { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
+    { "path": "./tsconfig.node.json" },
+    { "path": "./tsconfig.api.json" }
   ]
 }
