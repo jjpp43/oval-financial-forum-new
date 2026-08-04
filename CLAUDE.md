@@ -207,6 +207,21 @@ Pageviews are sent by hand from `useAnalytics()` on every `pathname` change,
 because `capture_pageview: false` — the library's automatic one fires once and
 this is a single-page app.
 
+**Verifying it in headless Chrome shows nothing, and that is correct.**
+posthog-js drops events from bot user-agents, and headless Chrome announces
+itself as `HeadlessChrome`. The SDK still reports `__loaded: true`, a
+distinct_id, and `capture()` returning cleanly — it just never sends. Override
+the UA before concluding anything is broken:
+
+```
+Emulation.setUserAgentOverride  →  a normal Chrome UA
+```
+
+Then a load fires `POST /e/` and each route change fires `POST /i/v0/e/`.
+CDP's `Network.requestWillBeSent` is also unreliable here; patch `fetch` /
+`sendBeacon` / `XMLHttpRequest` via `Page.addScriptToEvaluateOnNewDocument`
+instead, so the hooks exist before PostHog captures its references.
+
 Named events, on top of autocapture: `newsletter_subscribed` /
 `newsletter_failed` (with `where`, hero or footer, so the two placements can be
 compared), `issue_read` (`volume`, `from`), `issue_downloaded`, `apply_clicked`
