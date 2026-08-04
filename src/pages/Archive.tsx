@@ -3,6 +3,7 @@ import gsap from "gsap";
 import PageHead from "../components/PageHead";
 import { archive, issues as fallback } from "../content";
 import { useIssues } from "../lib/sanity";
+import { track } from "../lib/analytics";
 
 /* =============================================================================
  * ROUTE /archive — every published issue
@@ -97,6 +98,12 @@ export default function Archive() {
                   href={issue.html ?? undefined}
                   target="_blank"
                   rel="noreferrer"
+                  onClick={() =>
+                    track("issue_read", {
+                      volume: issue.volume,
+                      from: "archive",
+                    })
+                  }
                   className="label text-label-s inline-block bg-scarlet px-5 py-3 text-white transition-opacity duration-200 hover:opacity-80"
                 >
                   Read issue
@@ -109,6 +116,9 @@ export default function Archive() {
                   <a
                     href={issue.pdf}
                     download
+                    onClick={() =>
+                      track("issue_downloaded", { volume: issue.volume })
+                    }
                     className="label text-label-s inline-block border border-scarlet px-5 py-3 text-scarlet transition-colors duration-200 hover:bg-scarlet hover:text-white"
                   >
                     Download PDF

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { nav, studio } from "../content";
+import { track } from "../lib/analytics";
 
 /** Crosshair mark — also used at footer scale. */
 export function Mark({ className = "" }: { className?: string }) {
@@ -63,6 +64,7 @@ export default function Nav() {
         {/* below md it lives at the foot of the drawer instead */}
         <Link
           to="/apply"
+          onClick={() => track("apply_clicked", { where: "bar" })}
           className="label text-label-s group relative hidden bg-white px-5 py-2 text-scarlet md:block"
         >
           <span
@@ -129,7 +131,10 @@ export default function Nav() {
               one action among the routes */}
           <Link
             to="/apply"
-            onClick={() => setOpen(false)}
+            onClick={() => {
+              setOpen(false);
+              track("apply_clicked", { where: "drawer" });
+            }}
             tabIndex={open ? undefined : -1}
             className="label text-label-s border-t border-white/20 bg-white px-6 py-4 text-scarlet"
           >

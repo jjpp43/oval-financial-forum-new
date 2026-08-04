@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { track } from "../lib/analytics";
 
 /**
  * Subscribe field — bordered box plus a solid square submit. Used by the hero
@@ -45,13 +46,21 @@ export default function NewsletterField({
       if (res.ok) {
         setState("done");
         setEmail("");
+        // `where` separates the hero field from the footer one, so the numbers
+        // say which placement actually converts. The address itself is never
+        // sent — PostHog does not need to know who subscribed, only that
+        // somebody did. A honeypot hit answers 200 like any other success, so
+        // it is flagged here rather than counted as a signup.
+        track("newsletter_subscribed", { where: id, bot: Boolean(company) });
       } else {
         setError(data.error ?? "Could not subscribe right now");
         setState("error");
+        track("newsletter_failed", { where: id, reason: data.error ?? "unknown" });
       }
     } catch {
       setError("Could not reach the server");
       setState("error");
+      track("newsletter_failed", { where: id, reason: "network" });
     }
     modal.current?.showModal();
   };

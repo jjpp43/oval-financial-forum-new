@@ -13,6 +13,7 @@ import Archive from "./pages/Archive";
 import TeamPage from "./pages/TeamPage";
 import Apply from "./pages/Apply";
 import { useLenis } from "./lib/anim";
+import { useAnalytics } from "./lib/analytics";
 
 /* =============================================================================
  * ROUTE / — the home page, six sections top to bottom.
@@ -33,6 +34,12 @@ function Home() {
   );
 }
 
+/** Renders nothing — it is only here to run the hook inside the router. */
+function Analytics() {
+  useAnalytics();
+  return null;
+}
+
 /* =============================================================================
  * APP SHELL — route table and the chrome that shows on every page.
  * Nav (fixed bar) and Footer sit outside <Routes>, so only the middle swaps.
@@ -47,6 +54,7 @@ export default function App() {
       <Stairs />
       <Nav />
       <ScrollReset />
+      <Analytics />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/archive" element={<Archive />} />

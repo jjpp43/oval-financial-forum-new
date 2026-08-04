@@ -3,6 +3,7 @@ import gsap from "gsap";
 import { issues as fallback, work } from "../content";
 import { splitChars } from "../lib/anim";
 import { useIssues } from "../lib/sanity";
+import { track } from "../lib/analytics";
 
 /* =============================================================================
  * HOME · section 5 of 6 — WORK / "Monthly Newsletter"
@@ -11,14 +12,27 @@ import { useIssues } from "../lib/sanity";
  * month it is due. Copy: `work` in content.ts — an item with `soon` is
  * unpublished, and the value is the month shown.
  * ========================================================================== */
-function Card({ href, children }: { href?: string; children: ReactNode }) {
+function Card({
+  href,
+  issue,
+  children,
+}: {
+  href?: string;
+  /** volume of the edition this card links to, for the read event */
+  issue?: number;
+  children: ReactNode;
+}) {
   const cls = "work-item flex flex-col";
-  // the issue is a static file under public/, not a router route — a plain
-  // anchor in a new tab, same as /archive's "Read issue". No hover opacity on
-  // the shell: GSAP's reveal leaves an inline opacity that beats a utility
-  // class, so the hover cue lives on a child instead.
+  // the issue opens in a new tab, so the event has time to leave before the
+  // browser moves on — no need for sendBeacon or a delayed navigation
   return href ? (
-    <a href={href} target="_blank" rel="noreferrer" className={`${cls} group`}>
+    <a
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+      className={`${cls} group`}
+      onClick={() => track("issue_read", { volume: issue, from: "home" })}
+    >
       {children}
     </a>
   ) : (
@@ -161,7 +175,11 @@ export default function Work() {
         {shown.map((issue, i) => (
           // a published issue makes the whole card its own link to the issue;
           // an unpublished one has nowhere to go, so it stays a plain div
-          <Card key={issue.volume} href={issue.html ?? undefined}>
+          <Card
+            key={issue.volume}
+            href={issue.html ?? undefined}
+            issue={issue.volume}
+          >
             <div className="flex items-baseline justify-between border-b border-scarlet/25 pb-2">
               <span className="label text-label-s text-gray-dark-40"></span>
               <span className="label text-label-s text-gray-dark-40">

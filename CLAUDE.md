@@ -35,6 +35,7 @@ src/
   content.ts         ALL copy — every section reads from here
   index.css          @theme tokens, utilities, reduced-motion rules
   lib/anim.ts        splitters, reveal hooks, curtain promise, Lenis setup
+  lib/analytics.ts   PostHog — lazy init, track(), per-route pageviews
   lib/sanity.ts      useTeam / useIssues, the GROQ queries, row mapping
   lib/sanity.test.mts  mapping self-check, no network
   components/        Nav, Stairs, ScrollReset, PageHead, NewsletterField, Duotone
@@ -186,6 +187,32 @@ Gotchas:
   stores the same people with `title` instead of `role` and the bio split
   across `bioMain` + `bioOutside`.
 
+## Analytics — PostHog
+
+`lib/analytics.ts`. Two env vars, both client-side and neither secret:
+`VITE_POSTHOG_KEY` and `VITE_POSTHOG_HOST` (defaults to US cloud). A PostHog
+project key identifies a project, it does not authorise anything.
+
+**No key means no analytics, and no code either.** `KEY` is inlined at build
+time, so with it unset the whole `start()` body is dead and Rollup drops the
+dynamic import — `npm run dev` and preview builds stay silent by construction.
+Set the key and a separate ~76 kB gz chunk appears; the initial bundle does not
+change either way.
+
+The library is imported *after* `curtainGone`, so it never competes with the
+load sequence. `track()` is safe to call before that lands — events queue and
+replay in order. Never `await` it.
+
+Pageviews are sent by hand from `useAnalytics()` on every `pathname` change,
+because `capture_pageview: false` — the library's automatic one fires once and
+this is a single-page app.
+
+Named events, on top of autocapture: `newsletter_subscribed` /
+`newsletter_failed` (with `where`, hero or footer, so the two placements can be
+compared), `issue_read` (`volume`, `from`), `issue_downloaded`, `apply_clicked`
+(`where`). No email address is ever sent — a signup event says that somebody
+subscribed, not who.
+
 ## Current state
 
 Built and working: all seven home sections plus three sub-pages, Stairs load
@@ -250,5 +277,6 @@ Append one line per session: date — area — what landed.
 - 2026-08-02 — backend — Brevo signup wired (`api/subscribe.ts`), result modal, honeypot + per-IP rate limit, dev-only Vite middleware so `/api` works in `npm run dev`
 - 2026-08-02 — newsletter — June issue published under `public/newsletter/2026/`; its stylesheet rebuilt on the site's tokens; /archive links to the HTML and offers a direct PDF download
 - 2026-08-02 — work — June cover on the Work card, whole card links to the issue, arrow plate in the cover's bottom-left that widens on hover; real Instagram/LinkedIn URLs in the footer
+- 2026-08-04 — analytics — PostHog behind a lazy import gated on the curtain; per-route pageviews, named events for signups, issue reads, PDF downloads and Apply; no key means no code shipped
 - 2026-08-04 — cms — site reads Sanity through plain fetch (no client library); team grid off `teamMember`, hotspot drives the portrait crop; `work.items` + `archive.issues` merged into one `issues` list feeding both; ScrollTrigger refresh landed; migration script for the old project's members
 - 2026-08-03 — polish — newsletter covers show as plain photos (duotone dropped on Work + /archive); sub-page headlines type out instead of scrambling; Services heading is one centred line on the standard char reveal (spread scrub removed); staircase rects bleed 1px to kill a device-only seam; mobile Apply moved from the bar into the hamburger drawer
