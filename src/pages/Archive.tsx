@@ -1,7 +1,8 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import PageHead from "../components/PageHead";
-import { archive } from "../content";
+import { archive, issues as fallback } from "../content";
+import { useIssues } from "../lib/sanity";
 
 /* =============================================================================
  * ROUTE /archive — every published issue
@@ -11,6 +12,11 @@ import { archive } from "../content";
  * ========================================================================== */
 export default function Archive() {
   const root = useRef<HTMLElement>(null);
+  const all = useIssues(fallback);
+  // newest first, and only editions that are actually out — a placeholder
+  // plate belongs on the home row, not in a list of things you can read.
+  // filter makes a copy, so reversing it does not disturb the hook's state.
+  const issues = all.filter((i) => i.published).reverse();
 
   useEffect(() => {
     const el = root.current;
@@ -34,7 +40,8 @@ export default function Archive() {
       rows.scrollTrigger?.kill();
       rows.kill();
     };
-  }, []);
+    // rebuilt when the CMS list lands and changes how many rows there are
+  }, [all]);
 
   return (
     <main>
@@ -49,14 +56,14 @@ export default function Archive() {
         ref={root}
         className="px-6 pt-24 pb-32 lg:px-15 lg:pt-32 lg:pb-48"
       >
-        {archive.issues.map((issue) => (
+        {issues.map((issue) => (
           <article
-            key={issue.number}
+            key={issue.volume}
             className="issue-row grid-page group border-t border-scarlet/25 py-10 lg:py-14"
           >
             <div className="col-span-6 flex items-baseline justify-between lg:col-span-1 lg:col-start-1">
               <span className="label text-label-s text-gray-dark-40">
-                {issue.number}
+                {String(issue.volume).padStart(2, "0")}
               </span>
               <span className="label text-label-s text-gray-dark-40 lg:hidden">
                 {issue.date}
@@ -87,22 +94,26 @@ export default function Archive() {
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
                 <a
-                  href={issue.html}
+                  href={issue.html ?? undefined}
                   target="_blank"
                   rel="noreferrer"
                   className="label text-label-s inline-block bg-scarlet px-5 py-3 text-white transition-opacity duration-200 hover:opacity-80"
                 >
                   Read issue
                 </a>
-                {/* `download` hands the file over instead of opening a viewer;
-                    same origin, so the browser honours it */}
-                <a
-                  href={issue.pdf}
-                  download
-                  className="label text-label-s inline-block border border-scarlet px-5 py-3 text-scarlet transition-colors duration-200 hover:bg-scarlet hover:text-white"
-                >
-                  Download PDF
-                </a>
+                {/* `download` hands the file over instead of opening a viewer.
+                    The browser only honours it same-origin, so a PDF from the
+                    Sanity CDN carries `?dl=` instead — see lib/sanity.ts. An
+                    issue may have no PDF uploaded yet. */}
+                {issue.pdf && (
+                  <a
+                    href={issue.pdf}
+                    download
+                    className="label text-label-s inline-block border border-scarlet px-5 py-3 text-scarlet transition-colors duration-200 hover:bg-scarlet hover:text-white"
+                  >
+                    Download PDF
+                  </a>
+                )}
               </div>
             </div>
 

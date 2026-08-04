@@ -1,8 +1,7 @@
 import { Fragment, useEffect, useRef, useState } from "react";
 import { team } from "../content";
 import { useCharReveal } from "../lib/anim";
-
-type Member = (typeof team.members)[number];
+import { useTeam, type Member } from "../lib/sanity";
 
 /** Column count of the grid, mirroring the Tailwind breakpoints below. */
 const readCols = (bare: boolean) =>
@@ -88,9 +87,7 @@ function Card({
           src={member.photo}
           alt={member.name}
           className="h-full w-full object-cover"
-          style={{
-            objectPosition: "focus" in member ? member.focus : "center",
-          }}
+          style={{ objectPosition: member.focus ?? "center" }}
         />
       </div>
 
@@ -202,11 +199,12 @@ export default function Team({ bare = false }: { bare?: boolean }) {
   const headline = useCharReveal<HTMLHeadingElement>();
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const cols = useColumns(bare);
+  const members = useTeam(team.members);
 
   // one strip per row; the open card's row is the only one with a height
   const rows: Member[][] = [];
-  for (let i = 0; i < team.members.length; i += cols)
-    rows.push(team.members.slice(i, i + cols));
+  for (let i = 0; i < members.length; i += cols)
+    rows.push(members.slice(i, i + cols));
 
   const openInRow = (r: number) =>
     openIndex !== null && Math.floor(openIndex / cols) === r;
@@ -247,7 +245,7 @@ export default function Team({ bare = false }: { bare?: boolean }) {
             })}
             {bare && (
               <Strip
-                member={openInRow(r) ? team.members[openIndex!] : null}
+                member={openInRow(r) ? members[openIndex!] : null}
                 open={openInRow(r)}
                 col={openInRow(r) ? openIndex! % cols : 0}
                 cols={cols}

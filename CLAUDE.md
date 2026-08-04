@@ -19,8 +19,13 @@ landing-page study. The project is no longer that.
   Vite has no server runtime, so a dev-only middleware in `vite.config.ts`
   mounts them into `npm run dev` (see Backend)
 
+- Sanity is the CMS for the two lists members maintain themselves — the team
+  and the newsletter issues. **No client library**: the dataset is public, so
+  the site reads it with plain `fetch` against the GROQ HTTP API. The Studio
+  is its own project in this repo, `production-website/`
+
 Commands: `npm run dev`, `npm run build`, `npm run lint` (oxlint),
-`node api/subscribe.test.mts` (handler self-check).
+`node api/subscribe.test.mts` and `node src/lib/sanity.test.mts` (self-checks).
 
 ## Layout
 
@@ -30,12 +35,18 @@ src/
   content.ts         ALL copy — every section reads from here
   index.css          @theme tokens, utilities, reduced-motion rules
   lib/anim.ts        splitters, reveal hooks, curtain promise, Lenis setup
+  lib/sanity.ts      useTeam / useIssues, the GROQ queries, row mapping
+  lib/sanity.test.mts  mapping self-check, no network
   components/        Nav, Stairs, ScrollReset, PageHead, NewsletterField, Duotone
   sections/          Hero, Intro, Services, Approach, Work, Team, Footer
   pages/             Archive, TeamPage, Apply
 api/
   subscribe.ts       POST { email } → Brevo contact; honeypot + rate limit
   subscribe.test.mts assert-based self-check, stubs fetch
+production-website/  the Sanity Studio — separate project, own package.json
+  schemaTypes/       teamMember + newsletterIssue; `npx sanity deploy` to ship
+scripts/
+  migrate-team.mts   one-shot import of the 9 members from the old project
 public/
   fonts/             CormorantGaramond-var, MartianMono-400
   team/              9 real member portraits
@@ -60,7 +71,10 @@ anything visual.
 ## Working rules
 
 - **Copy goes in `content.ts`, never inline in a component.** The only
-  exception is the hero's two wordmark lines.
+  exception is the hero's two wordmark lines. `team.members` and `issues` are
+  the two entries there that are only *fallbacks* — the live values come from
+  Sanity, so editing them changes what shows when the CMS is empty or
+  unreachable, not what members see.
 - **One easing curve** — `cubic-bezier(0.4, 0, 0.2, 1)`, which is also
   Tailwind's default. Never add a bounce or elastic ease.
 - **The palette is closed.** 13 Ohio State values, all defined. Use an unused
@@ -124,6 +138,50 @@ Full list with explanations in design.md §7. The short version:
 - `NewsletterField` reports the result in a native `<dialog>` (Escape, focus
   trap and backdrop come free) and keeps the hint line as a quieter echo.
 
+## CMS — Sanity
+
+Project `gkbg7i6n` ("Production Website"), org `ov5RkHc5h`, dataset
+`production`, **public**. Studio at <https://ovalfinancialforum.sanity.studio/>,
+source in `production-website/` — schema changes need `npx sanity deploy` from
+there, since the hosted URL serves a build.
+
+Public means reads are unauthenticated, so there is no token and no
+`@sanity/client`: one `fetch` against
+`https://gkbg7i6n.apicdn.sanity.io/…/data/query/production`. The project id is
+not a secret and is hardcoded in `lib/sanity.ts` — do not move it to a `VITE_`
+var, that only adds a way for a deploy to break. If the dataset is ever made
+**private**, the query has to move into an `api/` function; a Sanity token in a
+`VITE_` var ships to every visitor's browser.
+
+Two types, both defined in `production-website/schemaTypes/`:
+
+- `teamMember` — `name`, `role`, `photo`, `bio`, `order`
+- `newsletterIssue` — `volume`, `title`, `publishedAt`, `dueMonth`, `blurb`,
+  `cover`, and the issue as two **file uploads**, `html` and `pdf`, so
+  publishing an edition needs no commit
+
+Renaming a field breaks the query *silently*: the row comes back with nulls and
+the section quietly falls back to `content.ts`. Both hooks also ignore an empty
+response, so an outage or an unpopulated type degrades to the hardcoded copy
+instead of blanking a section.
+
+**The dataset is still empty.** Everything on screen today is the fallback.
+
+Gotchas:
+
+- `photo` has `hotspot: true`, and the site turns the hotspot into a CSS
+  `object-position`. That is what replaced the hand-tuned crop hints — a
+  member drags the crop circle in the Studio instead.
+- `<a download>` is ignored cross-origin, so PDFs from the CDN get `?dl=`
+  appended, which makes Sanity send `Content-Disposition: attachment`.
+- GROQ has no `trim()`. Trim in JS.
+- Data landing after mount changes section heights, which is what the
+  ScrollTrigger refresh in `lib/anim.ts` exists for.
+- The previous site's project, `mndx0824`, is **not ours** — publicly readable,
+  which is the only reason `scripts/migrate-team.mts` can read from it. It
+  stores the same people with `title` instead of `role` and the bio split
+  across `bioMain` + `bioOutside`.
+
 ## Current state
 
 Built and working: all seven home sections plus three sub-pages, Stairs load
@@ -139,10 +197,10 @@ Builds and lints clean; `node api/subscribe.test.mts` passes.
 
 ## Known issues / next up
 
-- [ ] **ScrollTrigger drift** — reveals fire early because start/end pixel
-      offsets are cached before webfonts and canvases settle. Fix is
-      `ScrollTrigger.refresh()` on `document.fonts.ready`, `window.load`, and
-      a body `ResizeObserver`. Was implemented once, currently not in tree.
+- [ ] **The CMS is empty** — schema is deployed, no documents. Run
+      `node --env-file=.env.local scripts/migrate-team.mts` with a
+      `SANITY_WRITE_TOKEN` to bring the 9 members over, then enter the June
+      issue by hand and upload its HTML + PDF.
 - [ ] **Mobile** — home, /team and /archive checked at 390px; /apply and the
       newsletter issue below 640px are still unverified.
 - [ ] **Leftover agency links** — Services' "View all services" and Work's
@@ -151,8 +209,9 @@ Builds and lints clean; `node api/subscribe.test.mts` passes.
       the June cover still uses one.
 - [ ] **Issue HTML is 1.3 MB** — six inline base64 images. Extract them to
       `public/img/` before the archive grows.
-- [ ] Two team portraits are non-square and rely on a `focus` crop hint;
-      proper square headshots would read better at 112px.
+- [ ] Two team portraits are non-square. In the CMS this is solved — `photo`
+      has a hotspot, and the migration seeds one for those two. The `focus`
+      values left in `content.ts` only matter while the dataset is empty.
 - [ ] Nothing on `/team` links to `/apply` any more — only the nav does.
 - [ ] Unused: `src/assets/hero.png`, `public/favicon.svg`, and the three.js
       dependency set.
@@ -183,4 +242,5 @@ Append one line per session: date — area — what landed.
 - 2026-08-02 — backend — Brevo signup wired (`api/subscribe.ts`), result modal, honeypot + per-IP rate limit, dev-only Vite middleware so `/api` works in `npm run dev`
 - 2026-08-02 — newsletter — June issue published under `public/newsletter/2026/`; its stylesheet rebuilt on the site's tokens; /archive links to the HTML and offers a direct PDF download
 - 2026-08-02 — work — June cover on the Work card, whole card links to the issue, arrow plate in the cover's bottom-left that widens on hover; real Instagram/LinkedIn URLs in the footer
+- 2026-08-04 — cms — site reads Sanity through plain fetch (no client library); team grid off `teamMember`, hotspot drives the portrait crop; `work.items` + `archive.issues` merged into one `issues` list feeding both; ScrollTrigger refresh landed; migration script for the old project's members
 - 2026-08-03 — polish — newsletter covers show as plain photos (duotone dropped on Work + /archive); sub-page headlines type out instead of scrambling; Services heading is one centred line on the standard char reveal (spread scrub removed); staircase rects bleed 1px to kill a device-only seam; mobile Apply moved from the bar into the hamburger drawer

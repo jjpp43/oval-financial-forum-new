@@ -22,5 +22,7 @@
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src"]
+  // the self-checks run on node, not in the browser — same reason api/ is out
+  "include": ["src"],
+  "exclude": ["src/**/*.test.mts"]
 }

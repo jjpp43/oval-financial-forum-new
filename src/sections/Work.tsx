@@ -1,7 +1,8 @@
 import { useEffect, useRef, type ReactNode } from "react";
 import gsap from "gsap";
-import { work } from "../content";
+import { issues as fallback, work } from "../content";
 import { splitChars } from "../lib/anim";
+import { useIssues } from "../lib/sanity";
 
 /* =============================================================================
  * HOME · section 5 of 6 — WORK / "Monthly Newsletter"
@@ -27,6 +28,10 @@ function Card({ href, children }: { href?: string; children: ReactNode }) {
 
 export default function Work() {
   const root = useRef<HTMLElement>(null);
+  const issues = useIssues(fallback);
+  // the row is the tail of the archive — the newest four editions, oldest of
+  // them first, so the placeholder plate stays on the right
+  const shown = issues.slice(-4);
 
   useEffect(() => {
     const el = root.current;
@@ -49,6 +54,20 @@ export default function Work() {
         scrollTrigger: { trigger: el, start: "top 75%", once: true },
       },
     );
+
+    return () => {
+      reveal.scrollTrigger?.kill();
+      reveal.kill();
+    };
+  }, []);
+
+  // the card tweens are separate because the CMS list arrives after mount and
+  // adds or removes plates — they rebuild against the new nodes, while the
+  // heading above keeps its one-shot reveal instead of replaying it
+  useEffect(() => {
+    const el = root.current;
+    if (!el) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     // cards slide up from below and fade in, one after the other
     const plates = gsap.fromTo(
@@ -105,8 +124,6 @@ export default function Work() {
     });
 
     return () => {
-      reveal.scrollTrigger?.kill();
-      reveal.kill();
       plates.scrollTrigger?.kill();
       plates.kill();
       soon.forEach((t) => {
@@ -114,7 +131,7 @@ export default function Work() {
         t.kill();
       });
     };
-  }, []);
+  }, [issues]);
 
   return (
     <section
@@ -138,28 +155,28 @@ export default function Work() {
             2: "lg:max-w-1/2 lg:grid-cols-2",
             3: "lg:max-w-3/4 lg:grid-cols-3",
             4: "lg:grid-cols-4",
-          }[Math.min(work.items.length, 4)]
+          }[Math.min(shown.length, 4)]
         }`}
       >
-        {work.items.map((item, i) => (
+        {shown.map((issue, i) => (
           // a published issue makes the whole card its own link to the issue;
           // an unpublished one has nowhere to go, so it stays a plain div
-          <Card key={item.sector} href={"href" in item ? item.href : undefined}>
+          <Card key={issue.volume} href={issue.html ?? undefined}>
             <div className="flex items-baseline justify-between border-b border-scarlet/25 pb-2">
               <span className="label text-label-s text-gray-dark-40"></span>
               <span className="label text-label-s text-gray-dark-40">
-                {item.sector}
+                Vol.{issue.volume}
               </span>
             </div>
 
-            <h3 className="text-heading mt-7 min-h-[2lh]">{item.client}</h3>
+            <h3 className="text-heading mt-7 min-h-[2lh]">{issue.title}</h3>
 
             {/* unpublished issues keep the plate, lose the picture */}
-            {"soon" in item ? (
+            {!issue.published ? (
               <div className="dot-grid grid aspect-4/5 place-items-center border border-scarlet/25">
                 <span
                   className="soon-label label text-label-s text-gray-dark-40"
-                  data-month={item.soon}
+                  data-month={issue.due}
                 >
                   {work.soonLabel}
                 </span>
@@ -167,15 +184,13 @@ export default function Work() {
             ) : (
               <div className="relative aspect-4/5 overflow-hidden">
                 <img
-                  src={
-                    "cover" in item ? item.cover : `/img/p${(i % 5) + 1}.jpg`
-                  }
+                  src={issue.cover ?? `/img/p${(i % 5) + 1}.jpg`}
                   alt=""
                   className="h-full w-full object-cover"
                 />
                 {/* the card itself is the link — this is the affordance, not a
                     second control, so it stays a span and out of the a11y tree */}
-                {"href" in item && (
+                {issue.html && (
                   <span
                     aria-hidden
                     className="absolute bottom-0 left-0 grid aspect-square w-12 place-items-center border-1 border-gray-dark-10 bg-white text-scarlet transition-[width] duration-500 group-hover:w-16"

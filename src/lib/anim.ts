@@ -260,8 +260,43 @@ export function useRise<T extends HTMLElement>(delay = 0) {
   return ref;
 }
 
+/**
+ * Keeps trigger positions honest. ScrollTrigger measures start/end pixels once,
+ * at creation — but this page keeps growing after that: webfonts reflow every
+ * heading, the dither canvases size themselves, and the Sanity lists swap in
+ * more cards. Without this the reveals fire against stale offsets and go off
+ * early. Cheap to over-call; refresh is idempotent.
+ */
+function useScrollRefresh() {
+  useEffect(() => {
+    const refresh = () => ScrollTrigger.refresh();
+    document.fonts?.ready.then(refresh);
+    window.addEventListener("load", refresh);
+
+    // catches everything the two events above miss — images decoding, the bio
+    // strip opening, a route swapping the whole body. Height-gated: a refresh
+    // can itself nudge layout, and calling straight back into it from the
+    // observer is how you get a feedback loop.
+    let last = document.body.offsetHeight;
+    const observer = new ResizeObserver(() => {
+      const height = document.body.offsetHeight;
+      if (height === last) return;
+      last = height;
+      refresh();
+    });
+    observer.observe(document.body);
+
+    return () => {
+      window.removeEventListener("load", refresh);
+      observer.disconnect();
+    };
+  }, []);
+}
+
 /** Lenis smooth scroll, driven by GSAP's ticker so ScrollTrigger stays in sync. */
 export function useLenis() {
+  useScrollRefresh();
+
   useEffect(() => {
     if (reduced()) return;
     // long coast after each wheel notch — `duration` is seconds to settle,

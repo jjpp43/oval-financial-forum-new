@@ -9,11 +9,18 @@
  *   services  → HOME section 3, "We Present" accordion rows
  *   approach  → HOME section 4, the four tilted step cards
  *   work      → HOME section 5, "Monthly Newsletter" issue row
+ *   issues    → the editions themselves, shared by that row and /archive
  *   team      → HOME section 6 + the /team grid, and every bio
- *   archive   → /archive masthead + one entry per published issue
+ *   archive   → /archive masthead
  *   apply     → /apply masthead, its three points, and the form URL
  *   contact   → footer subscribe hint
+ *
+ * `issues` and `team.members` are the two entries here that are only
+ * *fallbacks* — the live values come from Sanity (see lib/sanity.ts), so
+ * editing them changes what shows when the CMS is empty or unreachable, not
+ * what members see day to day.
  * ========================================================================== */
+import type { Issue } from "./lib/sanity";
 
 export const studio = {
   name: "The Oval Financial Forum",
@@ -97,23 +104,41 @@ export const approach = {
 export const work = {
   eyebrow: "Archive",
   headline: "Monthly Newsletter",
-  items: [
-    {
-      client: "June Edition",
-      sector: "Vol.1",
-      year: "2026",
-      role: "Identity, site, design system",
-      body: "",
-      tone: "ink",
-      cover: "/img/june.jpg",
-      href: "/newsletter/2026/june-2026.html",
-    },
-    // only one issue is out, so the row shows it plus the next one due. The
-    // grid takes one column per item, up to 4 — add editions here as they land.
-    { client: "", sector: "Vol.2", year: "", role: "", body: "", tone: "ink", soon: "July 2026" },
-  ],
   soonLabel: "Coming up soon!",
 };
+
+/**
+ * Every edition, feeding both the home row and /archive. Fallback copy only —
+ * the live list is the `newsletterIssue` type in Sanity, and members add
+ * editions there, not here. An issue with no `html` shows as the dotted plate
+ * counting down to `due`.
+ */
+export const issues: Issue[] = [
+  {
+    volume: 1,
+    title: "June Edition",
+    blurb:
+      "The Fed's third hold of the year, what the futures market is pricing, and why the labour data keeps contradicting itself.",
+    cover: "/img/june.jpg",
+    // both files live in public/newsletter/; in Sanity they are uploads
+    html: "/newsletter/2026/june-2026.html",
+    pdf: "/newsletter/2026/june-2026.pdf",
+    date: "Published : 07/19/2026",
+    published: true,
+    due: "",
+  },
+  {
+    volume: 2,
+    title: "",
+    blurb: "",
+    cover: null,
+    html: null,
+    pdf: null,
+    date: "",
+    published: false,
+    due: "July 2026",
+  },
+];
 
 export const team = {
   eyebrow: "Who runs it",
@@ -149,20 +174,6 @@ export const archive = {
   headline: "Archive",
   intro:
     "Every issue we have published, free to read. New editions land each month.",
-  issues: [
-    {
-      number: "01",
-      title: "June Edition",
-      date: "Published : 07/19/2026",
-      blurb:
-        "The Fed's third hold of the year, what the futures market is pricing, and why the labour data keeps contradicting itself.",
-      // `html` is the issue to read in the browser, `pdf` the file the
-      // download button hands over — both live in public/newsletter/
-      html: "/newsletter/2026/june-2026.html",
-      pdf: "/newsletter/2026/june-2026.pdf",
-      cover: "/img/june.jpg",
-    }
-  ],
 };
 
 /* ---- /apply -------------------------------------------------------------
