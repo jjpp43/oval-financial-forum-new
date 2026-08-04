@@ -24,7 +24,7 @@ import type { Issue } from "./lib/sanity";
 
 export const studio = {
   name: "The Oval Financial Forum",
-  tagline: "Student organization publishing financial newsletter monthly.",
+  tagline: "A Student organization at The Ohio State University centered around a monthly financial newsletter.",
   email: "ovalfinancialforum@gmail.com",
   location: "Columbus, OH",
 };

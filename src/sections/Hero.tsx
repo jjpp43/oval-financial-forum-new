@@ -94,7 +94,7 @@ export default function Hero() {
 
       {/* ---- bottom row: tagline left, subscribe field right --------------- */}
       <div className="grid-page mt-10 lg:mt-14">
-        <p className="hero-meta text-body-l col-span-6 max-w-[42ch] lg:col-span-5">
+        <p className="hero-meta text-body-l col-span-6 max-w-[50ch] lg:col-span-5">
           {studio.tagline}
         </p>
 
