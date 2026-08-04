@@ -16,7 +16,7 @@
  * ========================================================================== */
 
 export const studio = {
-  name: "Oval Financial Forum",
+  name: "The Oval Financial Forum",
   tagline: "Student organization publishing financial newsletter monthly.",
   email: "ovalfinancialforum@gmail.com",
   location: "Columbus, OH",
@@ -29,7 +29,7 @@ export const nav = [
 ];
 
 export const hero = {
-  eyebrow: "Oval Financial Forum",
+  eyebrow: "The Oval Financial Forum",
   headline: "",
   intro:
     "",
@@ -40,7 +40,8 @@ export const hero = {
 export const intro = {
   eyebrow: "Who we are",
   statement:
-    "A team of eager OSU students in collaboration to provide the best financial newsletter in the midwest.",
+  " An enviorment of OSU students driven to learn macroeconomics and geopolitics."
+    ,
   note: "No AI written material is used for our newsletter.",
 };
 
@@ -72,7 +73,7 @@ export const services = {
 
 export const approach = {
   eyebrow: "How it goes",
-  headline: "How we bring each issue",
+  headline: "Our Publication Process",
   steps: [
     {
       title: "Research",
@@ -116,7 +117,7 @@ export const work = {
 
 export const team = {
   eyebrow: "Who runs it",
-  headline: "Meet the team.",
+  headline: "Meet the team",
   // 9 members fills the 3x3 grid exactly. Add or remove freely — the grid
   // reflows; it just stops being a clean 3x3.
   members: [
@@ -178,7 +179,7 @@ export const apply = {
   points: [
     {
       title: "Who we look for",
-      body: "Open to any Ohio State student with the drive to learn deeply.",
+      body: "Open to any Ohio State student with the drive to learn deeply. No previous experience required.",
     },
     
   ],

@@ -91,7 +91,7 @@ function Row({
 
 /* =============================================================================
  * HOME · section 3 of 6 — SERVICES / "We Present"
- * The two drifting words, the duotone plate, and the hover-expand accordion of
+ * The heading, the three duotone plates, and the hover-expand accordion of
  * newsletter departments. Copy: `services` in content.ts.
  * ========================================================================== */
 export default function Services() {
@@ -101,13 +101,13 @@ export default function Services() {
   useEffect(() => {
     const el = root.current;
     if (!el) return;
-    const left = el.querySelector<HTMLElement>(".word-left");
-    const right = el.querySelector<HTMLElement>(".word-right");
-    if (!left || !right) return;
+    const heading = el.querySelector<HTMLElement>(".services-title");
+    if (!heading) return;
 
-    const chars = [...splitChars(left), ...splitChars(right)];
+    const chars = splitChars(heading);
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
+    // same reveal as every other home heading — chars rise into place
     const reveal = gsap.fromTo(
       chars,
       { yPercent: 100, autoAlpha: 0 },
@@ -116,24 +116,8 @@ export default function Services() {
         autoAlpha: 1,
         duration: 0.8,
         ease: "power3.out",
-        stagger: 0.02,
+        stagger: 0.018,
         scrollTrigger: { trigger: el, start: "top 75%", once: true },
-      },
-    );
-
-    // the two words drift apart as the section scrolls past
-    const spread = gsap.fromTo(
-      [left, right],
-      { xPercent: (i) => (i === 0 ? -20 : 20) },
-      {
-        xPercent: 0,
-        ease: "none",
-        scrollTrigger: {
-          trigger: el,
-          start: "top bottom",
-          end: "bottom top",
-          scrub: 0.9,
-        },
       },
     );
 
@@ -179,8 +163,6 @@ export default function Services() {
     return () => {
       reveal.scrollTrigger?.kill();
       reveal.kill();
-      spread.scrollTrigger?.kill();
-      spread.kill();
       plates.scrollTrigger?.kill();
       plates.kill();
       drift.scrollTrigger?.kill();
@@ -192,15 +174,11 @@ export default function Services() {
     <section
       ref={root}
       id="services"
-      className="overflow-hidden px-6 pt-32 pb-32 lg:px-15 lg:pt-50 lg:pb-40"
+      className="overflow-hidden px-6 pt-32 pb-32 lg:px-15 lg:pt-36 lg:pb-20"
     >
-      {/* heading centred in the viewport, the two words meeting at the middle */}
-      <div className="flex items-baseline justify-center gap-[2vw]">
-        <span className="word-left text-display-l block font-semibold">We</span>
-        <span className="word-right text-display-l block font-semibold">
-          Present
-        </span>
-      </div>
+      <h2 className="services-title text-display-l mx-auto font-semibold text-center">
+        We Present
+      </h2>
 
       {/* ---- left: plate + caption · right: accordion, then the CTA ------- */}
       <div className="grid-page mt-20 lg:mt-32">
@@ -229,7 +207,7 @@ export default function Services() {
           </div>
         </div>
 
-        <ul className="col-span-6 mt-12 border-b border-scarlet/25 lg:col-span-6 lg:col-start-7 lg:mt-0">
+        <ul className="col-span-6 mt-12 border-scarlet/25 lg:col-span-6 lg:col-start-7 lg:mt-0">
           {services.items.map((s, i) => (
             <Row
               key={s.title}
@@ -242,12 +220,12 @@ export default function Services() {
           ))}
         </ul>
 
-        <a
+        {/* <a
           href="#work"
           className="label text-label-s col-span-6 mt-10 block bg-scarlet py-4 text-center text-white transition-opacity duration-200 hover:opacity-90 lg:col-span-6 lg:col-start-7"
         >
           View all services
-        </a>
+        </a> */}
       </div>
     </section>
   );

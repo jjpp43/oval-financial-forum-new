@@ -66,7 +66,7 @@ export default function Stairs() {
       ))}
       <div className="stairs-mark absolute inset-0 grid place-items-center opacity-0">
         <span className="label text-label-lg text-white">
-          Oval Financial Forum
+          The Oval Financial Forum
         </span>
       </div>
     </div>

@@ -168,7 +168,7 @@ export default function Approach() {
     <section
       ref={root}
       id="approach"
-      className="grid-page relative isolate overflow-hidden px-6 pt-24 pb-32 lg:px-15 lg:pt-40 lg:pb-48"
+      className="grid-page relative isolate overflow-hidden px-6 pt-24 pb-32 lg:px-15 lg:pt-40 lg:pb-24"
     >
       {/* Background loop. The wash over it keeps scarlet type above AA — the
           raw footage is far too busy to read against. Masked top and bottom so

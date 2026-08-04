@@ -76,7 +76,7 @@ export default function Hero() {
       {/* ---- wordmark: the flip-board lines ------------------------------- */}
       {/* One .hero-title per line — splitWords() rebuilds each element from
           its textContent, so a <br /> inside one would be discarded. */}
-      {["Oval", "Financial Forum"].map((line) => (
+      {["The Oval", "Financial Forum"].map((line) => (
         <span
           key={line}
           aria-hidden

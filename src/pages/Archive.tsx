@@ -1,6 +1,5 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
-import Duotone from "../components/Duotone";
 import PageHead from "../components/PageHead";
 import { archive } from "../content";
 
@@ -70,7 +69,11 @@ export default function Archive() {
                 would be pushed to a new row. */}
             {issue.cover && (
               <div className="col-span-6 mt-8 aspect-square overflow-hidden lg:col-span-3 lg:col-start-2 lg:mt-0 lg:w-4/5 lg:justify-self-end lg:self-center">
-                <Duotone src={issue.cover} />
+                <img
+                  src={issue.cover}
+                  alt=""
+                  className="h-full w-full object-cover"
+                />
               </div>
             )}
 

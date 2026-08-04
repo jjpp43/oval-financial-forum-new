@@ -60,9 +60,10 @@ export default function Nav() {
       <div className="flex items-center gap-4">
         {/* white grows past the chip to both edges of the bar — the header's
             py-4 is exactly the distance it has to cover */}
+        {/* below md it lives at the foot of the drawer instead */}
         <Link
           to="/apply"
-          className="label text-label-s group relative bg-white px-5 py-2 text-scarlet"
+          className="label text-label-s group relative hidden bg-white px-5 py-2 text-scarlet md:block"
         >
           <span
             aria-hidden
@@ -123,6 +124,17 @@ export default function Nav() {
               {n.label}
             </Link>
           ))}
+
+          {/* the Apply chip, moved in — inverted so it still reads as the
+              one action among the routes */}
+          <Link
+            to="/apply"
+            onClick={() => setOpen(false)}
+            tabIndex={open ? undefined : -1}
+            className="label text-label-s border-t border-white/20 bg-white px-6 py-4 text-scarlet"
+          >
+            Apply
+          </Link>
         </nav>
       </div>
     </header>

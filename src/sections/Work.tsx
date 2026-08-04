@@ -1,6 +1,5 @@
 import { useEffect, useRef, type ReactNode } from "react";
 import gsap from "gsap";
-import Duotone from "../components/Duotone";
 import { work } from "../content";
 import { splitChars } from "../lib/anim";
 
@@ -167,10 +166,12 @@ export default function Work() {
               </div>
             ) : (
               <div className="relative aspect-4/5 overflow-hidden">
-                <Duotone
+                <img
                   src={
                     "cover" in item ? item.cover : `/img/p${(i % 5) + 1}.jpg`
                   }
+                  alt=""
+                  className="h-full w-full object-cover"
                 />
                 {/* the card itself is the link — this is the affordance, not a
                     second control, so it stays a span and out of the a11y tree */}
@@ -203,10 +204,10 @@ export default function Work() {
 
       {/* ---- CTA under the row (leftover agency copy — points nowhere) ---- */}
       <a
-        href="#top"
+        href="/archive"
         className="label text-label-s mx-auto mt-20 block max-w-sm bg-scarlet py-4 text-center text-white transition-opacity duration-200 hover:opacity-90 lg:mt-28"
       >
-        View all projects
+        View more
       </a>
     </section>
   );

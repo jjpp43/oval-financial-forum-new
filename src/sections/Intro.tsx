@@ -131,7 +131,7 @@ export default function Intro() {
   return (
     <section ref={root} className="relative overflow-hidden">
       {/* solid body, copy sits top-right */}
-      <div className="grid-page bg-scarlet px-6 pt-28 text-white lg:px-15 lg:pt-36 lg:pb-4">
+      <div className="grid-page bg-scarlet px-6 pt-28 text-white lg:px-15 lg:pt-8 lg:pb-4">
         <p className="slab-copy label text-label-m col-span-6 opacity-50 lg:col-span-4">
           {intro.eyebrow}
         </p>
@@ -150,11 +150,14 @@ export default function Intro() {
         className={`flex w-full flex-col bg-scarlet ${BAND_HEIGHT}`}
       >
         {RECTANGLES.map((r, i) => (
-          <div key={i} className="relative w-full flex-1 overflow-hidden">
+          // no clipping per row — the section already clips, and a rect that
+          // stops exactly on the row edge leaves a scarlet hairline on devices
+          // that round transformed layers differently from their parent
+          <div key={i} className="relative w-full flex-1">
             {r.width > 0 && (
               <div
                 id={`rect-${i + 1}`}
-                className="absolute inset-y-0 left-0 bg-gray-light-90"
+                className="absolute top-0 -bottom-px left-0 bg-gray-light-90"
                 style={{ width: `${r.width}%` }}
               />
             )}

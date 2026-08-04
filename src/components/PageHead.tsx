@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import Duotone from "./Duotone";
-import { curtainGone, splitLines, splitWords } from "../lib/anim";
+import { curtainGone, splitChars, splitLines } from "../lib/anim";
 
 /**
  * Scarlet masthead every sub-page opens with. Sits under the fixed nav, so
@@ -33,12 +33,8 @@ export default function PageHead({
     const h1 = title.current;
     if (!el || !block || !h1) return;
 
-    // headline decodes word by word; the rest of the copy wipes by line
-    const words = splitWords(h1);
-    // the first word lands plain — it anchors the line while the rest resolve.
-    // A one-word headline would otherwise have nothing to animate, so it
-    // scrambles instead of sitting still.
-    const scrambled = words.length > 1 ? words.slice(1) : words;
+    // headline types out character by character; the rest wipes by line
+    const chars = splitChars(h1);
     const lines = Array.from(block.children)
       .filter((child) => child !== h1)
       .flatMap((child) => splitLines(child as HTMLElement));
@@ -51,7 +47,7 @@ export default function PageHead({
 
     // hide the words now, not on play — a route change has no curtain to
     // cover the gap between mount and the timeline starting
-    gsap.set(scrambled, { autoAlpha: 0 });
+    gsap.set(chars, { autoAlpha: 0 });
 
     // paused, but the fromTo start values render now — the panel is parked
     // above the fold and the copy is hidden before the curtain lifts
@@ -61,15 +57,15 @@ export default function PageHead({
       { yPercent: -100 },
       { yPercent: 0, duration: 0.6, ease: "expo.out" },
     )
+      // typewriter: each letter simply appears, no cursor. autoAlpha toggles
+      // visibility, so the line holds its final width and nothing reflows.
       .to(
-        scrambled,
+        chars,
         {
           autoAlpha: 1,
-          duration: 0.7,
+          duration: 0,
           ease: "none",
-          stagger: 0.12,
-          // scrambling to the text already there reads as a decode
-          scrambleText: { text: "{original}", chars: "upperCase", speed: 0.6 },
+          stagger: 0.04,
         },
         "+=0.15",
       )

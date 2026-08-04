@@ -44,7 +44,7 @@ export default function Apply() {
         ) : (
           <div className="border border-scarlet/25 px-6 py-16 text-center">
             <p className="label text-label-s text-gray-dark-40">
-              The application form is not connected yet.
+              The application form is not open yet.
             </p>
             <a
               href={`mailto:${studio.email}`}
