@@ -151,7 +151,7 @@ export default function Work() {
     <section
       ref={root}
       id="work"
-      className="px-6 pt-24 pb-32 lg:px-15 lg:pt-32 lg:pb-48"
+      className="px-6 pt-24 pb-8 lg:px-15 lg:pt-32 lg:pb-16"
     >
       <h2 className="work-title text-display-l mx-auto font-semibold max-w-[12ch] text-center">
         {work.headline}
@@ -161,7 +161,7 @@ export default function Work() {
           one flat row — no stagger. The client name reserves two lines so the
           plates below it start at the same height whether the name wraps. */}
       <div
-        className={`work-grid mx-auto mt-20 grid grid-cols-2 items-start gap-x-6 gap-y-16 md:gap-x-15 lg:mt-32 ${
+        className={`work-grid mx-auto mt-16 grid grid-cols-2 items-start gap-x-6 gap-y-16 md:gap-x-15 lg:mt-20 ${
           // one column per issue, up to the full four-wide row; a short row
           // stays centred at the width it would have had inside a full one
           {
