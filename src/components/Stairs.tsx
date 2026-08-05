@@ -65,7 +65,10 @@ export default function Stairs() {
         <div key={i} className="stair h-full flex-1 bg-scarlet" />
       ))}
       <div className="stairs-mark absolute inset-0 grid place-items-center opacity-0">
-        <span className="label text-label-lg text-white">
+        <span
+          className="label text-heading text-white"
+          style={{ fontFamily: '"Times New Roman", Times, serif' }}
+        >
           The Oval Financial Forum
         </span>
       </div>

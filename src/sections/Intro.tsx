@@ -5,6 +5,9 @@ import { SplitText } from "gsap/SplitText";
 gsap.registerPlugin(SplitText);
 import { intro } from "../content";
 
+/* the two top-right labels ask for Times, not the site's mono */
+const TIMES = { fontFamily: '"Times New Roman", Times, serif' };
+
 /* ===========================================================================
  * THE RECTANGLES — edit this table, nothing else.
  *
@@ -132,10 +135,16 @@ export default function Intro() {
     <section ref={root} className="relative overflow-hidden">
       {/* solid body, copy sits top-right */}
       <div className="grid-page bg-scarlet px-6 pt-28 text-white lg:px-15 lg:pt-8 lg:pb-4">
-        <p className="slab-copy label text-label-m col-span-6 opacity-50 lg:col-span-4">
+        <p
+          className="slab-copy label text-label-m col-span-6 opacity-50 lg:col-span-4"
+          style={TIMES}
+        >
           {intro.eyebrow}
         </p>
-        <p className="ink-text label text-label-m col-span-3 mt-10 leading-relaxed lg:col-span-3 lg:col-start-7 lg:mt-0">
+        <p
+          className="ink-text label text-label-m col-span-3 mt-10 leading-relaxed lg:col-span-3 lg:col-start-7 lg:mt-0"
+          style={TIMES}
+        >
           {intro.statement}
         </p>
         <p className="ink-text label text-label-s col-span-3 mt-10 leading-relaxed lg:col-span-3 lg:col-start-10 lg:mt-0">
