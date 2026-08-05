@@ -134,7 +134,7 @@ export default function Intro() {
   return (
     <section ref={root} className="relative overflow-hidden">
       {/* solid body, copy sits top-right */}
-      <div className="grid-page bg-scarlet px-6 pt-28 text-white lg:px-15 lg:pt-8 lg:pb-4">
+      <div className="grid-page bg-scarlet px-6 pt-4 text-white lg:px-15 lg:pt-8 lg:pb-4">
         <p
           className="slab-copy label text-label-m col-span-6 opacity-50 lg:col-span-4"
           style={TIMES}
