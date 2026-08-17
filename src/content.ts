@@ -12,7 +12,7 @@
  *   issues    → the editions themselves, shared by that row and /archive
  *   team      → HOME section 6 + the /team grid, and every bio
  *   archive   → /archive masthead
- *   apply     → /apply masthead, its three points, and the form URL
+ *   apply     → /apply masthead, points, recruitment timeline, and the form URL
  *   contact   → footer subscribe hint
  *
  * `issues` and `team.members` are the two entries here that are only
@@ -185,15 +185,46 @@ export const apply = {
   eyebrow: "Join us",
   headline: "Write with us.",
   intro:
-    "Applications for our founding member class open August 2026. We'll see you then.",
+    "Applications for our founding member class open this August.",
   formUrl: "",
   points: [
     {
       title: "Who we look for",
-      body: "Open to any Ohio State student with the drive to learn deeply. No previous experience required.",
+      body: "Open to any Ohio State student with the drive to learn deeply.\nNo previous experience required.",
     },
-    
   ],
+  timeline: {
+    headline: "Timeline",
+    events: [
+      {
+        at: "2026-08-26T19:00",
+        month: "August",
+        day: "26",
+        weekday: "Wednesday",
+        time: "7:00 PM",
+        title: "Info session I",
+        location: "TBD",
+      },
+      {
+        at: "2026-09-01T20:30",
+        month: "September",
+        day: "1",
+        weekday: "Tuesday",
+        time: "8:30 PM",
+        title: "Info session II",
+        location: "TBD",
+      },
+      {
+        at: "2026-09-06T17:00",
+        month: "September",
+        day: "6",
+        weekday: "Sunday",
+        time: "5:00 PM",
+        title: "Make-up session",
+        location: "TBD",
+      },
+    ],
+  },
 };
 
 /* ---- footer -------------------------------------------------------------
