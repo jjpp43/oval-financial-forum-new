@@ -71,7 +71,7 @@ export default function Apply() {
       <section
         ref={timeline}
         id="recruitment"
-        className="grid-page px-6 pt-24 pb-24 lg:px-15 lg:pt-32 lg:pb-32"
+        className="grid-page px-6 py-24 lg:px-15 lg:pt-32 lg:pb-32"
       >
         <div className="col-span-6">
           {apply.points.map((p) => (
@@ -91,7 +91,7 @@ export default function Apply() {
 
         <ol
           aria-label={apply.timeline.headline}
-          className="relative col-span-6 mt-10 lg:col-span-6 lg:col-start-7 lg:mt-0"
+          className="relative col-span-6 mt-20 lg:col-span-6 lg:col-start-7 lg:mt-0"
         >
           <div
             aria-hidden
