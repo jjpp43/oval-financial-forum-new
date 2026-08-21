@@ -18,12 +18,32 @@ export default function Apply() {
     if (!el) return;
     const heading = el.querySelector<HTMLElement>(".timeline-title");
     const track = el.querySelector<HTMLElement>(".timeline-track");
-    if (!heading || !track) return;
+    const list = el.querySelector<HTMLElement>("ol");
+    if (!heading || !track || !list) return;
+
+    const layout = () => {
+      const nodes = list.querySelectorAll<HTMLElement>(".timeline-node");
+      if (nodes.length < 2) {
+        track.style.height = "0px";
+        return;
+      }
+      const box = list.getBoundingClientRect();
+      const first = nodes[0].getBoundingClientRect();
+      const last = nodes[nodes.length - 1].getBoundingClientRect();
+      const top = first.top + first.height / 2 - box.top;
+      const bottom = last.top + last.height / 2 - box.top;
+      track.style.top = `${top}px`;
+      track.style.height = `${Math.max(0, bottom - top)}px`;
+    };
+
+    layout();
+    const ro = new ResizeObserver(layout);
+    ro.observe(list);
 
     const chars = splitChars(heading);
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       track.style.transform = "scaleY(1)";
-      return;
+      return () => ro.disconnect();
     }
 
     const reveal = gsap.fromTo(
@@ -56,6 +76,7 @@ export default function Apply() {
       reveal.kill();
       draw.scrollTrigger?.kill();
       draw.kill();
+      ro.disconnect();
     };
   }, []);
 
@@ -85,6 +106,11 @@ export default function Apply() {
                   </span>
                 ))}
               </p>
+              {p.note && (
+                <p className="text-body-s mt-4 font-semibold leading-relaxed text-scarlet">
+                  {p.note}
+                </p>
+              )}
             </div>
           ))}
         </div>
@@ -95,7 +121,7 @@ export default function Apply() {
         >
           <div
             aria-hidden
-            className="timeline-track absolute top-[calc(1.875rem*1.15/2)] bottom-0 left-[7px] w-[2px] origin-top bg-[linear-gradient(to_bottom,var(--color-gray)_0%,var(--color-gray)_80%,transparent_100%)]"
+            className="timeline-track absolute left-[7px] w-[2px] origin-top bg-gray"
           />
 
           {apply.timeline.events.map((e, i) => {
@@ -103,11 +129,11 @@ export default function Apply() {
             return (
               <li
                 key={e.at}
-                className={`relative flex gap-x-5 ${last ? "pb-8" : "pb-12 lg:pb-14"}`}
+                className={`relative flex gap-x-5 ${last ? "" : "pb-12 lg:pb-14"}`}
               >
                 <span
                   aria-hidden
-                  className="relative z-10 mt-[calc(1.875rem*1.15/2-8px)] size-4 shrink-0 rounded-full border-2 border-scarlet bg-gray-light-90"
+                  className="timeline-node relative z-10 mt-[calc(1.875rem*1.15/2-8px)] size-4 shrink-0 rounded-full border-2 border-scarlet bg-gray-light-90"
                 />
                 <div>
                   <p className="text-heading font-semibold">{e.title}</p>
