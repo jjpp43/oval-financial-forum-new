@@ -3,12 +3,12 @@ import gsap from "gsap";
 import PageHead from "../components/PageHead";
 import { apply, studio } from "../content";
 import { splitChars } from "../lib/anim";
+import { track } from "../lib/analytics";
 
 /* =============================================================================
  * ROUTE /apply — "Join Us" in the nav
- * Masthead, then one 12-col band: who we look for on the left, a vertical
- * timeline on the right (grey track running through hollow scarlet nodes).
- * Google Form underneath. Copy: `apply` in content.ts.
+ * Masthead, then one 12-col band: who we look for on the left (note + Apply
+ * button), a vertical timeline on the right. Copy: `apply` in content.ts.
  * ========================================================================== */
 export default function Apply() {
   const timeline = useRef<HTMLElement>(null);
@@ -113,6 +113,16 @@ export default function Apply() {
               )}
             </div>
           ))}
+          <a
+            href={apply.formUrl || `mailto:${studio.email}`}
+            {...(apply.formUrl
+              ? { target: "_blank", rel: "noreferrer" }
+              : {})}
+            onClick={() => track("apply_clicked", { where: "page" })}
+            className="label text-label-s mt-8 block w-full bg-scarlet px-5 py-4 text-center text-white transition-opacity duration-200 hover:opacity-80 lg:inline-block lg:w-auto"
+          >
+            {apply.cta}
+          </a>
         </div>
 
         <ol
@@ -171,31 +181,6 @@ export default function Apply() {
             );
           })}
         </ol>
-      </section>
-
-      <section className="px-6 pt-4 pb-32 lg:px-15 lg:pt-4 lg:pb-40">
-        {apply.formUrl ? (
-          /* Google's embed ships its own type and spacing — the frame is the
-             one place on this site the design system does not reach. */
-          <iframe
-            src={apply.formUrl}
-            title="Membership application"
-            className="h-[1200px] w-full border border-scarlet/25 bg-white"
-            loading="lazy"
-          />
-        ) : (
-          <div className="border border-scarlet/25 px-6 py-16 text-center">
-            <p className="label text-label-s text-gray-dark-40">
-              The application form is not open yet.
-            </p>
-            <a
-              href={`mailto:${studio.email}`}
-              className="label text-label-s mt-6 inline-block bg-scarlet px-5 py-4 text-white transition-opacity duration-200 hover:opacity-80"
-            >
-              Email us instead
-            </a>
-          </div>
-        )}
       </section>
     </main>
   );

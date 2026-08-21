@@ -12,6 +12,7 @@ import Footer from "./sections/Footer";
 import Archive from "./pages/Archive";
 import TeamPage from "./pages/TeamPage";
 import Apply from "./pages/Apply";
+import ApplyPrompt from "./components/ApplyPrompt";
 import { useLenis } from "./lib/anim";
 import { useAnalytics } from "./lib/analytics";
 
@@ -55,6 +56,7 @@ export default function App() {
       <Nav />
       <ScrollReset />
       <Analytics />
+      <ApplyPrompt />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/archive" element={<Archive />} />

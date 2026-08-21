@@ -12,7 +12,7 @@
  *   issues    → the editions themselves, shared by that row and /archive
  *   team      → HOME section 6 + the /team grid, and every bio
  *   archive   → /archive masthead
- *   apply     → /apply masthead, points, recruitment timeline, and the form URL
+ *   apply     → /apply masthead, points, recruitment timeline, CTA, load prompt
  *   contact   → footer subscribe hint
  *
  * `issues` and `team.members` are the two entries here that are only
@@ -177,16 +177,21 @@ export const archive = {
 };
 
 /* ---- /apply -------------------------------------------------------------
- * `formUrl` must be the Google Form's EMBED url — open the form, Send →
- * <> → copy the src from the iframe. It ends in /viewform?embedded=true.
- * A plain /viewform link renders but refuses to submit inside a frame.
+ * `formUrl` is the Apply button's href — the Google Form's share link
+ * (the /viewform URL, not the embed). Empty falls back to mailto.
  * ------------------------------------------------------------------------- */
 export const apply = {
   eyebrow: "Join us",
   headline: "Write with us.",
   intro:
     "Applications for our founding member class open this August.",
-  formUrl: "",
+  formUrl:
+    "https://docs.google.com/forms/d/e/1FAIpQLSe4dwRvRjGtOnbNGcZaib9ZM0bpgEYIWZfXRPyZJbOeTDzKjQ/viewform",
+  cta: "Apply",
+  prompt: {
+    headline: "Currently accepting applications",
+    dismiss: "Close",
+  },
   points: [
     {
       title: "Who we look for",
@@ -229,7 +234,7 @@ export const apply = {
         month: "September",
         day: "6",
         weekday: "Sunday",
-        time: "7-8 PM",
+        time: "8 PM",
         title: "Application Due",
         location: "Google Form",
       },

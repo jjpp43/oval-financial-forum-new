@@ -297,3 +297,4 @@ Append one line per session: date — area — what landed.
 - 2026-08-03 — polish — newsletter covers show as plain photos (duotone dropped on Work + /archive); sub-page headlines type out instead of scrambling; Services heading is one centred line on the standard char reveal (spread scrub removed); staircase rects bleed 1px to kill a device-only seam; mobile Apply moved from the bar into the hamburger drawer
 - 2026-08-16 — apply — recruitment timeline on /apply: Aug 26 7pm and Sep 1 8:30pm info sessions, location TBD, scarlet band
 - 2026-08-16 — apply — timeline rebuilt as a vertical grey graph; scarlet fill grows with elapsed dates, nodes stay on every stop
+- 2026-08-21 — apply — load prompt after the Stairs curtain: currently accepting applications, links to /apply
