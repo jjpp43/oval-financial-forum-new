@@ -189,7 +189,7 @@ export const apply = {
     "https://docs.google.com/forms/d/e/1FAIpQLSe4dwRvRjGtOnbNGcZaib9ZM0bpgEYIWZfXRPyZJbOeTDzKjQ/viewform",
   cta: "Apply",
   prompt: {
-    headline: "Currently accepting applications",
+    headline: "Applications are open for Fall 2026.",
     dismiss: "Close",
   },
   points: [
