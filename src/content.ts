@@ -187,7 +187,7 @@ export const apply = {
     "Applications for our founding member class open this August.",
   formUrl:
     "https://docs.google.com/forms/d/e/1FAIpQLSe4dwRvRjGtOnbNGcZaib9ZM0bpgEYIWZfXRPyZJbOeTDzKjQ/viewform",
-  cta: "Apply",
+  cta: "Fill out our interest form",
   prompt: {
     headline: "Applications are open for Fall 2026.",
     dismiss: "Close",
@@ -234,7 +234,7 @@ export const apply = {
         month: "September",
         day: "6",
         weekday: "Sunday",
-        time: "8 PM",
+        time: "7-8 PM",
         title: "Application Due",
         location: "Google Form",
       },
