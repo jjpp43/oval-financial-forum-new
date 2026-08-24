@@ -209,7 +209,7 @@ export const apply = {
         weekday: "Monday",
         time: "7-8 PM",
         title: "Info session I",
-        location: "Enarson 268",
+        location: "Enarson 258",
       },
       {
         at: "2026-09-01T20:30",
@@ -218,7 +218,7 @@ export const apply = {
         weekday: "Wednesday",
         time: "8:30-9:30 PM",
         title: "Info session II",
-        location: "Enarson 268",
+        location: "Enarson 258",
       },
       {
         at: "2026-09-06T19:00",
