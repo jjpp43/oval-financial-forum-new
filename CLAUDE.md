@@ -39,7 +39,7 @@ src/
   lib/analytics.ts   PostHog — lazy init, track(), per-route pageviews
   lib/sanity.ts      useTeam / useIssues, the GROQ queries, row mapping
   lib/sanity.test.mts  mapping self-check, no network
-  components/        Nav, Stairs, ScrollReset, PageHead, NewsletterField, Duotone
+  components/        Nav, Stairs, ScrollReset, PageHead, NewsletterField, Duotone, Seo
   sections/          Hero, Intro, Services, Approach, Work, Team, Footer
   pages/             Archive, TeamPage, Apply
 api/
@@ -57,13 +57,16 @@ public/
   img/               banners (archive/team/joinus), logo_dark, ex1–ex3
                      (Services plates), p1–p5 placeholders, june/aug covers
   newsletter/2026/   june-2026 + aug-2026 html/pdf — published issues
+  robots.txt         Allow all; points at sitemap.xml
+  sitemap.xml        /, /archive, /team, /apply
 ```
 
 Home section order: Hero → Intro → Services → Approach → Work → Team → Footer.
 
 Routes (`App.tsx`, react-router): `/` · `/archive` · `/team` · `/apply`,
-anything else falls back to home. Every sub-page opens with `PageHead`; the
-Footer sits outside `<Routes>` and shows on all of them.
+anything else redirects to `/`. `Seo` sets title/description/canonical per
+route. Every sub-page opens with `PageHead`; the Footer sits outside
+`<Routes>` and shows on all of them.
 
 Each file starts with a banner comment naming the part of the page it draws —
 grep `section N of 6` to jump to a home section.
@@ -268,8 +271,8 @@ Builds and lints clean; `node api/subscribe.test.mts` passes.
 - [ ] Nothing on `/team` links to `/apply` any more — only the nav does.
 - [ ] Unused: `src/assets/hero.png`, `public/favicon.svg`, and the three.js
       dependency set.
-- [ ] No OG work. Favicon is deliberately blank (`data:` icon in
-      `index.html`).
+- [ ] **OG image is the wordmark**, not a 1200×630 share card. Fine for
+      search; a dedicated raster would look better in iMessage and Slack.
 
 ## Progress log
 
@@ -304,3 +307,4 @@ Append one line per session: date — area — what landed.
 - 2026-08-26 — newsletter — August edition styled on the June tokens, images extracted, fallback + Sanity seed
 - 2026-08-26 — team — LinkedIn and mail icons on /team, name left / icons right
 - 2026-08-26 — cms — Read issue opens the Sanity HTML through /api/issue, so Studio uploads go live without a commit
+- 2026-08-26 — seo — per-route titles, sitemap, robots, JSON-LD; home title names OSU finance club

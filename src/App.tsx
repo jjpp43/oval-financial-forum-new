@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import Nav from "./components/Nav";
 import Stairs from "./components/Stairs";
 import ScrollReset from "./components/ScrollReset";
@@ -13,6 +13,7 @@ import Archive from "./pages/Archive";
 import TeamPage from "./pages/TeamPage";
 import Apply from "./pages/Apply";
 import ApplyPrompt from "./components/ApplyPrompt";
+import Seo from "./components/Seo";
 import { useLenis } from "./lib/anim";
 import { useAnalytics } from "./lib/analytics";
 
@@ -56,14 +57,15 @@ export default function App() {
       <Nav />
       <ScrollReset />
       <Analytics />
+      <Seo />
       <ApplyPrompt />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/archive" element={<Archive />} />
         <Route path="/team" element={<TeamPage />} />
         <Route path="/apply" element={<Apply />} />
-        {/* anything unknown falls back to the landing page */}
-        <Route path="*" element={<Home />} />
+        {/* unknown paths redirect so they are not indexed as a second home */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       <Footer />
     </BrowserRouter>

@@ -24,9 +24,12 @@ import type { Issue } from "./lib/sanity";
 
 export const studio = {
   name: "The Oval Financial Forum",
-  tagline: "A Student organization at The Ohio State University centered around a monthly financial newsletter.",
+  tagline:
+    "An Ohio State student finance club that publishes a monthly financial newsletter.",
   email: "ovalfinancialforum@gmail.com",
   location: "Columbus, OH",
+  instagram: "https://www.instagram.com/ovalfinancialforum/",
+  linkedin: "https://www.linkedin.com/company/the-oval-financial-forum/",
 };
 
 export const nav = [
@@ -47,8 +50,7 @@ export const hero = {
 export const intro = {
   eyebrow: "Who we are",
   statement:
-  " An enviorment of OSU students driven to learn macroeconomics and geopolitics."
-    ,
+    "An environment of OSU students driven to learn macroeconomics and geopolitics.",
   note: "No AI written material is used for our newsletter.",
 };
 
@@ -251,4 +253,42 @@ export const contact = {
   eyebrow: "Start something",
   headline: "Tell us what is broken.",
   body: "We publish our newsletter every month. Subscribe to our newsletter to learn more!",
+};
+
+/* ---- search / social ----------------------------------------------------
+ * Titles and descriptions for <title>, meta, Open Graph. The origin is the
+ * live site — canonical and og:url are built from it. Copy: keep "finance
+ * club" and "Ohio State" in the home title so a search for those words can
+ * match what the page actually says.
+ * ------------------------------------------------------------------------- */
+export const origin = "https://www.ovalfinancialforum.com";
+
+export const seo = {
+  origin,
+  title: "Oval Financial Forum | OSU Finance Club",
+  description:
+    "Oval Financial Forum is an Ohio State student finance club. We write a monthly newsletter on markets, macroeconomics, and geopolitics.",
+  image: "/img/logo_dark.png",
+  pages: {
+    "/": {
+      title: "Oval Financial Forum | OSU Finance Club",
+      description:
+        "Oval Financial Forum is an Ohio State student finance club. We write a monthly newsletter on markets, macroeconomics, and geopolitics.",
+    },
+    "/archive": {
+      title: "Newsletter Archive | Oval Financial Forum",
+      description:
+        "Read every Oval Financial Forum edition. A monthly financial newsletter written by Ohio State students.",
+    },
+    "/team": {
+      title: "The Team | Oval Financial Forum",
+      description:
+        "Meet the Ohio State students who write and edit the Oval Financial Forum, OSU’s student finance club newsletter.",
+    },
+    "/apply": {
+      title: "Join Us | Oval Financial Forum",
+      description:
+        "Apply to Oval Financial Forum, Ohio State’s student finance club. Open to any OSU student — no finance background required.",
+    },
+  } satisfies Record<string, { title: string; description: string }>,
 };
