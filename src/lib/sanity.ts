@@ -161,24 +161,41 @@ const stamp = (iso: string | null) => {
   return `Published : ${m}/${d}/${y}`;
 };
 
-/** Exported for the self-check in sanity.test.mts — no live dataset needed. */
-export const mapIssues = (rows: IssueRow[]): Issue[] =>
-  rows.map((r) => ({
-    volume: r.volume,
-    title: r.title ?? "",
-    blurb: r.blurb ?? "",
-    cover: sized(r.cover, 900),
-    html: r.html,
+/**
+ * CMS rows win for copy and the cover. HTML and PDF prefer the matching
+ * `content.ts` path when one exists: those files live next to `/fonts` and
+ * `/img`, and the Sanity CDN copy of the HTML cannot see either. An issue
+ * that exists only in the Studio still uses the uploaded file URLs.
+ *
+ * Exported for the self-check in sanity.test.mts — no live dataset needed.
+ */
+export const mapIssues = (rows: IssueRow[], locals: Issue[] = []): Issue[] =>
+  rows.map((r) => {
+    const local = locals.find((i) => i.volume === r.volume);
+    const html = local?.html ?? r.html;
     // `?dl=` makes the CDN answer with Content-Disposition: attachment. The
     // <a download> attribute alone is ignored cross-origin, so without this
-    // the PDF would open in a viewer instead of downloading.
-    pdf: r.pdf ? `${r.pdf}?dl=` : null,
-    date: stamp(r.publishedAt),
-    // an issue counts as out once it has both a date and something to read
-    published: Boolean(r.publishedAt && r.html),
-    due: r.dueMonth ?? "",
-  }));
+    // the PDF would open in a viewer instead of downloading. Same-origin
+    // files in public/ do not need it.
+    const pdf = local?.pdf ?? (r.pdf ? `${r.pdf}?dl=` : null);
+    return {
+      volume: r.volume,
+      title: r.title ?? "",
+      blurb: r.blurb ?? "",
+      cover: sized(r.cover, 900),
+      html,
+      pdf,
+      date: stamp(r.publishedAt),
+      // an issue counts as out once it has both a date and something to read
+      published: Boolean(r.publishedAt && html),
+      due: r.dueMonth ?? "",
+    };
+  });
 
 export function useIssues(fallback: Issue[]): Issue[] {
-  return useSanity<IssueRow, Issue>(ISSUE_QUERY, mapIssues, fallback);
+  return useSanity<IssueRow, Issue>(
+    ISSUE_QUERY,
+    (rows) => mapIssues(rows, fallback),
+    fallback,
+  );
 }

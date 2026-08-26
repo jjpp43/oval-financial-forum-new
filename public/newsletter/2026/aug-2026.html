@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Oval Review — August 2026 Edition</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+
+  /* ── Site fonts, self-hosted. Same files the app loads, so a reader who
+        came from the site has them cached already. ── */
+  @font-face {
+    font-family: "Cormorant Garamond";
+    src: url("/fonts/CormorantGaramond-var.woff2") format("woff2-variations");
+    font-weight: 300 700;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: "Martian Mono";
+    src: url("/fonts/MartianMono-400.woff2") format("woff2");
+    font-weight: 400;
+    font-display: swap;
+  }
+
+  :root {
+    /* ── Ohio State palette — the site's tokens, same values (index.css) ── */
+    --scarlet: #ba0c2f;
+    --scarlet-deep: #70071c;
+    --paper: #f6f7f8;        /* gray-light-90, the site's page colour */
+    --desk: #dfe3e5;         /* gray-light-60, the surface behind the sheet */
+    --ink: #212325;          /* gray-dark-80 */
+    --ink-soft: #3f4443;     /* gray-dark-60 — running prose */
+    --ink-muted: #646a6e;    /* gray-dark-40 — the only de-emphasis colour;
+                                never a faded scarlet, which drops below AA */
+    /* the one colour outside the closed site palette: a market table has to
+       show direction, and scarlet already means "down" here */
+    --gain: #1f7a4d;
+    --rule: rgba(186, 12, 47, 0.25);
+    --rule-soft: rgba(186, 12, 47, 0.14);
+
+    --font-display: "Cormorant Garamond", ui-serif, Georgia, serif;
+    --font-mono: "Martian Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+    /* one curve for everything that moves, as on the site */
+    --ease: cubic-bezier(0.4, 0, 0.2, 1);
+
+    --sheet-width: 820px;
+    /* Horizontal inset of the sheet's content. The page-cut rule bleeds
+       back by the same amount, so they must move together — hence one
+       token rather than four literals. Overridden for narrow screens only;
+       print keeps 52px. */
+    --pad: 56px;
+  }
+
+  body {
+    margin: 0; background: var(--desk);
+    font-family: var(--font-display); color: var(--ink);
+    font-size: 17px; line-height: 1.7; -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3 { font-family: var(--font-display); margin: 0; line-height: 1.1; letter-spacing: -0.02em; font-weight: 600; }
+  p { margin: 0; }
+  a { color: inherit; text-decoration: none; }
+  ::selection { background: var(--scarlet); color: #fff; }
+
+  /* ── Shared type primitives ──
+     `.kicker` is the site's `label` utility: Martian Mono, uppercase, 0.05em.
+     It is the only uppercase in the document. ── */
+  .kicker {
+    font-family: var(--font-mono); font-weight: 400; font-size: 11px;
+    text-transform: uppercase; letter-spacing: 0.05em; color: var(--scarlet);
+    display: block; margin: 0 0 12px;
+  }
+  .rule { border: 0; border-top: 1px solid var(--rule); margin: 0; }
+  .rule--soft { border: 0; border-top: 1px solid var(--rule-soft); margin: 0; }
+
+  /* ── Issue control bar (screen only) — the site's fixed scarlet nav ── */
+  .print-bar {
+    background: var(--scarlet); color: #fff; text-align: center;
+    padding: 13px 24px; font-family: var(--font-mono); font-size: 11px;
+    letter-spacing: 0.05em; display: flex; align-items: center;
+    justify-content: center; gap: 22px; position: sticky; top: 0; z-index: 100;
+    border-bottom: 1px solid #fff;
+  }
+  .print-bar span { text-transform: uppercase; }
+  .print-bar .download {
+    position: relative; overflow: hidden; background: #fff; color: var(--scarlet);
+    border: none; padding: 7px 18px; font-family: var(--font-mono); font-size: 11px;
+    letter-spacing: 0.05em; text-transform: uppercase; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 8px; text-decoration: none;
+    transition: opacity 0.2s var(--ease);
+  }
+  .print-bar .download:hover { opacity: 0.8; }
+  .print-bar .download svg { width: 13px; height: 13px; flex: none; }
+
+  /* ── Sheet + pages. Flat, square, no shadow — the site has neither. ── */
+  .newsletter { max-width: var(--sheet-width); margin: 0 auto; background: var(--paper); }
+  html { scroll-behavior: smooth; }
+  .page { position: relative; }
+  .body-pad { padding: 22px var(--pad) 24px; }
+
+  /* ── Masthead (page 1) ── */
+  .masthead__top-rule { border: 0; border-top: 2px solid var(--scarlet); margin: 0; }
+  .masthead__meta {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 11px var(--pad); font-family: var(--font-mono); font-size: 10px;
+    letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-muted);
+  }
+  .masthead__vol { color: var(--scarlet); }
+  .masthead__brand { text-align: center; padding: 60px var(--pad) 14px; }
+  .wordmark {
+    font-family: var(--font-display); font-weight: 600;
+    font-size: clamp(2.75rem, 7vw, 4.75rem); letter-spacing: -0.02em;
+    color: var(--scarlet); line-height: 0.9;
+  }
+  .masthead__tagline { font-family: var(--font-display); font-size: 20px; line-height: 1.45; color: var(--ink-soft); margin: 18px auto 0; max-width: 44ch; }
+  .masthead__pub { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-muted); margin-top: 20px; }
+  .masthead__brand-pad { padding: 0 var(--pad) 30px; }
+
+  /* ── Section headers ── */
+  .headline { font-family: var(--font-display); font-weight: 600; font-size: clamp(2rem, 4.4vw, 2.75rem); line-height: 0.94; letter-spacing: -0.02em; color: var(--scarlet); }
+  .sub { font-family: var(--font-display); font-weight: 600; font-size: 24px; color: var(--ink); margin: 34px 0 8px; letter-spacing: -0.01em; }
+  .section-head { margin-bottom: 26px; }
+  .section-head + h2.sub { margin-top: 12px; }
+  .section-head .rule--soft { margin-top: 18px; }
+
+  /* ── Body copy ── */
+  p.body { font-size: 17px; line-height: 1.7; color: var(--ink-soft); margin-bottom: 16px; }
+  p.body b, .toc__title b { color: var(--ink); font-weight: 600; }
+
+  /* ── Figures ── */
+  .lead-figure { margin: 6px 0 26px; }
+  .lead-figure__frame {
+    width: 100%; height: 690px; background: var(--desk); border: 1px solid var(--rule);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ink-muted); font-family: var(--font-display); font-size: 15px;
+    overflow: hidden;
+  }
+  .lead-figure__frame img { width: 100%; height: 100%; object-fit: cover; object-position: center 45%; display: block; }
+  .lead-figure--right { float: right; width: 300px; margin: 6px 0 14px 28px; }
+  .lead-figure--right img, .lead-figure--wide img { width: 100%; height: auto; display: block; border: 1px solid var(--rule); }
+  .lead-figure--right .lead-figure__cap { margin-top: 8px; }
+  .lead-figure--wide, table.data { clear: both; }
+  .lead-figure__cap { font-family: var(--font-mono); font-size: 10px; line-height: 1.5; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-muted); margin-top: 10px; }
+  .lead-figure__cap .credit { color: var(--scarlet); }
+
+  /* ── Page cut (new-page marker within the continuous sheet) ── */
+  .page-cut { border: 0; border-top: 2px solid var(--scarlet); margin: 20px calc(var(--pad) * -1); }
+
+  /* ── Data table. Figures set in the mono face, which is tabular by
+        construction — no font-feature juggling needed. ── */
+  table.data { width: 100%; border-collapse: collapse; margin: 46px 0 8px; }
+  table.data th { text-align: left; font-family: var(--font-mono); font-size: 10px; font-weight: 400; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-muted); padding: 10px 10px; border-bottom: 1px solid var(--rule); }
+  table.data td { padding: 11px 10px; border-bottom: 1px solid var(--rule-soft); color: var(--ink-soft); font-family: var(--font-mono); font-size: 12px; }
+  table.data td.num { text-align: left; }
+  table.data td.pos, .pos { color: var(--gain); }
+  table.data td.neg, .neg { color: var(--scarlet); }
+
+  /* ── Timeline ── */
+  .timeline { border: 1px solid var(--rule); border-top: 2px solid var(--scarlet); margin: 18px 0 8px; }
+  .tl-item { display: grid; grid-template-columns: 132px 1fr; border-top: 1px solid var(--rule-soft); }
+  .tl-item:first-child { border-top: none; }
+  .tl-date { display: flex; align-items: center; font-family: var(--font-mono); font-size: 10px; color: var(--scarlet); letter-spacing: 0.05em; text-transform: uppercase; border-right: 1px solid var(--rule-soft); padding: 15px 16px; }
+  .tl-text { display: flex; align-items: center; font-size: 16px; line-height: 1.55; color: var(--ink-soft); padding: 14px 18px; }
+
+  /* ── Framed card — 2px scarlet top border, the site's plate signature ── */
+  .card { border: 1px solid var(--rule); border-top: 2px solid var(--scarlet); padding: 20px 22px; margin: 18px 0 24px; }
+  .tc-name { font-family: var(--font-display); font-weight: 600; font-size: 22px; color: var(--ink); letter-spacing: -0.01em; }
+  .tc-ticker { font-family: var(--font-mono); font-size: 10px; color: var(--ink-muted); letter-spacing: 0.05em; text-transform: uppercase; margin-top: 4px; }
+  .m-label { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-muted); }
+  .m-val { font-family: var(--font-mono); font-size: 13px; color: var(--ink); margin-top: 5px; }
+
+  /* ── Company deep-dive card ── */
+  .deep-card { border: 1px solid var(--rule); border-top: 2px solid var(--scarlet); margin: 18px 0 24px; }
+  .deep-card__head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 14px 18px; border-bottom: 1px solid var(--rule); }
+  .deep-card__head .tc-ticker { margin-top: 0; }
+  .tc-mu { color: var(--scarlet); }
+  .close-price { text-align: right; }
+  .close-price__label { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--scarlet); }
+  .close-price__val { font-family: var(--font-display); font-weight: 600; font-size: 30px; color: var(--ink); line-height: 1.05; letter-spacing: -0.01em; }
+  .close-price__chg { font-family: var(--font-mono); font-size: 11px; color: var(--gain); margin-top: 4px; }
+  .stat-row { display: grid; grid-template-columns: repeat(4, 1fr); }
+  .stat-cell { padding: 15px 18px; border-right: 1px solid var(--rule-soft); }
+  .stat-cell:last-child { border-right: none; }
+
+  /* ── Rates & currencies snapshot ── */
+  .snapshot { border: 1px solid var(--rule); border-top: 2px solid var(--scarlet); margin: 24px 0; }
+  .snapshot__head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 13px 18px; border-bottom: 1px solid var(--rule); }
+  .snapshot__title { font-family: var(--font-display); font-weight: 600; font-size: 20px; color: var(--ink); letter-spacing: -0.01em; }
+  .snapshot__date { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-muted); white-space: nowrap; }
+  .snapshot__grid { display: grid; grid-template-columns: 1fr 1fr; }
+  .snapshot__col { padding: 15px 18px 17px; }
+  .snapshot__col:first-child { border-right: 1px solid var(--rule-soft); }
+  .snapshot__label { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--scarlet); margin-bottom: 6px; }
+  .snapshot__row { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 8px 0; border-top: 1px solid var(--rule-soft); font-size: 16px; color: var(--ink-soft); }
+  .snapshot__row:first-of-type { border-top: none; }
+  .snapshot__val { font-family: var(--font-mono); font-size: 12px; color: var(--ink); }
+
+  /* ── About the authors ── */
+  .authors { margin-top: 14px; }
+  .author { display: grid; grid-template-columns: 112px 1fr; gap: 22px; align-items: start; padding: 20px 0; border-top: 1px solid var(--rule-soft); }
+  .author:first-of-type { border-top: none; padding-top: 4px; }
+  .author__photo { width: 112px; height: 140px; object-fit: cover; object-position: center 20%; display: block; }
+  .author__name { font-family: var(--font-display); font-weight: 600; font-size: 22px; color: var(--scarlet); line-height: 1.1; }
+  .author__role { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-muted); margin: 6px 0 10px; }
+  .author__bio { font-size: 15px; line-height: 1.6; color: var(--ink-soft); margin: 0; }
+  .author-credit { font-family: var(--font-mono); font-size: 9px; line-height: 1.6; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-muted); margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--rule-soft); }
+
+  /* ── Colophon ── */
+  .colophon { border-top: 2px solid var(--scarlet); padding: 32px var(--pad) 40px; }
+  .colophon .co-mark { font-family: var(--font-display); font-size: 24px; color: var(--scarlet); }
+  .colophon .disclaimer { font-size: 14px; line-height: 1.65; color: var(--ink-muted); margin-top: 14px; max-width: 66ch; }
+  .colophon .links { margin-top: 18px; font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.05em; text-transform: uppercase; }
+  .colophon .links a { color: var(--scarlet); transition: opacity 0.2s var(--ease); }
+  .colophon .links a:hover { opacity: 0.7; }
+
+  /* ── Cover page ── */
+  .cover-mission { margin: 8px 0 30px; padding: 20px 24px; border: 1px solid var(--rule); border-top: 2px solid var(--scarlet); }
+  .cover-mission__label { font-family: var(--font-mono); font-size: 9px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--scarlet); margin-bottom: 10px; }
+  .cover-mission__text { font-family: var(--font-display); font-size: 17px; line-height: 1.65; color: var(--ink-soft); margin: 0; }
+
+  /* ── Contents. Rows behave like the site's accordion: the fill and the
+        indent move together on one curve. ── */
+  .toc { margin-top: 18px; }
+  .toc__head { font-family: var(--font-display); font-size: 30px; font-weight: 600; color: var(--scarlet); margin: 0 0 4px; letter-spacing: -0.015em; }
+  .toc__sub { font-family: var(--font-mono); font-size: 9px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-muted); margin-bottom: 12px; }
+  .toc__item {
+    display: block; text-decoration: none; color: inherit;
+    padding: 12px 0 12px 0; border-top: 1px solid var(--rule-soft); cursor: pointer;
+    transition: background 0.3s var(--ease), padding-left 0.3s var(--ease);
+  }
+  .toc__item:last-of-type { border-bottom: 1px solid var(--rule-soft); }
+  .toc__item:hover { background: var(--scarlet); padding-left: 18px; }
+  .toc__item:hover .toc__title,
+  .toc__item:hover .toc__num { color: #fff; }
+  .toc__item:hover .toc__desc { color: rgba(255, 255, 255, 0.8); }
+  .toc__row { display: flex; align-items: baseline; }
+  .toc__num { font-family: var(--font-mono); color: var(--scarlet); font-size: 11px; width: 34px; flex: none; transition: color 0.3s var(--ease); }
+  .toc__title { font-family: var(--font-display); font-size: 20px; color: var(--ink); font-weight: 600; flex: none; letter-spacing: -0.01em; transition: color 0.3s var(--ease); }
+  .toc__dots { flex: 1; border-bottom: 1px solid var(--rule-soft); margin: 0 12px 5px; display: none; }
+  .toc__pg { font-family: var(--font-mono); font-size: 11px; color: var(--ink-muted); flex: none; display: none; }
+  .toc__desc { font-family: var(--font-mono); font-size: 9px; line-height: 1.5; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-muted); margin: 6px 0 0 34px; transition: color 0.3s var(--ease); }
+  [id^="toc-"] { scroll-margin-top: 60px; }
+
+  /* ── Sources (fine print) ── */
+  .sources { margin-top: 26px; padding-top: 16px; border-top: 1px solid var(--rule-soft); }
+  .sources__head { font-family: var(--font-display); font-size: 20px; font-weight: 600; color: var(--ink-muted); margin: 0 0 12px; }
+  .sources__group { margin-top: 12px; }
+  .sources__glabel { font-family: var(--font-mono); font-size: 8.5px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-muted); margin: 0 0 5px; break-after: avoid; }
+  .sources__item { font-family: var(--font-mono); font-size: 8.5px; line-height: 1.6; color: var(--ink-muted); padding-left: 14px; text-indent: -14px; margin: 0 0 3px; }
+  .sources__item a { color: var(--ink-muted); text-decoration: none; word-break: break-all; }
+
+  /* Glossary hover terms — interactive on web, plain text in print */
+  .term { border-bottom: 1px dotted var(--ink-muted); cursor: help; position: relative; }
+  .term::after {
+    content: attr(data-def); position: absolute; left: 0; bottom: calc(100% + 8px);
+    width: 250px; background: var(--scarlet); color: #fff; border: 1px solid #fff;
+    padding: 11px 13px; font-family: var(--font-mono); font-size: 10px;
+    line-height: 1.55; letter-spacing: 0.05em; text-align: left; text-transform: none;
+    opacity: 0; visibility: hidden; transform: translateY(4px);
+    transition: opacity 0.2s var(--ease), transform 0.2s var(--ease);
+    z-index: 60; pointer-events: none;
+  }
+  .term:hover::after { opacity: 1; visibility: visible; transform: translateY(0); }
+
+
+  /* ── August-only blocks, restyled onto the June tokens ── */
+  .cover-note { margin: 8px 0 24px; padding: 20px 24px; border: 1px solid var(--rule); border-top: 2px solid var(--scarlet); }
+  .cover-note__label { font-family: var(--font-mono); font-size: 9px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--scarlet); margin-bottom: 10px; }
+  .cover-note__text { font-family: var(--font-display); font-size: 17px; line-height: 1.65; color: var(--ink-soft); margin: 0; }
+  .closing-block { margin-top: 28px; }
+
+  .authors-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px 18px; margin-top: 14px; }
+  .author-card { break-inside: avoid; }
+  .author-card__photo { width: 100%; height: 172px; object-fit: cover; object-position: center 22%; display: block; margin-bottom: 10px; }
+  .author-card__name { font-family: var(--font-display); font-weight: 600; font-size: 18px; color: var(--scarlet); line-height: 1.12; }
+  .author-card__role { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-muted); margin: 6px 0 8px; }
+  .author-card__work { font-family: var(--font-mono); font-size: 9px; line-height: 1.5; letter-spacing: 0.05em; color: var(--ink-muted); }
+
+  /* ── Phones ──
+     Scoped to `screen` on purpose: the print rules below share this
+     stylesheet and produce the distributed PDF, so nothing here may ever
+     match print media. */
+  @media screen and (max-width: 640px) {
+    :root { --pad: 20px; }
+
+    body { font-size: 16px; }
+
+    /* the bar is the whole width on a phone: label left, button right, and
+       the long issue name allowed to sit on one line at a smaller size */
+    .print-bar { justify-content: space-between; gap: 12px; padding: 10px 16px; font-size: 9px; }
+    .print-bar .download { padding: 7px 12px; }
+
+    .masthead__brand { padding-top: 40px; }
+    .masthead__tagline { font-size: 17px; }
+
+    /* The market table has four columns of unwrappable figures, so its
+       min-content width exceeds a phone's content box and it — not the
+       layout — dragged the document wider than the screen. Let it scroll
+       within its own box; the page stays put. */
+    .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    table.data { margin-top: 28px; }
+    table.data th, table.data td { padding-left: 6px; padding-right: 6px; }
+
+    /* These tooltips are the real reason the issue overflowed on phones.
+       Each is an absolutely-positioned ~250px box that is merely
+       `visibility: hidden` — hidden paints nothing but still occupies
+       layout, so every term near the right edge dragged the document
+       wider than the screen. They're also :hover-only, so touch can never
+       open them: on phones they are pure overflow with no function. */
+    .term::after { display: none; }
+    .term { border-bottom: 0; cursor: auto; }
+
+    /* A 300px float leaves a ~35px gutter on a phone — too narrow to set
+       text in, but not narrow enough for the browser to give up on: the
+       paragraph's first word wraps into it alone before the rest clears
+       below. Stack the figure instead; text wrapping needs a column. */
+    .lead-figure--right { float: none; width: 100%; margin: 6px 0 22px; }
+    .lead-figure__frame { height: 420px; }
+
+    .snapshot__grid, .stat-row { grid-template-columns: 1fr; }
+    .snapshot__col:first-child { border-right: none; border-bottom: 1px solid var(--rule-soft); }
+    .stat-cell { border-right: none; border-bottom: 1px solid var(--rule-soft); }
+    .stat-cell:last-child { border-bottom: none; }
+    .tl-item { grid-template-columns: 1fr; }
+    .tl-date { border-right: none; border-bottom: 1px solid var(--rule-soft); }
+    .author { grid-template-columns: 84px 1fr; gap: 16px; }
+    .author__photo { width: 84px; height: 105px; }
+    .authors-grid { grid-template-columns: 1fr 1fr; }
+    .author-card__photo { height: 140px; }
+  }
+
+  /* Anything that moves does so only if the reader allows it */
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { transition-duration: 0ms !important; }
+  }
+
+  @media print {
+    @page { size: 8.5in 11in; margin: 0.5in 0.06in; @bottom-right { content: counter(page); font-family: 'Martian Mono', monospace; font-size: 10pt; color: #646a6e; padding-right: 0.5in; } }
+    body { background: #fff; }
+    .print-bar { display: none; }
+    .newsletter { margin: 0 auto; max-width: 100%; background: #fff; }
+    .page { page-break-after: auto; }
+    .page-cut { display: none; }
+    .cover { break-after: page; page-break-after: always; }
+    .toc__item { padding: 7px 0; background: none; }
+    .toc__dots { display: block; }
+    .toc__pg { display: inline-block; }
+    .term { border-bottom: none; padding: 0; }
+    .term::after { display: none; }
+    /* keep these blocks whole instead of splitting across a page */
+    .data, table.data tr, .timeline, .deep-card, .snapshot, .lead-figure, .author, .author-card, .section-head, .close-price, img { break-inside: avoid; }
+    /* never strand a heading at the bottom of a page */
+    .section-head, h2.sub, .author__name { break-after: avoid; }
+    .section-head + h2.sub { break-after: auto; }
+    p { orphans: 2; widows: 2; }
+  }
+</style>
+</head>
+<body>
+
+<div class="print-bar">
+  <span>The Oval Review · August 2026 Edition</span>
+  <a class="download" href="aug-2026.pdf" download>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M12 3v12"></path>
+      <path d="m7 10 5 5 5-5"></path>
+      <path d="M4 20h16"></path>
+    </svg>
+    Download
+  </a>
+</div>
+
+<div class="newsletter">
+
+  <!-- ════════ PAGE 1 — MASTHEAD + MARKET OVERVIEW ════════ -->
+  <section class="page cover">
+    <hr class="masthead__top-rule">
+    <div class="masthead__meta">
+      <span>August 2026 Edition</span>
+      <span class="masthead__vol">Vol. I · No. 02</span>
+    </div>
+    <hr class="rule--soft">
+    <div class="masthead__brand">
+      <div class="wordmark">The Oval Review</div>
+      <div class="masthead__tagline">A monthly examination of markets, macro, and the forces beneath them</div>
+      <div class="masthead__pub">The Oval Financial Forum · Ohio State University</div>
+    </div>
+    <div class="masthead__brand-pad"><hr class="rule"></div>
+    <div class="body-pad">
+      <div class="cover-mission">
+        <div class="cover-mission__label">Our Mission</div>
+        <p class="cover-mission__text">The Oval Financial Forum was founded with the understanding that one of the best ways to retain information is by writing about it. Through the publication process, members have the opportunity to develop skills that the classroom cannot replicate. We hope you enjoy this edition!</p>
+      </div>
+      <div class="toc">
+        <div class="toc__head">Inside This Issue</div>
+        <div class="toc__sub">August 2026 &middot; Volume I, No. 02</div>
+        <a class="toc__item" href="#toc-market">
+          <div class="toc__row"><span class="toc__num">01</span><span class="toc__title">Market Overview</span><span class="toc__dots"></span><span class="toc__pg">2</span></div>
+          <div class="toc__desc">The month in review across major indices, commodities, and the events that moved them.</div>
+        </a>
+      <a class="toc__item" href="#toc-macro">
+          <div class="toc__row"><span class="toc__num">02</span><span class="toc__title">Macroeconomic &amp; Geopolitical Overview</span><span class="toc__dots"></span><span class="toc__pg">3</span></div>
+          <div class="toc__desc">U.S. economic data, Federal Reserve policy, and the international landscape.</div>
+        </a>
+      <a class="toc__item" href="#toc-sector">
+          <div class="toc__row"><span class="toc__num">03</span><span class="toc__title">The Financial Sector</span><span class="toc__dots"></span><span class="toc__pg">6</span></div>
+          <div class="toc__desc">An analysis of July’s standout sector.</div>
+        </a>
+      <a class="toc__item" href="#toc-energy">
+          <div class="toc__row"><span class="toc__num">04</span><span class="toc__title">The Energy Sector</span><span class="toc__dots"></span><span class="toc__pg">8</span></div>
+          <div class="toc__desc">A brief look at oil, Brent crude, and the energy majors.</div>
+        </a>
+      <a class="toc__item" href="#toc-deepdive">
+          <div class="toc__row"><span class="toc__num">05</span><span class="toc__title">Company Deep Dive</span><span class="toc__dots"></span><span class="toc__pg">8</span></div>
+          <div class="toc__desc">In-focus profiles of Apple (AAPL) and Eli Lilly (LLY).</div>
+        </a>
+      <a class="toc__item" href="#toc-ipos">
+          <div class="toc__row"><span class="toc__num">06</span><span class="toc__title">Notable IPOs</span><span class="toc__dots"></span><span class="toc__pg">11</span></div>
+          <div class="toc__desc">The month’s standout market debut.</div>
+        </a>
+      <a class="toc__item" href="#toc-osu">
+          <div class="toc__row"><span class="toc__num">07</span><span class="toc__title">OSU Student Impact</span><span class="toc__dots"></span><span class="toc__pg">12</span></div>
+          <div class="toc__desc">How the month’s markets, rates, and hiring reach Ohio State students.</div>
+        </a>
+      <a class="toc__item" href="#toc-funfact">
+          <div class="toc__row"><span class="toc__num">08</span><span class="toc__title">Fisher Fun Fact</span><span class="toc__dots"></span><span class="toc__pg">13</span></div>
+          <div class="toc__desc">A piece of Buckeye history from the Fisher community.</div>
+        </a>
+      <a class="toc__item" href="#toc-authors">
+          <div class="toc__row"><span class="toc__num">09</span><span class="toc__title">About the Authors</span><span class="toc__dots"></span><span class="toc__pg">13</span></div>
+          <div class="toc__desc">The students behind this issue.</div>
+        </a>
+      <a class="toc__item" href="#toc-sources">
+          <div class="toc__row"><span class="toc__num">10</span><span class="toc__title">Sources</span><span class="toc__dots"></span><span class="toc__pg">14</span></div>
+          <div class="toc__desc">Full citations for every figure and claim, in Chicago style.</div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ MARKET OVERVIEW ════════ -->
+  <section class="page">
+
+
+    <div class="body-pad">
+      <div class="section-head">
+        <span class="kicker" id="toc-market">The Month in Brief</span>
+        <h1 class="headline">Market Overview</h1>
+        <hr class="rule--soft">
+      </div>
+
+      <figure class="lead-figure lead-figure--right">
+        
+        <img src="/img/newsletter/aug-2026/b2-spirit.jpg" alt="A B-2 Spirit bomber flanked by fighter jets in formation flight">
+        <figcaption class="lead-figure__cap">A B-2 Spirit bomber and fighter escort in formation flight &nbsp;<span class="credit">Photo: George W. Bradbury</span></figcaption>
+      </figure>
+      <p class="body">July was headlined by continued uncertainty surrounding valuations within the AI sector, renewed international conflict, and heightened Treasury yields. Questions arose regarding the future growth projections for AI companies, ultimately straining the sector. At the tail end of July, some of tech’s biggest names (GOOGL, TSLA, META) reported negative cash flow for the latest quarter, with Meta’s cash generation falling 91%. The results of these reports revitalized uncertainties related to AI valuations. The Dow Jones Industrial Average came out on top among other major U.S. indices; the Dow’s broad representation beyond the technology landscape offset the volatility from the tech sector. One of the major offsetting factors for the Dow was the financials sector with the S&amp;P 500 financials index gaining 6.04% in July.</p>
+      <p class="body">The iShares semiconductor <span class="term" data-def="A basket of stocks, bonds, or other assets that trades on an exchange all day like a stock, often built to track an index.">ETF</span> fell 21.2% during the month, weighing heavily on the Nasdaq Composite, which ultimately fell 3.2%. Some major moves within the Nasdaq came from Sandisk (SNDK) and Micron (MU) which fell approximately 47% and 29%, respectively. Strong performances from Amazon (AMZN) and Microsoft (MSFT) helped to partially counteract the semiconductor selloff; the two tech giants gained roughly 14% and 25%, respectively. Moving away from the numbers, SpaceX (SPCX) added to the Nasdaq-100 on July 7, three weeks after its major <span class="term" data-def="The process by which a private company first sells shares to the public and becomes publicly traded (going public).">IPO</span>. Finally, the S&amp;P 500 remained relatively flat at the month’s conclusion, falling 0.1%.</p>
+      <p class="body">Oil prices increased as the month progressed; Brent crude opened July with prices at $71.57 per barrel (up roughly 18% since January 1). The global benchmark for crude oil reached a monthly high of $102.01 on July 23. This spike was heavily influenced by ongoing difficulties involving the United States and Iran reaching and maintaining ceasefire agreements. The <span class="term" data-def="a basic, raw physical good, a natural resource or agricultural product">commodity</span> ultimately closed the month at $90.12.</p>
+      <p class="body">The Federal Reserve maintained its <span class="term" data-def="The rate banks charge each other for overnight loans, the Federal Reserve’s main tool for tightening or loosening policy.">federal funds target range</span> of 3.5% to 3.75% following a Federal Open Market Committee (FOMC) meeting on July 28-29. On top of this, treasury yields remained heightened, revealing expectations of elevated interest rates. On July 29, the 30-year yield reached 5.24%, the highest level since 2007.</p>
+      <p class="body">Non-yielding assets produced a wide array of results. Cryptocurrency markets rebounded in July, with Bitcoin gaining 7.3% and Ethereum gaining 18.5%. Precious metals had unfavorable results, with Gold falling 0.7% and Silver retreating 3.2%.</p>
+      <div class="table-scroll">
+      <table class="data">
+        <thead><tr><th>Instrument</th><th class="num">Level</th><th class="num">MTD</th><th class="num">YTD</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>S&amp;P 500</td>
+            <td class="num">7,489.72</td>
+            <td class="num neg">−0.13%</td>
+            <td class="num pos">+9.41%</td>
+          </tr>
+          <tr>
+            <td>NASDAQ Composite</td>
+            <td class="num">25,373.85</td>
+            <td class="num neg">−3.2%</td>
+            <td class="num pos">+9.17%</td>
+          </tr>
+          <tr>
+            <td>Dow Jones</td>
+            <td class="num">52,485.03</td>
+            <td class="num pos">+0.32%</td>
+            <td class="num pos">+9.2%</td>
+          </tr>
+          <tr>
+            <td>10-Yr Treasury</td>
+            <td class="num">4.745%</td>
+            <td class="num pos">+32.7 bps</td>
+            <td class="num pos">+58.2 bps</td>
+          </tr>
+          <tr>
+            <td>WTI Crude</td>
+            <td class="num">$84.67</td>
+            <td class="num pos">+23.46%</td>
+            <td class="num pos">+47.46%</td>
+          </tr>
+          <tr>
+            <td>Gold</td>
+            <td class="num">$4,049.10</td>
+            <td class="num neg">−0.47%</td>
+            <td class="num neg">−6.39%</td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ PAGE 2 — TIMELINE ════════ -->
+  <section class="page">
+    <div class="body-pad">
+      <h2 class="sub" style="margin-top:0;">Timeline of the Month</h2>
+      <div class="timeline">
+        <div class="tl-item"><div class="tl-date">July 8</div><div class="tl-text">Trump declares the Memorandum of Understanding with Iran “over”</div></div>
+        <div class="tl-item"><div class="tl-date">July 10</div><div class="tl-text">SK Hynix American Depository Receipt debuts on the NASDAQ</div></div>
+        <div class="tl-item"><div class="tl-date">July 23</div><div class="tl-text">Brent crude tops $100 per barrel</div></div>
+        <div class="tl-item"><div class="tl-date">July 30</div><div class="tl-text">Situational Awareness hedge fund announces a $35 billion loss over the course of July</div></div>
+      </div>
+
+      <div class="page-cut"></div>
+
+    </div>
+  </section>
+
+  <!-- ════════ PAGE 3 — U.S. / INTERNATIONAL / OSU ════════ -->
+  <section class="page">
+    <div class="body-pad">
+      <div class="section-head">
+        <span class="kicker" id="toc-macro">The Macro Picture</span>
+        <h1 class="headline">Macroeconomic &amp; Geopolitical Overview</h1>
+        <hr class="rule--soft">
+      </div>
+
+      <h2 class="sub">Macro</h2>
+
+      <figure class="lead-figure lead-figure--right">
+        
+        <img src="/img/newsletter/aug-2026/capitol.jpg" alt="The United States Capitol, Washington, D.C.">
+        <figcaption class="lead-figure__cap">The United States Capitol, Washington, D.C. &nbsp;<span class="credit">Photo: George W. Bradbury</span></figcaption>
+      </figure>
+      <p class="body">The federal funds rate remained at 3.5-3.75 following the FOMCs July 28-29 meeting. The Fed has now left interest rates unchanged for five consecutive sessions. In the days leading up to the meeting, expectations for a rate hike spiked following a closure to the Strait of Hormuz and growing supply constraints for AI infrastructure. The probability for a rate hike jumped 24 percentage points from July 15 to July 22 on CME’s FedWatch tool. Despite consistency in recent FOMC rate decisions, there remains uncertainty surrounding a potential rate hike in the near future. These anticipations were initially sparked by a projection from the FedWatch tool on May 22, which displayed a 57% chance of at least one rate hike before December. Looking forward, the Federal Reserve’s next meeting will take place on September 15-16.</p>
+      <p class="body">The Bureau of Labor Statistics released July inflation data on August 12. The <span class="term" data-def="A monthly Bureau of Labor Statistics inflation gauge tracking a broad basket of consumer goods and services; core CPI excludes food and energy.">consumer price index</span> for all urban consumers (CPI-U) increased by 0.1% on a seasonally adjusted basis, its smallest month-to-month change of the year. The index has risen by 3.4% (non-seasonally adjusted) from July 2025. Both the month-to-month and annual changes aligned with expectations for the report. Shelter prices rose by 0.1%, accounting for two-thirds of the all items increase for the month. Shelter, which represents over 35% of items in the CPI-U index, overpowered the 1.5% decline in energy for the month. Shifting industries, food prices increased by 0.1%, despite a major headline for lettuce; the item fell 16.4% after being linked to the intestinal parasite cyclospora.</p>
+      <p class="body">Nonfarm payroll employment came in 100,000 jobs lower than expected for the month. Prior to the report, economists surveyed by the Dow Jones expected an increase of 83,000 jobs for July, but the Bureau of Labor Statistics ultimately announced a loss of 23,000 jobs. Despite the NFP data, the unemployment rate ticked lower from 4.2% to 4.1%, as roughly 264,000 people left the workforce in July; the <span class="term" data-def="The share of working-age people employed or actively job-seeking; it can fall even as unemployment falls if people stop looking.">labor force participation rate</span> reached a five-year low of 61.4%. Employment within local government education experienced the sharpest decline, falling by 50,000. The financial activities industry lost 14,000 jobs, continuing its downward trend; employment within the sector is down 121,000 jobs since May 2025. This year-long slump, however, is still far from crisis territory. For example, during the 2008 financial crisis, the financial activities industry lost 368,000 jobs between September 2008 and June 2009.</p>
+      <p class="body">The <span class="term" data-def="An index measuring the dollar against six currencies (euro, yen, pound, Canadian dollar, krona, franc), weighted most toward the euro.">US dollar index (DXY)</span> fell roughly 1.2%, a reversal from June’s 2.3% increase. Cooling inflation paired with resumed peace talks between the US and Iran weakened the US dollar. Despite the Fed’s consistency in leaving interest rates unchanged, sentiment surrounding a future rate hike has fluctuated, resulting in volatile market expectations.</p>
+      <div class="snapshot">
+        <div class="snapshot__head">
+          <span class="snapshot__title">Rates &amp; Currencies</span>
+          <span class="snapshot__date">As of July 31, 2026</span>
+        </div>
+        <div class="snapshot__grid">
+          <div class="snapshot__col">
+            <div class="snapshot__label">Treasury Yields</div>
+            <div class="snapshot__row"><span>2-Year</span><span class="snapshot__val">4.29%</span></div>
+            <div class="snapshot__row"><span>10-Year</span><span class="snapshot__val">4.75%</span></div>
+            <div class="snapshot__row"><span>30-Year</span><span class="snapshot__val">5.28%</span></div>
+          </div>
+          <div class="snapshot__col">
+            <div class="snapshot__label">Dollar &amp; FX</div>
+            <div class="snapshot__row"><span>DXY</span><span class="snapshot__val">99.80</span></div>
+            <div class="snapshot__row"><span>EUR / USD</span><span class="snapshot__val">1.15</span></div>
+            <div class="snapshot__row"><span>USD / JPY</span><span class="snapshot__val">160.18</span></div>
+            <div class="snapshot__row"><span>USD / CNY</span><span class="snapshot__val">6.755</span></div>
+          </div>
+        </div>
+      </div>
+
+      <h2 class="sub">Geo</h2>
+      <p class="body">The conflict between the United States and Iran re-escalated this month, amplifying global market uncertainty. The <span class="term" data-def="a formal yet non-binding agreement between two or more parties">Memorandum of Understanding</span> that was signed last month by the United States and Iran quickly proved its fragility. On July 7, Iran fired at three commercial tankers that were in close proximity to the Strait of Hormuz. Shortly after the attack, the United States Treasury Department suspended a license that permitted the sale of Iranian oil worldwide. CNBC explained that this license was one of the most tangible outcomes from the MOU. On July 8, President Trump announced that the signed agreement with Iran was “over.” The countries exchanged heavy fire in the days following the initial attacks, with CENTCOM reporting that the United States struck over 300 Iranian targets in a three-day span. In retaliation, Tehran announced that it was closing the Strait of Hormuz on July 12. Ultimately, the conflict eased as the end of the month approached. Following the closing of the Strait by Tehran, the US and Iran paused attacks for multiple days in an effort to develop a new peace plan.</p>
+      <p class="body">Prices for Brent crude oil remain volatile as the conflict drags on. The commodity was down nearly 10% from the signing of the MOU to the tanker attacks on July 7. Following the attacks, Brent Crude spiked 21.5% to close out the month, briefly surpassing $100 per barrel on July 23.</p>
+      <p class="body">NATO also hosted a summit in Ankara, Turkey, on July 7 &amp; 8. At the summit, tensions flared as President Trump criticized Spain’s reluctance to increase defense spending and lack of support regarding the conflict with Iran, calling Spain “a terrible partner” and a “wasted cause.” The tension can be traced back to the NATO summit in June of last year, where President Trump proposed that all 32 NATO nations increase their defense spending to 5% of their <span class="term" data-def="The total value of all goods and services produced within a country’s borders, the broadest measure of economic output.">gross domestic product</span>. Spain was ultimately the only nation within the alliance to not comply. Pedro Sanchez, the Prime Minister of Spain, has been reluctant to increase military spending due to pressures from the public, more specifically domestic political groups. Sanchez’s supporters are described by the Atlantic Council as “an unstable minority” with skepticisms toward military spending.</p>
+      <p class="body">The month’s geopolitical instability was not limited to military tensions, as trade policy emerged as another significant source of economic uncertainty. On July 23, President Trump announced a 10% - 12.5% tariff on 60 economies. The tariffs stem from a March 12 investigation by the United States Trade Representative (USTR) into labor ecosystems worldwide. Dozens of US trading partners were monitored under section 301 of the Trade Act of 1974. On June 2, the USTR concluded that 60 economies (ranging from Japan to the European Union) were utilizing discriminatory and/or forced methodologies for labor practices. On July 23, President Trump explained the implementation of section 301 tariffs. The President outlined that economies showing little effort to improve their labor environment would endure a 12.5% tariff on most exports (with the exception of some materials), while countries that are working quickly to align with labor laws (Canada and the EU) will experience a 10% tariff on exports.</p>
+      <p class="body">The technology sector (more specifically microchip producers) exercised significant influence on global markets during the month. In the US, the Dow Jones Industrial Average and the S&amp;P 500 remained relatively flat due to a strong performance by the energy sector, while the Nasdaq composite fell over 4% as a result of strong volatility within chipmakers. South Korea’s KOSPI index was down nearly 22% for July, even with record-breaking growth on July 31; the index increased close to 18%. The single day burst was fueled by strong performances from South Korean chipmakers SK Hynix and Samsung, which rose 30% and 27%, respectively. Major chip producers endured a rocky month in part due to growing recognition of Chinese expansion within the semiconductor ecosystem.</p>
+      <p class="body">The Japanese Yen strengthened by 3% in late July dropping its ratio to USD 158.34. Analysts commented on the dramatic surge, suggesting that the Japanese government was directly involved. The Japanese currency was enduring 40 year lows in terms of value against the dollar; a huge struggle in regard to foreign trade (especially imports).</p>
+      <div class="page-cut"></div>
+    </div>
+  </section>
+
+  <!-- ════════ PAGE 4 — SECTOR ANALYSIS ════════ -->
+  <section class="page">
+    <div class="body-pad">
+      <div class="section-head">
+        <span class="kicker" id="toc-sector">Sector Analysis</span>
+        <h1 class="headline">The Financial Sector</h1>
+        <hr class="rule--soft">
+      </div>
+
+
+      <p class="body">The financial sector performed well during the month. Marked by a strong day of earnings and a record-breaking milestone for the sector’s premier ETF (XLF), the S&amp;P 500 Financials index achieved a 6.04% gain in July. The index features 76 stocks, led by companies like JP Morgan (JPM), Berkshire Hathaway B (BRK.B), and Visa (V).</p>
+      <p class="body">On the morning of July 14th, JPMorgan Chase, Bank of America (BAC), Goldman Sachs (GS), Wells Fargo (WFC), and Citigroup (C) all reported earnings. These 5 major lenders posted a combined $49 billion in profit for Q2 2026, up 39% year-over-year. JPMorgan’s headline number stood out: $21.2 billion in net income, the highest quarterly profit in US bank history, though it is worth noting that figure included a one-time $4.6 billion gain from JPMorgan’s own equity stake in Visa. Benefitting from an increased amount of consumer spending, Bank of America’s bottom line grew 34% year-over-year. Goldman Sachs had their best quarter in company history. Increased loan deposits led Wells Fargo to crush earnings expectations. Citi reported an earnings per share of $3.15, which surpassed the Zacks Consensus Estimate of $2.72. As a whole, these examples of earnings results were primarily propelled by a sharp rebound in investment banking fees and sustained strength in net interest income (NII).</p>
+      <p class="body">The momentum gained from the July 14th earnings reports barrelled into the end of the month. The premier Financial Sector ETF, State Street’s SPDR XLF, set an all time high in late June. Peaking at $57.60, up comparably to its low set in March. The rally wasn’t just from the revenue growth of the aforementioned banks. Paypal (PYPL) was up over 26% across the month, due to a higher than expected earnings report. After lagging traditional banks for much of 2026, fintech stocks participated meaningfully in July’s rally. Coinbase (COIN) and Block (XYZ) experienced sharp rises as well. Coinbase jumped as much as 13% on July 21st alone after Treasury Secretary Scott Bessent signaled progress on the CLARITY Act, a crypto market-structure bill, displaying a spread of wealth to the broader financial sector unseen throughout the previous months of 2026.</p>
+      <p class="body">Visa and Mastercard, two of the most valuable companies in the financial industry, go unrecognized compared to the banking giants. On July 28, Visa announced plans to lay off 2,600 employees, about 7% of its workforce, in order to improve efficiency. The announcement landed the same day as the company’s strong earnings report, bringing heightened attention to Visa stock. Mastercard had strong earnings growth as well, featuring a 12% increase in net revenue and 16% growth in adjusted net income. Increased global value and domestic consumer spending has continued to boost Visa and Mastercards through political and regulatory fears.</p>
+      <p class="body">As August commences, the financial sector faces the challenge of maintaining its July momentum in the absence of earnings results. Despite the Federal Reserve opting to keep interest rates unchanged for the fifth consecutive session, three dissenting FOMC votes highlighted a persistent divide regarding inflationary pressures. While softer inflation and labor market reports have recently lowered expectations for a September rate increase, the lack of fundamental catalysts before October’s Q3 reporting season ensures that market participants will scrutinize upcoming inflation and employment data for further direction.</p>
+      <div class="section-head">
+        <span class="kicker" id="toc-energy">Sector Brief</span>
+        <h1 class="headline">The Energy Sector</h1>
+        <hr class="rule--soft">
+      </div>
+      <p class="body">The energy sector experienced turbulence throughout the month, but ultimately increased by roughly 12%; this comes as a reversal from June, where the sector was down approximately 5.1%. The sector’s recent volatility is directly related to disruptions in oil transportation due to international conflict. These influences include the tensions in the Middle East and the ongoing Russia-Ukraine war. Brent <span class="term" data-def="contracts to buy or sell an asset at a set price on a future date, and the standard way commodity prices like gold and silver are quoted">Futures</span> closed the month at $90.12 per barrel, a 23.58% increase from June. The S&amp;P 500 Energy Select Sector represents 21 companies. Within the index, Exxonmobil (XOM) and Chevron (CVX) combine for 46.7% of its total <span class="term" data-def="A company’s share price times its shares outstanding, the standard measure of company size and index weighting.">market capitalization</span>. Both Exxonmobil and Chevron increased by 14% and 19%, respectively. With no concrete end to current global conflicts, the energy sector remains vulnerable to volatility.</p>
+      <div class="page-cut"></div>
+    </div>
+  </section>
+
+  <!-- ════════ PAGE 5 — COMPANY DEEP DIVE ════════ -->
+  <section class="page">
+    <div class="body-pad">
+      <div class="section-head">
+        <span class="kicker" id="toc-deepdive">Under the Hood</span>
+        <h1 class="headline">Company Deep Dive</h1>
+        <hr class="rule--soft">
+      </div>
+
+
+      <div class="deep-card">
+        <div class="deep-card__head" style="align-items: center;">
+          <span class="tc-name">Apple <span class="tc-mu">(AAPL)</span></span>
+          <div class="close-price">
+            <div class="close-price__label">July Close</div>
+            <div class="close-price__val">$308.91</div>
+            <div class="close-price__chg">+6.76% MTD</div>
+          </div>
+        </div>
+        <div class="stat-row" style="grid-template-columns: repeat(3, 1fr);">
+          <div class="stat-cell"><div class="m-label">1-Yr Return</div><div class="m-val">+13.63%</div></div>
+          <div class="stat-cell"><div class="m-label"><span class="term" data-def="Revenue left after the direct cost of producing goods, as a percentage: (revenue − COGS) ÷ revenue.">Gross Margin</span></div><div class="m-val">50.1%</div></div>
+          <div class="stat-cell"><div class="m-label">Rev (Q3 ’26)</div><div class="m-val">$109.4B</div></div>
+        </div>
+      </div>
+      <p class="body">Apple finished up roughly 7% despite fluctuations in share price throughout the month. The tech giant is also preparing for a leadership transition. On April 20, Tim Cook announced that he would be stepping down as CEO on September 1, with John Ternus (Apple’s current Senior Vice President of Hardware Engineering) assuming the role. Despite this upcoming change, Apple announced record-breaking Q3 revenue on July 30, reporting revenue of $109.4 billion, up 16 percent year-over-year. Apple also announced a gross margin of 50.1 percent for the quarter. The company saw strong revenue growth in the iPhone (21%), Mac (30%), and Services, with year-over-year sales increasing in the Americas, Europe, Greater China, Japan, and the Rest of Asia Pacific. In the day following its earnings report, the company lost $357.8 billion in market value, the third-largest one-day market cap decline of any U.S. company. The stark reversal can be partly attributed to future growth concerns and supply constraints for product infrastructure. For the September quarter, Apple’s 9%-11% revenue projection came in below Wall Street expectations of 12%. Additionally, evolving artificial intelligence capabilities, rising memory costs, and chip shortages are expected to pressure Apple’s margins and pricing in the near future.</p>
+      <p class="body">One major cause for concern is the major supply constraints, specifically <span class="term" data-def="Advanced memory that stacks DRAM chips vertically with ultra-fast wiring for much faster data transfer, central to AI chips.">high-bandwidth memory (HBM)</span> and advanced random-access memory (RAM), which are key components for global AI buildout. Apple relies heavily on Taiwan Semiconductor Manufacturing Company (TSMC) to manufacture its custom-designed logic chips, which are considered to be “the brain inside Apple’s devices.” Premium AI memory producers are enduring a significant backlog, “Companies such as SK Hynix (SKHY), Samsung Electronics (005930.KS), and Micron (MU) have largely sold out their premium AI memory capacity through much of 2026.” These firms have been heavy suppliers of other Magnificent Seven companies such as Nvidia (NVDA), Microsoft (MSFT), Amazon (AMZN), and Meta (META). These tech giants are competing with Apple in the “race to build AI infrastructure.” The memory shortage has proven to be a major headwind for Apple. In order to maintain its profit margins, the company has already increased some iPad, Mac, and other product pricing by up to 25%. When asked about this, Cook stated: “We reluctantly raised prices…we’re in what I would characterize as a 100-year flood on the memory pricing, with exponential increases in memory prices…” From Cook’s statement, analysts forecast significant price spikes for the new iPhone Ultra which is set to release in September. Moreover, older iPhone model prices are expected to remain stagnant even with the release. With this lack of insight into the future regarding supply constraints, investors will be facing a time of uncertainty. For this reason, Cook made an additional statement hinting that Apple will begin looking at alternative supply chain strategies to manage escalating memory costs.</p>
+      <p class="body">In the realm of new product categories, the Apple Vision Pro headset has not achieved the same level of mainstream adoption as other Apple products. As Apple works to solidify its position in the AI race and reduce its reliance on the iPhone, the company is expanding its artificial intelligence capabilities. It plans to utilize Siri and Apple Intelligence as catalysts for company growth, and ultimately position itself within major AI leaders such as OpenAI’s ChatGPT and Google’s Gemini. Still, this update (to Siri and AI) has experienced major delays. Apple elaborated on the delay by saying the rollout would occur in 2027. The postponement quickly triggered concerns among investors, with Morgan Stanley analyst Erik Woodring warning that the rollout of the more advanced Siri would leave Apple with “fewer features to accelerate iPhone upgrade rates in FY26.”</p>
+      <p class="body">Apple filed a lawsuit on July 10 after two former Apple employees who now work for OpenAI allegedly were providing confidential information to OpenAI. Some analysts believe that OpenAI might be working on new consumer hardware of their own which would potentially draw attention away from Apple’s iPhone (their best-selling device).</p>
+      <div class="deep-card">
+        <div class="deep-card__head" style="align-items: center;">
+          <span class="tc-name">Eli Lilly <span class="tc-mu">(LLY)</span></span>
+          <div class="close-price">
+            <div class="close-price__label">July Close</div>
+            <div class="close-price__val">$1,148.84</div>
+            <div class="close-price__chg neg">−4.22% MTD</div>
+          </div>
+        </div>
+        <div class="stat-row" style="grid-template-columns: repeat(3, 1fr);">
+          <div class="stat-cell"><div class="m-label">July Open</div><div class="m-val">$1,217.51</div></div>
+          <div class="stat-cell"><div class="m-label">All-Time High</div><div class="m-val">$1,249.45</div></div>
+          <div class="stat-cell"><div class="m-label">Worst Day</div><div class="m-val">−4.55%</div></div>
+        </div>
+      </div>
+      <p class="body">The major pharmaceutical company, Eli Lilly (LLY), faced significant valuation swings throughout the month. Lilly holds the largest market capitalization ($1.02T) within the healthcare and pharmaceuticals sector. The company opened July at a share price of $1,217.51, and reached an all-time-high of $1,249.45 per share, on July 7. Following the record-setting day, Lilly fell over 7% throughout the rest of the month, with a single-day decline of 4.55% on July 30. The company ultimately closed the month down 4.22%, closing at $1,148.84.</p>
+      <p class="body">On April 1, the U.S. Food and Drug Administration (FDA) approved Foundayo (a new Lilly obesity drug expected to be a global bestseller). Fast forward to July 1, confidence in the stock was soaring due to the launch of Lilly’s GLP-1 Bridge program. The program makes Zepbound and Foundayo available to eligible Medicare patients for a relatively cheap subscription ($50 a month). The enthusiasm surrounding the obesity drug market was boosted by JPMorgan analyst Chris Schott who moved his share price target of Lilly stock from $1,300 to $1,400 on July 7.</p>
+      <p class="body">On July 23, Eli Lilly announced positive phase 3 trial data for Retatrutide, their next weight-loss drug. The drug is widely seen as a preemptive counter to future Novo Nordisk (a major pharmaceutical competitor) production. In the trials, patients lost an average of up to 49.6 pounds over 80 weeks. These results were stronger than other well known drugs such as Lilly’s Zepbound and Novo Nordisk’s Wegovy, and showed no signs of increased cardiovascular risk. The company stated they planned to file for FDA approval in 2027. This news caused shares to rise 1.97%.</p>
+      <p class="body">Around the same time, Novo Nordisk sued Eli Lilly for an unspecified amount in damages and filed for a preliminary injunction to block Lilly’s weight-loss ads. They felt these ads made claims based on outdated studies and improperly made comparisons between their own drugs and Lilly’s. As a proactive measure, Lilly publicly stood by its advertisements and committed to defending them in a court of law.</p>
+      <p class="body">On July 28, major news came, as Goldman Sachs cut its Foundayo sales forecast from a whopping $100 million to only $40 million. Additionally, Asad Haider, a top-rated-analyst at Goldman with an 88% success rate, lowered his own estimate for gross sales of the pill from $1.1 billion to $755 million. Two days later, Eli Lilly announced a $750 million manufacturing investment with Resilience in order to improve production capacity. This same day, they had their worst session of the month, falling 4.55% due to investors’ lack of confidence. On the final day of the month, Novo Nordisk lost $30 billion in value after its own drug failed a heart trial.</p>
+      <p class="body">Foundayo is Lilly’s first oral pill, designed to have easier access to the public than their previous injectable medications. Sales have stalled for 5 weeks straight, according to IQVIA prescription data. The miss is troubling, however, with guidance, Goldman believes they can see a boost, and they and the market remain bullish on the stock.</p>
+      <p class="body">On August 5, the company will face its next big catalyst, with the release of their Q2 earnings report. The biggest questions will be whether they will raise full-year guidance. If so, Goldman believes they can see room for them to raise revenue guidance to $86.1B, raising July’s pullback. The cumulative U.S. manufacturing capex now sits at $55 billion. This shows a clear bet on sustained demand from the public. Even with this drop, the market still has a bullish take on Eli Lilly; Emily Field, a Barclays analyst, remained strong with her “Buy” rating on Lilly, while assigning a $1,400 share price target.</p>
+      <div class="page-cut"></div>
+    </div>
+  </section>
+
+    <!-- ════ NOTABLE IPOS ════ -->
+  <section class="page">
+    <div class="body-pad">
+      <div class="section-head">
+        <span class="kicker" id="toc-ipos">Going Public</span>
+        <h1 class="headline">Notable IPOs</h1>
+        <hr class="rule--soft">
+      </div>
+      <p class="body">SK Hynix (SKHY), a South Korean public semiconductor company and the world’s second-largest memory chipmaker, delivered the largest ever foreign IPO on July 9. The NASDAQ listed American depository receipt (ADR) priced 177.9 million common shares at $149 per share. SK Hynix was able to raise $26.5 billion in gross proceeds, surpassing the previous record of $25 billion, which was raised by Alibaba (BABA), a Chinese Ecommerce Platform, in 2014. This high-value listing reflects SK Hynix’s position in the recent AI buildout. The Korean company is ranked first globally in AI memory chip (High-Bandwidth-Memory: HBM) production, with a market share of 56.4%. It ranks as the second largest supplier in the world for both <span class="term" data-def="A memory chip that stores data in tiny capacitors needing constant refreshing, the standard high-speed memory in computers and phones.">DRAM</span> and <span class="term" data-def="Non-volatile memory that keeps data without power, the technology behind SSDs, USB drives, and phone and laptop storage.">NAND</span> with market shares of 29.1% and 18.5%, respectively. The company is focused on the design, manufacturing, and sales of these advanced memory semiconductors. Due to its “unrivaled expertise in the HBM segment”, SK Hynix believes that it is relatively immune to the cyclicality of the tech market.</p>
+      <p class="body">Due to the immense retail demand, SK Hynix became available to investors at $170 per share on July 10. After fluctuating all the way up to $177, the stock ended up closing the day at $168, still well above the initial $149 pricing. Continuing to slide throughout the month, the US-listed ADR hit an all-time low on July 29 at $124. This came on the same day SK Hynix announced earnings of $54.55 billion, a 51% increase from Q1 of 2026. Investors’ ultra-high revenue expectations were not met, even with the notable increase quarter-to-quarter. After experiencing extreme turbulence, the stock closed July down 15.5% ($143.7) from the opening on July 10. The increased exposure to the Korean stock market is worrisome for some investors due to the extreme volatility of the Korean Exchange. The Kospi index dropped 22% in July, representing the country’s worst month since 2008.</p>
+      <div class="page-cut"></div>
+    </div>
+  </section>
+
+<!-- ════════ OSU STUDENT IMPACT ════════ -->
+  <section class="page">
+    <div class="body-pad">
+      <div class="section-head">
+        <span class="kicker" id="toc-osu">Close to Home</span>
+        <h1 class="headline">OSU Student Impact</h1>
+        <hr class="rule--soft">
+      </div>
+
+      
+      <p class="body">Donald Trump’s One Big Beautiful Bill Act (OBBBA) took effect on July 1. The bill directly affects students in need of a loan. The OBBBA sets new borrowing limits that reduce the maximum loan amounts for graduate students and parent borrowers. Additionally, there are now only two repayment plan choices: the Repayment Assistance Plan (RAP) and the Tiered Standard Repayment Plan. One of the most defining changes is that parents may no longer borrow unlimited amounts to help pay for school, as they are now capped at $20,000 per year and $65,000 over their child’s entire undergraduate career. For graduate students earning professional degrees such as law, dentistry, and medicine, borrowing is limited to $50,000 per year and a lifetime total of $200,000. Students may delay grad school due to these new borrowing limits. Private lenders can provide funding to fulfill the difference for students who typically depend on over $20,000 per year in federal student loans. For context, the average student loan balance for Ohio students is approximately $35,000.</p>
+      <p class="body">Shifting to the Ohio job market, July was an excellent month for Ohio State business students wanting to remain in Ohio after graduation. On July 9, 2026, CNBC ranked Ohio as the number one state in the country for business, mostly due to its strong infrastructure and low business costs. With Ohio’s accessibility to shovel-ready sites near major transport hubs, “unmatched population proximity,” abundance of natural gas, and highly stable multi-gigawatt power grid, the Buckeye State has risen from a ranking of 34th overall in 2010 to #1 in 2026. CNBC also partially attributed Ohio’s recent success to Governor Mike DeWine, who took office in 2019. His administration has since invested in projects such as the All Ohio Future Fund, launched in 2023, which opened up more economic development sites.</p>
+      <p class="body">In connection to an earlier piece, Ohio State students should remain alert regarding the prices of Apple products. Price increases are expected heading into the fall, due to rising production costs. As discussed previously, Apple has already increased prices on newer models of iPads and Macbooks by roughly 25%. These elevated costs will influence students looking to purchase iPhones, Macs, or iPads, especially with Apple expected to release its next iPhone model in September. As a result, students may need to budget more carefully or delay upgrading their devices while Apple seeks to address its supply constraints.</p>
+      <div class="page-cut"></div>
+    </div>
+  </section>
+
+  <!-- ════════ CLOSING — FUN FACT / E-BOARD / WORKS CITED ════════ -->
+  <section class="page">
+    <div class="body-pad">
+      <div class="section-head">
+        <span class="kicker">The Back Page</span>
+        <h1 class="headline">Closing</h1>
+        <hr class="rule--soft">
+      </div>
+
+      <h2 class="sub" id="toc-funfact" style="margin-top:0;">Fisher Fun Fact</h2>
+
+      <figure class="lead-figure lead-figure--right">
+        
+        <img src="/img/newsletter/aug-2026/thompson-library.jpg" alt="The Grand Reading Room at Thompson Library, The Ohio State University">
+        <figcaption class="lead-figure__cap">The Grand Reading Room, Thompson Library &nbsp;<span class="credit">Photo: George W. Bradbury</span></figcaption>
+      </figure>
+
+      
+      <p class="body">On July 28, The Ohio State University’s Athletic Department announced a $17 million-a-year jersey patch deal. JPMorgan Chase is making its first investment in college sports. Every jersey worn by an Ohio State player will now feature a white JPMorgan Chase logo. Ohio State head football coach Ryan Day was skeptical at first, saying in an interview, “I saw the logo, and I said absolutely not. We’re not doing this.” Coach Day was referring to JPMorgan Chase’s blue logo, rather than the white version. The Athletic Department has stated that this partnership will focus on “enhancing the student-athlete experience,” while also aiming to “enhance the fan experience across Ohio State Athletics” through various ticket holder benefits.</p>
+      <p class="body">The shock from this announcement was short-lived, as Notre Dame announced a larger deal on July 28, hours after OSU broke the news. The deal with SoFi Technologies is set to last six years, worth $18 million to $20 million per year. July 28 was not the beginning of jersey patch deals hitting NCAA college football. Universities such as Illinois, LSU, and BYU have entered into partnerships with major corporations. These brand deals aren’t limited to individual schools, either: the Big 12 has a $20 million deal with Monster Energy.</p>
+      <h2 class="sub" id="toc-authors">About the Authors</h2>
+      <div class="authors">
+        <div class="authors-grid">
+        <div class="author-card">
+          
+          <img class="author-card__photo" src="/img/newsletter/aug-2026/evan-tercek.jpg" alt="Evan Tercek">
+        <div class="author-card__name">Evan Tercek</div>
+          <div class="author-card__role">Co-Founder &middot; President</div>
+          <div class="author-card__work">Macroeconomic &amp; Geopolitical Overview &middot; Glossary</div>
+        </div>
+        <div class="author-card">
+          
+          <img class="author-card__photo" src="/img/newsletter/aug-2026/william-alt.jpg" alt="William Alt">
+        <div class="author-card__name">William Alt</div>
+          <div class="author-card__role">Co-Founder &middot; Editor-in-Chief</div>
+          <div class="author-card__work">Financial Sector &middot; Notable IPOs &middot; Fisher Fun Fact</div>
+        </div>
+        <div class="author-card">
+          
+          <img class="author-card__photo" src="/img/newsletter/aug-2026/charlie-hahn.jpg" alt="Charlie Hahn">
+        <div class="author-card__name">Charlie Hahn</div>
+          <div class="author-card__role">Senior VP, Operations</div>
+          <div class="author-card__work">Energy Sector Brief</div>
+        </div>
+        <div class="author-card">
+          
+          <img class="author-card__photo" src="/img/newsletter/aug-2026/benjamin-schwartz.jpg" alt="Benjamin Schwartz">
+        <div class="author-card__name">Benjamin Schwartz</div>
+          <div class="author-card__role">VP, New Member Development</div>
+          <div class="author-card__work">OSU Student Impact</div>
+        </div>
+        <div class="author-card">
+          
+          <img class="author-card__photo" src="/img/newsletter/aug-2026/evie-schwartz.jpg" alt="Evie Schwartz">
+        <div class="author-card__name">Evie Schwartz</div>
+          <div class="author-card__role">VP, New Member Development</div>
+          <div class="author-card__work">Company Deep Dive: Apple</div>
+        </div>
+        <div class="author-card">
+          
+          <img class="author-card__photo" src="/img/newsletter/aug-2026/charlie-slate.jpg" alt="Charlie Slate">
+        <div class="author-card__name">Charlie Slate</div>
+          <div class="author-card__role">VP, Marketing</div>
+          <div class="author-card__work">Company Deep Dive: Eli Lilly</div>
+        </div>
+        <div class="author-card">
+          
+          <img class="author-card__photo" src="/img/newsletter/aug-2026/benjamin-bury.jpg" alt="Benjamin Bury">
+        <div class="author-card__name">Benjamin Bury</div>
+          <div class="author-card__role">VP, Copy &amp; Standards</div>
+          <div class="author-card__work">Market Overview &middot; Sources &middot; Glossary</div>
+        </div>
+        </div>
+        <div class="author-credit">All photographs by George W. Bradbury, VP of Finance &amp; Strategy.</div>
+      </div>
+      <div class="sources">
+      <div class="sources__head" id="toc-sources">Sources</div>
+        <div class="sources__group"><div class="sources__glabel">Market Overview</div>
+        <p class="sources__item">Associated Press. "AI Stocks Sink and Drag Markets Lower Worldwide." AP News, <a href="https://apnews.com">https://apnews.com</a>.</p>
+        <p class="sources__item">Associated Press. "Oil Prices Jump, While the Dow Drops More Than 1,100 as Sinking AI Stocks Drag Wall Street Lower." AP News, <a href="https://apnews.com">https://apnews.com</a>.</p>
+        <p class="sources__item">Associated Press. "Oil Prices Rise, and Stocks Drop Worldwide After Trump Says Ceasefire with Iran Is 'Over'." AP News, <a href="https://apnews.com">https://apnews.com</a>.</p>
+        <p class="sources__item">Associated Press. "US Stocks Rise to Finish a Wild July as Amazon Soars, Apple Sinks and Inflation Worries Worsen." AP News, <a href="https://apnews.com">https://apnews.com</a>.</p>
+        <p class="sources__item">Board of Governors of the Federal Reserve System. "Implementation Note Issued July 29, 2026." Federal Reserve Board, July 29, 2026. <a href="https://www.federalreserve.gov/newsevents/pressreleases/monetary20260729a.htm">https://www.federalreserve.gov/newsevents/pressreleases/monetary20260729a.htm</a>.</p>
+        <p class="sources__item">CNBC. "Leopold Aschenbrenner's Situational Awareness Fund Faces Fire Sale." CNBC, July 31, 2026. <a href="https://www.cnbc.com/2026/07/31/leopold-aschenbrenner-situational-awareness-fund-fire-sale.html">https://www.cnbc.com/2026/07/31/leopold-aschenbrenner-situational-awareness-fund-fire-sale.html</a>.</p>
+        <p class="sources__item">CNBC. "Tech Earnings, Cash Holdings, and Memory AI Trends." CNBC, July 31, 2026. <a href="https://www.cnbc.com/2026/07/31/tech-earnings-cash-memory-ai.html">https://www.cnbc.com/2026/07/31/tech-earnings-cash-memory-ai.html</a>.</p>
+        <p class="sources__item">U.S. Bureau of Labor Statistics. "Consumer Price Index." U.S. Department of Labor, <a href="https://www.bls.gov/cpi/">https://www.bls.gov/cpi/</a>.</p>
+        <p class="sources__item">Yahoo Finance. "Bitcoin USD (BTC-USD) Price History &amp; Historical Data." Yahoo Finance, <a href="https://finance.yahoo.com/quote/BTC-USD/history">https://finance.yahoo.com/quote/BTC-USD/history</a>.</p>
+        <p class="sources__item">Yahoo Finance. "Brent Crude Oil Last Day Financ (BZ=F) Stock Historical Prices &amp; Data." Yahoo Finance, <a href="https://finance.yahoo.com/quote/BZ=F/history">https://finance.yahoo.com/quote/BZ=F/history</a>.</p>
+        <p class="sources__item">Yahoo Finance. "CBOE Interest Rate 10 Year T No (^TNX) Historical Data." Yahoo Finance, <a href="https://finance.yahoo.com/quote/%5ETNX/history">https://finance.yahoo.com/quote/%5ETNX/history</a>.</p>
+        <p class="sources__item">Yahoo Finance. "Crude Oil Sep 26 (CL=F) Stock Price, News, Quote &amp; History." Yahoo Finance, <a href="https://finance.yahoo.com/quote/CL=F/history">https://finance.yahoo.com/quote/CL=F/history</a>.</p>
+        <p class="sources__item">Yahoo Finance. "Dow Jones Industrial Average (^DJI) Historical Data." Yahoo Finance, <a href="https://finance.yahoo.com/quote/%5EDJI/history">https://finance.yahoo.com/quote/%5EDJI/history</a>.</p>
+        <p class="sources__item">Yahoo Finance. "Ethereum USD (ETH-USD) Price History &amp; Historical Data." Yahoo Finance, <a href="https://finance.yahoo.com/quote/ETH-USD/history">https://finance.yahoo.com/quote/ETH-USD/history</a>.</p>
+        <p class="sources__item">Yahoo Finance. "Gold Futures (GC=F) Historical Data." Yahoo Finance, <a href="https://finance.yahoo.com/quote/GC=F/history">https://finance.yahoo.com/quote/GC=F/history</a>.</p>
+        <p class="sources__item">Yahoo Finance. "iShares Semiconductor ETF (SOXX) Price History &amp; Historical Data." Yahoo Finance, <a href="https://finance.yahoo.com/quote/SOXX/history/">https://finance.yahoo.com/quote/SOXX/history/</a>.</p>
+        <p class="sources__item">Yahoo Finance. "NASDAQ Composite (^IXIC) Historical Data." Yahoo Finance, <a href="https://finance.yahoo.com/quote/%5EIXIC/history">https://finance.yahoo.com/quote/%5EIXIC/history</a>.</p>
+        <p class="sources__item">Yahoo Finance. "S&amp;P 500 (^GSPC) Historical Data." Yahoo Finance, <a href="https://finance.yahoo.com/quote/%5EGSPC/history">https://finance.yahoo.com/quote/%5EGSPC/history</a>.</p>
+        <p class="sources__item">Yahoo Finance. "Silver Futures (SI=F) Historical Data." Yahoo Finance, <a href="https://finance.yahoo.com/quote/SI=F/history">https://finance.yahoo.com/quote/SI=F/history</a>.</p>
+        <p class="sources__item">Yahoo Finance. "The Travelers Companies, Inc. (TRV) Stock Historical Prices &amp; Data." Yahoo Finance, <a href="https://finance.yahoo.com/quote/TRV/history">https://finance.yahoo.com/quote/TRV/history</a>.</p>
+        </div>
+        <div class="sources__group"><div class="sources__glabel">Macroeconomic Overview</div>
+        <p class="sources__item">Board of Governors of the Federal Reserve System. "Implementation Note Issued July 29, 2026." Federal Reserve Board, July 29, 2026. <a href="https://www.federalreserve.gov/newsevents/pressreleases/monetary20260729a.htm">https://www.federalreserve.gov/newsevents/pressreleases/monetary20260729a.htm</a>.</p>
+        <p class="sources__item">Federal Reserve Bank of St. Louis. "2-Year Treasury Constant Maturity Rate (DGS2)." FRED, Federal Reserve Bank of St. Louis, <a href="https://fred.stlouisfed.org/series/DGS2">https://fred.stlouisfed.org/series/DGS2</a>.</p>
+        <p class="sources__item">Federal Reserve Bank of St. Louis. "FRED Economic Data Graph." FRED, Federal Reserve Bank of St. Louis, <a href="https://fred.stlouisfed.org/graph/?g=1Ng5J">https://fred.stlouisfed.org/graph/?g=1Ng5J</a>.</p>
+        <p class="sources__item">Federal Reserve Bank of St. Louis. "Unemployment Level (UNEMPLOY)." FRED, Federal Reserve Bank of St. Louis, <a href="https://fred.stlouisfed.org/series/UNEMPLOY">https://fred.stlouisfed.org/series/UNEMPLOY</a>.</p>
+        <p class="sources__item">Federal Reserve Bank of St. Louis. "Unemployment Rate (UNRATE)." FRED, Federal Reserve Bank of St. Louis, <a href="https://fred.stlouisfed.org/series/UNRATE">https://fred.stlouisfed.org/series/UNRATE</a>.</p>
+        <p class="sources__item">Yahoo Finance. "CBOE Interest Rate 10 Year T No (^TNX) Historical Data." Yahoo Finance, <a href="https://finance.yahoo.com/quote/%5ETNX/history">https://finance.yahoo.com/quote/%5ETNX/history</a>.</p>
+        <p class="sources__item">Yahoo Finance. "EUR/USD (EURUSD=X) Stock Historical Prices &amp; Data." Yahoo Finance, <a href="https://finance.yahoo.com/quote/EURUSD%3DX/history/">https://finance.yahoo.com/quote/EURUSD%3DX/history/</a>.</p>
+        <p class="sources__item">Yahoo Finance. "July Jobs Report: US Economy Lost 23,000 Roles, Far Short of Expectations." Yahoo Finance, <a href="https://finance.yahoo.com/economy/article/july-jobs-report-us-economy-lost-23000-roles-far-short-of-expectations-170715590.html">https://finance.yahoo.com/economy/article/july-jobs-report-us-economy-lost-23000-roles-far-short-of-expectations-170715590.html</a>.</p>
+        <p class="sources__item">Yahoo Finance. "Kevin Warsh Sworn In as Fed Chair as Inflation Worries Raise the Volume on Possible Rate Hikes." Yahoo Finance, <a href="https://finance.yahoo.com/economy/policy/article/kevin-warsh-sworn-in-as-fed-chair-as-inflation-worries-raise-the-volume-on-possible-rate-hikes-164303530.html">https://finance.yahoo.com/economy/policy/article/kevin-warsh-sworn-in-as-fed-chair-as-inflation-worries-raise-the-volume-on-possible-rate-hikes-164303530.html</a>.</p>
+        <p class="sources__item">Yahoo Finance. "Probability of July Fed Rate Hike." Yahoo Finance, <a href="https://finance.yahoo.com/economy/policy/articles/probability-july-fed-rate-hike-082600333.html">https://finance.yahoo.com/economy/policy/articles/probability-july-fed-rate-hike-082600333.html</a>.</p>
+        <p class="sources__item">Yahoo Finance. "Treasury Yield 30 Years (^TYX) Historical Data." Yahoo Finance, <a href="https://finance.yahoo.com/quote/%5ETYX/history">https://finance.yahoo.com/quote/%5ETYX/history</a>.</p>
+        <p class="sources__item">Yahoo Finance. "USD/CNY (USDCNY=X) Stock Historical Prices &amp; Data." Yahoo Finance, <a href="https://finance.yahoo.com/quote/USDCNY%3DX/history/">https://finance.yahoo.com/quote/USDCNY%3DX/history/</a>.</p>
+        <p class="sources__item">Yahoo Finance. "USD/JPY (JPY=X) Stock Historical Prices &amp; Data." Yahoo Finance, <a href="https://finance.yahoo.com/quote/JPY%3DX/history/">https://finance.yahoo.com/quote/JPY%3DX/history/</a>.</p>
+        <p class="sources__item">Yahoo Finance. "U.S. Dollar Index (DX-Y.NYB) Historical Data." Yahoo Finance, <a href="https://finance.yahoo.com/quote/DX-Y.NYB/history/">https://finance.yahoo.com/quote/DX-Y.NYB/history/</a>.</p>
+        </div>
+        <div class="sources__group"><div class="sources__glabel">Geopolitical Overview</div>
+        <p class="sources__item">Atlantic Council. "Why Spain Is Not Meeting NATO Spending Targets." Atlantic Council, <a href="https://www.atlanticcouncil.org/blogs/new-atlanticist/why-spain-is-not-meeting-nato-spending-targets/">https://www.atlanticcouncil.org/blogs/new-atlanticist/why-spain-is-not-meeting-nato-spending-targets/</a>.</p>
+        <p class="sources__item">CNBC. "US Revokes Iran Oil Sanctions Waiver After Tanker Attacks." CNBC, July 7, 2026. <a href="https://www.cnbc.com/2026/07/07/us-revokes-iran-oil-sanctions-waiver-tanker-attacks.html">https://www.cnbc.com/2026/07/07/us-revokes-iran-oil-sanctions-waiver-tanker-attacks.html</a>.</p>
+        <p class="sources__item">CNBC. "US-Iran Conflict and the Strait of Hormuz." CNBC, July 27, 2026. <a href="https://www.cnbc.com/2026/07/27/us-iran-war-trump-hormuz.html">https://www.cnbc.com/2026/07/27/us-iran-war-trump-hormuz.html</a>.</p>
+        <p class="sources__item">CNN. "Full Text of US-Iran Memorandum of Understanding." CNN, June 17, 2026. <a href="https://www.cnn.com/2026/06/17/middleeast/us-iran-war-mou-text-intl">https://www.cnn.com/2026/06/17/middleeast/us-iran-war-mou-text-intl</a>.</p>
+        <p class="sources__item">CNN. "Tanker Attacked in Strait of Hormuz Amid Escalating Iran Tensions." CNN, July 7, 2026. <a href="https://www.cnn.com/2026/07/07/middleeast/hormuz-tanker-iran-attack-intl-hnk">https://www.cnn.com/2026/07/07/middleeast/hormuz-tanker-iran-attack-intl-hnk</a>.</p>
+        <p class="sources__item">FOREX.com. "Top Ten Most Traded Global Commodities." FOREX.com, <a href="https://www.forex.com/en-us/trading-guides/top-ten-most-traded-global-commodities/">https://www.forex.com/en-us/trading-guides/top-ten-most-traded-global-commodities/</a>.</p>
+        <p class="sources__item">Reuters. "Iran Declares Strait of Hormuz Closed After Unauthorized Vessel Hit." Reuters, July 11, 2026. <a href="https://www.reuters.com/world/asia-pacific/iran-declares-strait-hormuz-closed-unauthorised-vessel-hit-2026-07-11/">https://www.reuters.com/world/asia-pacific/iran-declares-strait-hormuz-closed-unauthorised-vessel-hit-2026-07-11/</a>.</p>
+        <p class="sources__item">Reuters. "NATO Leaders Meet in Ankara After Trump Rekindles Disputes Over Iran, Greenland." Reuters, July 8, 2026. <a href="https://www.reuters.com/business/aerospace-defense/nato-leaders-meet-ankara-after-trump-rekindles-disputes-over-iran-greenland-2026-07-08/">https://www.reuters.com/business/aerospace-defense/nato-leaders-meet-ankara-after-trump-rekindles-disputes-over-iran-greenland-2026-07-08/</a>.</p>
+        <p class="sources__item">Reuters. "Samsung, SK Hynix Slide Amid Nvidia Financing Worries and China Competition." Reuters, July 28, 2026. <a href="https://www.reuters.com/world/china/samsung-sk-hynix-slide-amid-nvidia-financing-worries-china-competition-2026-07-28/">https://www.reuters.com/world/china/samsung-sk-hynix-slide-amid-nvidia-financing-worries-china-competition-2026-07-28/</a>.</p>
+        <p class="sources__item">Reuters. "Trump Says Interim Accord with Iran to End War Is 'Over'." Reuters, July 8, 2026. <a href="https://www.reuters.com/world/europe/trump-says-interim-accord-with-iran-end-war-is-over-2026-07-08/">https://www.reuters.com/world/europe/trump-says-interim-accord-with-iran-end-war-is-over-2026-07-08/</a>.</p>
+        <p class="sources__item">Reuters. "Yen Strengthens Sharply Against US Dollar." Reuters, July 30, 2026. <a href="https://www.reuters.com/world/asia-pacific/yen-strengthens-sharply-against-us-dollar-2026-07-30/">https://www.reuters.com/world/asia-pacific/yen-strengthens-sharply-against-us-dollar-2026-07-30/</a>.</p>
+        <p class="sources__item">U.S. Central Command. "US Forces Finish Latest Round of Strikes Against Iran." U.S. Central Command, <a href="https://www.centcom.mil/MEDIA/PUBLIC-RELEASES/Article/4540919/us-forces-finish-latest-round-of-strikes-against-iran/">https://www.centcom.mil/MEDIA/PUBLIC-RELEASES/Article/4540919/us-forces-finish-latest-round-of-strikes-against-iran/</a>.</p>
+        <p class="sources__item">U.S. Department of Defense. "NATO Leaders Pledge to Increase Defense Spending." U.S. Department of Defense, <a href="https://www.war.gov/News/News-Stories/Article/Article/4226009/nato-leaders-pledge-to-increase-defense-spending/">https://www.war.gov/News/News-Stories/Article/Article/4226009/nato-leaders-pledge-to-increase-defense-spending/</a>.</p>
+        <p class="sources__item">The White House. "Actions by the United States in the Investigations Under Section 301 of the Trade Act of 1974." The White House, July 2026. <a href="https://www.whitehouse.gov/presidential-actions/2026/07/actions-by-the-united-states-in-the-investigations-under-section-301-of-the-trade-act-of-1974/">https://www.whitehouse.gov/presidential-actions/2026/07/actions-by-the-united-states-in-the-investigations-under-section-301-of-the-trade-act-of-1974/</a>.</p>
+        <p class="sources__item">Yahoo Finance. "3 KOSDAQ Stocks Surge Over Recent Trading." Yahoo Finance, <a href="https://finance.yahoo.com/markets/stocks/articles/3-kosdaq-stocks-surge-over-040000558.html">https://finance.yahoo.com/markets/stocks/articles/3-kosdaq-stocks-surge-over-040000558.html</a>.</p>
+        <p class="sources__item">Yahoo Finance. "Brent Crude Oil Last Day Financ (BZ=F) Stock Historical Prices &amp; Data." Yahoo Finance, <a href="https://finance.yahoo.com/quote/BZ%3DF/history/">https://finance.yahoo.com/quote/BZ%3DF/history/</a>.</p>
+        <p class="sources__item">Yahoo Finance. "Dow Jones Industrial Average (^DJI) Historical Data." Yahoo Finance, <a href="https://finance.yahoo.com/quote/%5EDJI/history/">https://finance.yahoo.com/quote/%5EDJI/history/</a>.</p>
+        <p class="sources__item">Yahoo Finance. "KOSPI Composite Index (^KS11) Historical Data." Yahoo Finance, <a href="https://finance.yahoo.com/quote/%5EKS11/history/">https://finance.yahoo.com/quote/%5EKS11/history/</a>.</p>
+        <p class="sources__item">Yahoo Finance. "NASDAQ Composite (^IXIC) Historical Data." Yahoo Finance, <a href="https://finance.yahoo.com/quote/%5EIXIC/history/">https://finance.yahoo.com/quote/%5EIXIC/history/</a>.</p>
+        <p class="sources__item">Yahoo Finance. "S&amp;P 500 (^GSPC) Historical Data." Yahoo Finance, <a href="https://finance.yahoo.com/quote/%5EGSPC/history/">https://finance.yahoo.com/quote/%5EGSPC/history/</a>.</p>
+        <p class="sources__item">Yahoo Finance. "Samsung Electronics Co., Ltd. (005930.KS) Historical Data." Yahoo Finance, <a href="https://finance.yahoo.com/quote/005930.KS/history/">https://finance.yahoo.com/quote/005930.KS/history/</a>.</p>
+        <p class="sources__item">Yahoo Finance. "Shanghai Composite Index (000001.SS) Historical Data." Yahoo Finance, <a href="https://finance.yahoo.com/quote/000001.SS/history/">https://finance.yahoo.com/quote/000001.SS/history/</a>.</p>
+        <p class="sources__item">Yahoo Finance. "SK Hynix Inc. (000660.KS) Historical Data." Yahoo Finance, <a href="https://finance.yahoo.com/quote/000660.KS/history/">https://finance.yahoo.com/quote/000660.KS/history/</a>.</p>
+        </div>
+        <div class="sources__group"><div class="sources__glabel">The Financial Sector</div>
+        <p class="sources__item">CNBC. "JPMorgan, Bank of America, Citi Bank Earnings Live Updates." CNBC, July 14, 2026. <a href="https://www.cnbc.com/2026/07/14/jpm-bank-of-america-citi-bank-earnings-live-updates.html">https://www.cnbc.com/2026/07/14/jpm-bank-of-america-citi-bank-earnings-live-updates.html</a>.</p>
+        <p class="sources__item">Morningstar. "Financial Stocks Are Crushing It: These Charts Show Why the Breakout Rally May Have Just Begun." Morningstar, August 2, 2026. <a href="https://www.morningstar.com/news/marketwatch/202608025/financial-stocks-are-crushing-it-these-charts-show-why-the-breakout-rally-may-have-just-begun">https://www.morningstar.com/news/marketwatch/202608025/financial-stocks-are-crushing-it-these-charts-show-why-the-breakout-rally-may-have-just-begun</a>.</p>
+        <p class="sources__item">Reuters. "Visa Plans to Cut 7% of Workforce, Bloomberg Reports." Reuters, July 28, 2026. <a href="https://www.reuters.com/business/world-at-work/visa-plans-cut-7-workforce-bloomberg-reports-2026-07-28/">https://www.reuters.com/business/world-at-work/visa-plans-cut-7-workforce-bloomberg-reports-2026-07-28/</a>.</p>
+        <p class="sources__item">S&amp;P Dow Jones Indices. "S&amp;P 500 Financials Sector Index Data." S&amp;P Global, <a href="https://www.spglobal.com/spdji/en/indices/equity/sp-500-financials-sector/#data">https://www.spglobal.com/spdji/en/indices/equity/sp-500-financials-sector/#data</a>.</p>
+        <p class="sources__item">The Wall Street Journal. "Big Banks' Profits Surge After a Red-Hot Quarter on Wall Street." The Wall Street Journal, <a href="https://www.wsj.com/finance/banking/big-banks-profits-surge-after-a-red-hot-quarter-on-wall-street-7a25ffbe">https://www.wsj.com/finance/banking/big-banks-profits-surge-after-a-red-hot-quarter-on-wall-street-7a25ffbe</a>.</p>
+        <p class="sources__item">The Wall Street Journal. "Financial Services Roundup: Market Talk." The Wall Street Journal, <a href="https://www.wsj.com/business/financial-services-roundup-market-talk-c712a670">https://www.wsj.com/business/financial-services-roundup-market-talk-c712a670</a>.</p>
+        <p class="sources__item">The Wall Street Journal. "S&amp;P 500 Financials Sector Historical Prices." The Wall Street Journal, <a href="https://www.wsj.com/market-data/quotes/index/XX/SP50040/historical-prices">https://www.wsj.com/market-data/quotes/index/XX/SP50040/historical-prices</a>.</p>
+        <p class="sources__item">Yahoo Finance. "5 Big Banks Earned Record Income." Yahoo Finance, <a href="https://finance.yahoo.com/markets/crypto/articles/5-big-banks-earned-49-231805896.html">https://finance.yahoo.com/markets/crypto/articles/5-big-banks-earned-49-231805896.html</a>.</p>
+        <p class="sources__item">Yahoo Finance. "Big Banks Deliver Strong Q2 Results." Yahoo Finance, <a href="https://finance.yahoo.com/markets/stocks/articles/big-banks-deliver-strong-q2-130000708.html">https://finance.yahoo.com/markets/stocks/articles/big-banks-deliver-strong-q2-130000708.html</a>.</p>
+        <p class="sources__item">Yahoo Finance. "Coinbase Global, Inc. (COIN) Historical Data." Yahoo Finance, <a href="https://finance.yahoo.com/quote/COIN/history/">https://finance.yahoo.com/quote/COIN/history/</a>.</p>
+        <p class="sources__item">Yahoo Finance. "Financial Select Sector SPDR Fund (XLF) Quote &amp; News." Yahoo Finance, <a href="https://finance.yahoo.com/quote/XLF/">https://finance.yahoo.com/quote/XLF/</a>.</p>
+        <p class="sources__item">Yahoo Finance. "Financial Sector ETF Hits Record High." Yahoo Finance, <a href="https://finance.yahoo.com/markets/stocks/articles/financial-sector-etf-hits-record-174105097.html">https://finance.yahoo.com/markets/stocks/articles/financial-sector-etf-hits-record-174105097.html</a>.</p>
+        <p class="sources__item">Yahoo Finance. "PayPal Holdings, Inc. (PYPL) Quote &amp; News." Yahoo Finance, <a href="https://finance.yahoo.com/quote/PYPL/">https://finance.yahoo.com/quote/PYPL/</a>.</p>
+        <p class="sources__item">Yahoo Finance. "Visa Inc. (V) Quote &amp; News." Yahoo Finance, <a href="https://finance.yahoo.com/quote/V/">https://finance.yahoo.com/quote/V/</a>.</p>
+        <p class="sources__item">Yahoo Finance. "Visa, Mastercard Still Have Widest Moats in Payments Sector." Yahoo Finance, <a href="https://finance.yahoo.com/markets/stocks/articles/visa-mastercard-still-widest-moats-123500541.html">https://finance.yahoo.com/markets/stocks/articles/visa-mastercard-still-widest-moats-123500541.html</a>.</p>
+        </div>
+        <div class="sources__group"><div class="sources__glabel">The Energy Sector</div>
+        <p class="sources__item">ChartMill. "S&amp;P 500 Energy Index Tracker." ChartMill, <a href="https://www.chartmill.com/stock/markets/usa/index/sp-500-energy">https://www.chartmill.com/stock/markets/usa/index/sp-500-energy</a>.</p>
+        <p class="sources__item">CNBC. "Brent Crude Oil Front-Month Futures (@LCO.1) Quote." CNBC, <a href="https://www.cnbc.com/quotes/@LCO.1/">https://www.cnbc.com/quotes/@LCO.1/</a>.</p>
+        <p class="sources__item">CNBC. "Chevron Corp (CVX) Stock Price &amp; Quote." CNBC, <a href="https://www.cnbc.com/quotes/CVX/">https://www.cnbc.com/quotes/CVX/</a>.</p>
+        <p class="sources__item">CNBC. "Exxon Mobil Corp (XOM) Stock Price &amp; Quote." CNBC, <a href="https://www.cnbc.com/quotes/XOM/">https://www.cnbc.com/quotes/XOM/</a>.</p>
+        <p class="sources__item">CNBC. "Oil Market Updates: WTI, Brent, and Geopolitical Developments." CNBC, July 23, 2026. <a href="https://www.cnbc.com/2026/07/23/oil-prices-today-wti-brent-trump-iran-hormuz.html">https://www.cnbc.com/2026/07/23/oil-prices-today-wti-brent-trump-iran-hormuz.html</a>.</p>
+        <p class="sources__item">CNBC. "Oil Prices Today: WTI and Brent Dynamics Amid US-Iran Hormuz Tension." CNBC, July 8, 2026. <a href="https://www.cnbc.com/2026/07/08/oil-prices-brent-wti-iran-us-hormuz.html">https://www.cnbc.com/2026/07/08/oil-prices-brent-wti-iran-us-hormuz.html</a>.</p>
+        <p class="sources__item">ExxonMobil. "ExxonMobil Announces Second Quarter 2026 Results." ExxonMobil Investor Relations, <a href="https://investor.exxonmobil.com/company-information/press-releases/detail/1208/exxonmobil-announces-second-quarter-2026-results">https://investor.exxonmobil.com/company-information/press-releases/detail/1208/exxonmobil-announces-second-quarter-2026-results</a>.</p>
+        <p class="sources__item">S&amp;P Dow Jones Indices. "U.S. Sector Performance Dashboard." S&amp;P Global, <a href="https://www.spglobal.com/spdji/en/documents/performance-reports/dashboard-us-sector.pdf">https://www.spglobal.com/spdji/en/documents/performance-reports/dashboard-us-sector.pdf</a>.</p>
+        <p class="sources__item">Trading Economics. "Brent Crude Oil Benchmark Commodity Prices." Trading Economics, <a href="https://tradingeconomics.com/commodity/brent-crude-oil">https://tradingeconomics.com/commodity/brent-crude-oil</a>.</p>
+        <p class="sources__item">Yahoo Finance. "Chevron Corporation (CVX) Stock Price, News &amp; Quote." Yahoo Finance, <a href="https://finance.yahoo.com/quote/CVX/">https://finance.yahoo.com/quote/CVX/</a>.</p>
+        </div>
+        <div class="sources__group"><div class="sources__glabel">Company Deep Dive: Apple</div>
+        <p class="sources__item">Apple. "Apple Reports Third Quarter Results." Apple Newsroom, July 2026. <a href="https://www.apple.com/newsroom/2026/07/apple-reports-third-quarter-results">https://www.apple.com/newsroom/2026/07/apple-reports-third-quarter-results</a>.</p>
+        <p class="sources__item">CNBC. "Apple Earnings Live Updates." CNBC, July 30, 2026. <a href="https://www.cnbc.com/2026/07/30/apple-earnings-live-updates.html">https://www.cnbc.com/2026/07/30/apple-earnings-live-updates.html</a>.</p>
+        <p class="sources__item">CNN. "Apple CEO Tim Cook Steps Down." CNN, April 20, 2026. <a href="https://www.cnn.com/2026/04/20/tech/apple-ceo-tim-cook-steps-down">https://www.cnn.com/2026/04/20/tech/apple-ceo-tim-cook-steps-down</a>.</p>
+        <p class="sources__item">Macworld. "Apple Warns It May Be Really Hard to Get a New iPhone This Year." Macworld, <a href="https://www.macworld.com/article/3203632/apple-warns-it-may-be-really-hard-to-get-a-new-iphone-this-year.html">https://www.macworld.com/article/3203632/apple-warns-it-may-be-really-hard-to-get-a-new-iphone-this-year.html</a>.</p>
+        <p class="sources__item">Reuters. "Apple Seeks Preliminary Injunction Against OpenAI in Trade Secrets Case." Reuters, August 4, 2026. <a href="https://www.reuters.com/legal/litigation/apple-seeks-preliminary-injunction-against-openai-trade-secrets-case-2026-08-04/">https://www.reuters.com/legal/litigation/apple-seeks-preliminary-injunction-against-openai-trade-secrets-case-2026-08-04/</a>.</p>
+        <p class="sources__item">The Wall Street Journal. "Amazon and Apple Deliver the Drama to Close a Turbulent Month." The Wall Street Journal, <a href="https://www.wsj.com/finance/stocks/amazon-and-apple-deliver-the-drama-to-close-a-turbulent-month-41d82dc9">https://www.wsj.com/finance/stocks/amazon-and-apple-deliver-the-drama-to-close-a-turbulent-month-41d82dc9</a>.</p>
+        <p class="sources__item">The Wall Street Journal. "Apple (AAPL) Q3 Earnings Report 2026 Stock." The Wall Street Journal, <a href="https://www.wsj.com/tech/apple-aapl-q3-earnings-report-2026-stock-a2eed24e">https://www.wsj.com/tech/apple-aapl-q3-earnings-report-2026-stock-a2eed24e</a>.</p>
+        <p class="sources__item">Yahoo Finance. "Apple Inc. (AAPL) Quote &amp; Historical Data." Yahoo Finance, <a href="https://finance.yahoo.com/quote/AAPL/">https://finance.yahoo.com/quote/AAPL/</a>.</p>
+        <p class="sources__item">Yahoo Finance. "Apple CEO Tim Cook Stepping Down to Be Succeeded by John Ternus." Yahoo Finance, <a href="https://finance.yahoo.com/news/apple-ceo-tim-cook-stepping-down-to-be-succeeded-by-john-ternus-204237479.html">https://finance.yahoo.com/news/apple-ceo-tim-cook-stepping-down-to-be-succeeded-by-john-ternus-204237479.html</a>.</p>
+        <p class="sources__item">Yahoo Finance. "Did Apple Just Signal a Bottom in Momentum-Driven Memory Chip Stocks?" Yahoo Finance, <a href="https://finance.yahoo.com/markets/article/did-apple-just-signal-a-bottom-in-momentum-driven-memory-chip-stocks-184019981.html">https://finance.yahoo.com/markets/article/did-apple-just-signal-a-bottom-in-momentum-driven-memory-chip-stocks-184019981.html</a>.</p>
+        </div>
+        <div class="sources__group"><div class="sources__glabel">Company Deep Dive: Eli Lilly</div>
+        <p class="sources__item">Barron's. "Eli Lilly vs. Novo Nordisk Lawsuit on Retatrutide Marketing." Barron's, <a href="https://www.barrons.com/articles/eli-lilly-novo-nordisk-lawsuit-retatrutide-f59d26d3">https://www.barrons.com/articles/eli-lilly-novo-nordisk-lawsuit-retatrutide-f59d26d3</a>.</p>
+        <p class="sources__item">Barchart. "Eli Lilly Stock Analyst Estimates and Ratings." Barchart, <a href="https://www.barchart.com/story/news/3686486/eli-lilly-stock-analyst-estimates-ratings">https://www.barchart.com/story/news/3686486/eli-lilly-stock-analyst-estimates-ratings</a>.</p>
+        <p class="sources__item">Eli Lilly and Company. "What Medicare Part D Patients Need to Know About Accessing Foundayo." Eli Lilly Investor Relations, <a href="https://investor.lilly.com/news-releases/news-release-details/what-medicare-part-d-patients-need-know-about-accessing-foundayo">https://investor.lilly.com/news-releases/news-release-details/what-medicare-part-d-patients-need-know-about-accessing-foundayo</a>.</p>
+        <p class="sources__item">Forbes. "Novo Nordisk Wipes Out $30 Billion in Market Value After Failed Heart Drug Trial." Forbes, July 31, 2026. <a href="https://www.forbes.com/sites/tylerroush/2026/07/31/novo-nordisk-wipes-out-30-billion-in-market-value-after-failed-heart-drug-trial/">https://www.forbes.com/sites/tylerroush/2026/07/31/novo-nordisk-wipes-out-30-billion-in-market-value-after-failed-heart-drug-trial/</a>.</p>
+        <p class="sources__item">Perplexity. "Eli Lilly and Co (LLY) Stock Financial Overview &amp; Profile." Perplexity Finance, <a href="https://www.perplexity.ai/finance/LLY">https://www.perplexity.ai/finance/LLY</a>.</p>
+        <p class="sources__item">PR Newswire. "Lilly Confirms Date and Conference Call for Second Quarter 2026 Financial Results Announcement." PR Newswire, <a href="https://www.prnewswire.com/news-releases/lilly-confirms-date-and-conference-call-for-second-quarter-2026-financial-results-announcement-302831004.html">https://www.prnewswire.com/news-releases/lilly-confirms-date-and-conference-call-for-second-quarter-2026-financial-results-announcement-302831004.html</a>.</p>
+        <p class="sources__item">PR Newswire. "Lilly's Triple Agonist Retatrutide Successful in Two Additional Phase 3 Obesity Trials, Delivering Significant Improvements in Weight and A1C." PR Newswire, <a href="https://www.prnewswire.com/news-releases/lillys-triple-agonist-retatrutide-successful-in-two-additional-phase-3-obesity-trials-302832674.html">https://www.prnewswire.com/news-releases/lillys-triple-agonist-retatrutide-successful-in-two-additional-phase-3-obesity-trials-302832674.html</a>.</p>
+        <p class="sources__item">Reuters. "Lilly Announces More Next-Gen Obesity Drug Data, Plans Q1 2027 FDA Application." Reuters, July 23, 2026. <a href="https://www.reuters.com/legal/litigation/lilly-announces-more-next-gen-obesity-drug-data-plans-q1-2027-fda-application-2026-07-23/">https://www.reuters.com/legal/litigation/lilly-announces-more-next-gen-obesity-drug-data-plans-q1-2027-fda-application-2026-07-23/</a>.</p>
+        <p class="sources__item">Reuters. "Novo Nordisk Seeks Preliminary Injunction Against Lilly Weight-Loss Ads." Reuters, July 24, 2026. <a href="https://www.reuters.com/world/novo-nordisk-seeks-preliminary-injunction-against-lilly-weight-loss-ads-2026-07-24/">https://www.reuters.com/world/novo-nordisk-seeks-preliminary-injunction-against-lilly-weight-loss-ads-2026-07-24/</a>.</p>
+        <p class="sources__item">Stock Analysis. "Eli Lilly and Company (LLY) Stock Price History." Stock Analysis, <a href="https://stockanalysis.com/stocks/lly/history/">https://stockanalysis.com/stocks/lly/history/</a>.</p>
+        <p class="sources__item">Yahoo Finance. "Why Eli Lilly (LLY) Stock Is Moving Today." Yahoo Finance, <a href="https://finance.yahoo.com/markets/stocks/articles/why-eli-lilly-lly-stock-212952094.html">https://finance.yahoo.com/markets/stocks/articles/why-eli-lilly-lly-stock-212952094.html</a>.</p>
+        </div>
+        <div class="sources__group"><div class="sources__glabel">Notable IPOs</div>
+        <p class="sources__item">BCC Research. "SK Hynix Inc. Company Profile and History." BCC Research, <a href="https://www.bccresearch.com/company-index/profile/sk-hynix-inc/history">https://www.bccresearch.com/company-index/profile/sk-hynix-inc/history</a>.</p>
+        <p class="sources__item">Reuters. "SK Hynix Set for Marquee US Debut to Test AI Appetite." Reuters, July 10, 2026. <a href="https://www.reuters.com/world/asia-pacific/sk-hynix-set-marquee-us-debut-test-ai-appetite-2026-07-10/">https://www.reuters.com/world/asia-pacific/sk-hynix-set-marquee-us-debut-test-ai-appetite-2026-07-10/</a>.</p>
+        <p class="sources__item">SK Hynix. "SK Hynix Official Website." SK Hynix, <a href="https://www.skhynix.com/">https://www.skhynix.com/</a>.</p>
+        <p class="sources__item">U.S. Securities and Exchange Commission. "Form 424B4 Filing." U.S. SEC, <a href="https://www.sec.gov/Archives/edgar/data/2120882/000119312526299963/d32785d424b4.htm">https://www.sec.gov/Archives/edgar/data/2120882/000119312526299963/d32785d424b4.htm</a>.</p>
+        <p class="sources__item">The Wall Street Journal. "Even $6.4 Billion in Quarterly Profit Is a Disappointment for Chip Investors." The Wall Street Journal, <a href="https://www.wsj.com/tech/even-64-billion-in-quarterly-profit-is-a-disappointment-for-chip-investors-91dcb5c4">https://www.wsj.com/tech/even-64-billion-in-quarterly-profit-is-a-disappointment-for-chip-investors-91dcb5c4</a>.</p>
+        <p class="sources__item">Yahoo Finance. "Inside One of the Wildest Months in South Korean Markets." Yahoo Finance, <a href="https://finance.yahoo.com/markets/stocks/articles/inside-one-wildest-months-south-072057221.html">https://finance.yahoo.com/markets/stocks/articles/inside-one-wildest-months-south-072057221.html</a>.</p>
+        <p class="sources__item">Yahoo Finance. "SK Hynix IPO Unraveling Faster Than Expected." Yahoo Finance, <a href="https://finance.yahoo.com/markets/stocks/articles/sk-hynix-ipo-unraveling-faster-161836871.html">https://finance.yahoo.com/markets/stocks/articles/sk-hynix-ipo-unraveling-faster-161836871.html</a>.</p>
+        <p class="sources__item">Yahoo Finance. "SK Hynix Just Raised $2.6 Billion." Yahoo Finance, <a href="https://finance.yahoo.com/markets/stocks/articles/sk-hynix-just-raised-26-041000488.html">https://finance.yahoo.com/markets/stocks/articles/sk-hynix-just-raised-26-041000488.html</a>.</p>
+        <p class="sources__item">Yahoo Finance. "Why South Korea's Stock Market Is Moving." Yahoo Finance, <a href="https://finance.yahoo.com/markets/stocks/articles/why-south-koreas-stock-market-080951565.html">https://finance.yahoo.com/markets/stocks/articles/why-south-koreas-stock-market-080951565.html</a>.</p>
+        </div>
+        <div class="sources__group"><div class="sources__glabel">OSU Student Impact</div>
+        <p class="sources__item">CNBC. "Ohio Ranked No. 1 in CNBC's America's Top States for Business." CNBC, July 9, 2026. <a href="https://www.cnbc.com/2026/07/09/ohio-no-1-americas-top-states-for-business-rankings.html">https://www.cnbc.com/2026/07/09/ohio-no-1-americas-top-states-for-business-rankings.html</a>.</p>
+        <p class="sources__item">Ohio Capital Journal. "Ohio Governor Candidate Suggested Consolidating Universities; Economists Think It's a Bad Idea." Ohio Capital Journal, July 27, 2026. <a href="https://ohiocapitaljournal.com/2026/07/27/ohio-gov-candidate-suggested-consolidating-universities-economists-think-its-a-bad-idea/">https://ohiocapitaljournal.com/2026/07/27/ohio-gov-candidate-suggested-consolidating-universities-economists-think-its-a-bad-idea/</a>.</p>
+        <p class="sources__item">Ohio Capital Journal. "Student Loan Changes Are Here: Ohio's Average Student Loan Debt Is About $35,000." Ohio Capital Journal, July 3, 2026. <a href="https://ohiocapitaljournal.com/2026/07/03/student-loan-changes-are-here-ohios-average-student-loan-debt-is-about-35000/">https://ohiocapitaljournal.com/2026/07/03/student-loan-changes-are-here-ohios-average-student-loan-debt-is-about-35000/</a>.</p>
+        <p class="sources__item">Ohio State University Student Financial Aid. "Key Changes From OBBBA." The Ohio State University, <a href="https://sfa.osu.edu/contact-us/consumer-disclosure/key-changes-from-obbba">https://sfa.osu.edu/contact-us/consumer-disclosure/key-changes-from-obbba</a>.</p>
+        <p class="sources__item">Office of the Governor of Ohio. "Ohio Named CNBC's No. 1 State for Business." Governor Mike DeWine, <a href="https://governor.ohio.gov/media/news-and-media/ohio-named-cnbcs-no-1-state-for-business">https://governor.ohio.gov/media/news-and-media/ohio-named-cnbcs-no-1-state-for-business</a>.</p>
+        </div>
+        <div class="sources__group"><div class="sources__glabel">Fisher Fun Fact</div>
+        <p class="sources__item">Columbus Dispatch. "Why OSU Head Coach Ryan Day Almost Rejected Idea of Chase Bank Patch." The Columbus Dispatch, July 29, 2026. <a href="https://www.dispatch.com/story/sports/college/football/2026/07/29/why-osu-head-coach-ryan-day-almost-rejected-idea-of-chase-bank-patch/91089783007/">https://www.dispatch.com/story/sports/college/football/2026/07/29/why-osu-head-coach-ryan-day-almost-rejected-idea-of-chase-bank-patch/91089783007/</a>.</p>
+        <p class="sources__item">ESPN. "Notre Dame Passes Ohio State for Richest Patch Deal." ESPN, <a href="https://www.espn.com/college-football/story/_/id/49471461/notre-dame-passes-ohio-state-richest-patch-deal">https://www.espn.com/college-football/story/_/id/49471461/notre-dame-passes-ohio-state-richest-patch-deal</a>.</p>
+        <p class="sources__item">Ohio State Athletics. "Ohio State Athletics and JPMorganChase Announce Landmark Partnership." Ohio State Buckeyes, July 28, 2026. <a href="https://ohiostatebuckeyes.com/news/2026/7/28/general-ohio-state-athletics-and-jpmorganchase-announce-landmark-partnership">https://ohiostatebuckeyes.com/news/2026/7/28/general-ohio-state-athletics-and-jpmorganchase-announce-landmark-partnership</a>.</p>
+        <p class="sources__item">The Wall Street Journal. "Ohio State Lands a Multimillion-Dollar Recruit: JPMorgan." The Wall Street Journal, <a href="https://www.wsj.com/sports/football/ohio-state-lands-a-multimillion-dollar-recruit-jpmorgan-9566b002">https://www.wsj.com/sports/football/ohio-state-lands-a-multimillion-dollar-recruit-jpmorgan-9566b002</a>.</p>
+        <p class="sources__item">Yahoo Sports. "Ryan Day Reveals Why He Initially Rejected Chase Jersey Patch Proposal." Yahoo Sports, <a href="https://sports.yahoo.com/articles/ryan-day-reveals-why-initially-153525489.html">https://sports.yahoo.com/articles/ryan-day-reveals-why-initially-153525489.html</a>.</p>
+        </div>
+      </div>
+
+    <div class="closing-block">
+      <div class="cover-note">
+        <div class="cover-note__label">Editorial Note</div>
+        <p class="cover-note__text">All written content published by The Oval Financial Forum is human-written. The club holds a strict policy on the usage of AI during the writing process. While AI is not allowed for writing, we encourage our members to use it to brainstorm ideas, and ultimately find credible sources regarding a newsletter topic.</p>
+      </div>
+
+      <div class="colophon">
+      <div class="co-mark">The Oval Review</div>
+      <p class="disclaimer">The Oval Review is published by the Oval Financial Forum at The Ohio State University for educational and informational purposes only. Nothing in this publication constitutes investment, financial, legal, or tax advice, nor an offer, solicitation, or recommendation to buy or sell any security or financial instrument. The views expressed are those of the individual student authors and do not necessarily reflect the positions of The Ohio State University, the Fisher College of Business, or any affiliated entity. All figures are drawn from publicly available sources believed to be reliable, though their accuracy and completeness are not guaranteed. Readers should conduct their own research and consult a licensed financial professional before making any investment decision. The Oval Financial Forum assumes no liability for actions taken in reliance on the information contained herein.</p>
+      <div class="links"><a href="https://www.ovalfinancialforum.com">ovalfinancialforum.com</a> &nbsp;·&nbsp; <a href="#">Subscribe</a> &nbsp;·&nbsp; <a href="#">Archive</a></div>
+    </div>
+      </div>
+  </section>
+
+</div>
+
+<script>
+  /* Kept for older ?print=1 links. Opens the print dialog once fonts and
+     images have settled, so a stale bookmark still paginates correctly. */
+  if (new URLSearchParams(location.search).has('print')) {
+    window.addEventListener('load', function () {
+      requestAnimationFrame(function () { window.print(); });
+    });
+  }
+</script>
+
+</body>
+</html>
+

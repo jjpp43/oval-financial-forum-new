@@ -49,12 +49,13 @@ production-website/  the Sanity Studio — separate project, own package.json
 scripts/
   migrate-team.mts   one-shot import of the 9 members into Sanity
   seed-june-issue.mts  ditto for the June edition and its three files
+  seed-aug-issue.mts   ditto for August (rewrites /fonts and /img to the live origin)
 public/
   fonts/             CormorantGaramond-var, MartianMono-400
   team/              9 real member portraits
   img/               banners (archive/team/joinus), logo_dark, ex1–ex3
-                     (Services plates), p1–p5 placeholders
-  newsletter/2026/   june-2026.html + .pdf — the published issue
+                     (Services plates), p1–p5 placeholders, june/aug covers
+  newsletter/2026/   june-2026 + aug-2026 html/pdf — published issues
 ```
 
 Home section order: Hero → Intro → Services → Approach → Work → Team → Footer.
@@ -243,10 +244,9 @@ Builds and lints clean; `node api/subscribe.test.mts` passes.
 
 ## Known issues / next up
 
-- [ ] **No "coming up soon" plate** — the CMS holds one issue, so the home
-      row is a single card. The placeholder is not hardcoded any more: create
-      a `newsletterIssue` with `volume: 2` and `dueMonth`, no `publishedAt`,
-      and it comes back.
+- [ ] **No "coming up soon" plate** — the CMS holds the published issues, so
+      the home row is only real cards. Create a `newsletterIssue` with the next
+      `volume` and `dueMonth`, no `publishedAt`, and it comes back.
 - [ ] **The June issue exists twice** — in the CMS as uploads, and still in
       `public/newsletter/2026/` as the `content.ts` fallback. The site serves
       the CMS copy, so the 1.3 MB file in the repo is now dead weight on every
@@ -257,8 +257,8 @@ Builds and lints clean; `node api/subscribe.test.mts` passes.
       "View all projects" point at anchors that go nowhere.
 - [ ] **Placeholder images** — `public/img/p1–p5.jpg` are Picsum stock; only
       the June cover still uses one.
-- [ ] **Issue HTML is 1.3 MB** — six inline base64 images. Extract them to
-      `public/img/` before the archive grows.
+- [ ] **June HTML is 1.3 MB** — six inline base64 images. August extracts
+      photos to `public/img/newsletter/aug-2026/`; June still inlines.
 - [ ] Two team portraits are non-square. In the CMS this is solved — `photo`
       has a hotspot, and the migration seeds one for those two. The `focus`
       values left in `content.ts` only matter while the dataset is empty.
@@ -298,3 +298,4 @@ Append one line per session: date — area — what landed.
 - 2026-08-16 — apply — recruitment timeline on /apply: Aug 26 7pm and Sep 1 8:30pm info sessions, location TBD, scarlet band
 - 2026-08-16 — apply — timeline rebuilt as a vertical grey graph; scarlet fill grows with elapsed dates, nodes stay on every stop
 - 2026-08-21 — apply — load prompt after the Stairs curtain: currently accepting applications, links to /apply
+- 2026-08-26 — newsletter — August edition styled on the June tokens, images extracted, fallback + Sanity seed

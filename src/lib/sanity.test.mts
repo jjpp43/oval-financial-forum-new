@@ -25,6 +25,25 @@ assert.equal(out.published, true);
 assert.equal(out.pdf, `${issue.pdf}?dl=`, "PDF needs ?dl= or it opens in a viewer");
 assert.ok(out.cover?.endsWith("?w=900&auto=format"), "cover should be resized");
 
+// a matching content.ts row keeps the issue on this origin, so /fonts and
+// /img resolve. The CDN html url is what made localhost look broken.
+const [local] = mapIssues([issue], [
+  {
+    volume: 1,
+    title: "ignored",
+    blurb: "",
+    cover: null,
+    html: "/newsletter/2026/june-2026.html",
+    pdf: "/newsletter/2026/june-2026.pdf",
+    date: "",
+    published: true,
+    due: "",
+  },
+]);
+assert.equal(local.html, "/newsletter/2026/june-2026.html");
+assert.equal(local.pdf, "/newsletter/2026/june-2026.pdf");
+assert.equal(local.title, "June Edition", "CMS copy still wins");
+
 // a date but nothing uploaded is not readable, so it stays a placeholder
 // rather than rendering a card that links nowhere
 assert.equal(mapIssues([{ ...issue, html: null }])[0].published, false);

@@ -129,14 +129,15 @@ export const issues: Issue[] = [
   },
   {
     volume: 2,
-    title: "",
-    blurb: "",
-    cover: null,
-    html: null,
-    pdf: null,
-    date: "",
-    published: false,
-    due: "July 2026",
+    title: "August Edition",
+    blurb:
+      "AI valuations wobbled, Brent crude topped $100, and the Fed held for a fifth session while financials led the Dow.",
+    cover: "/img/aug.jpg",
+    html: "/newsletter/2026/aug-2026.html",
+    pdf: "/newsletter/2026/aug-2026.pdf",
+    date: "Published : 08/26/2026",
+    published: true,
+    due: "",
   },
 ];
 
