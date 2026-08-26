@@ -179,27 +179,38 @@ const stamp = (iso: string | null) => {
 };
 
 /**
- * CMS rows win for copy and the cover. HTML and PDF prefer the matching
- * `content.ts` path when one exists: those files live next to `/fonts` and
- * `/img`, and the Sanity CDN copy of the HTML cannot see either. An issue
- * that exists only in the Studio still uses the uploaded file URLs.
+ * CMS rows win for copy, the cover, and the files. HTML from the Sanity CDN
+ * is opened through `/api/issue` so `/fonts` and `/img` resolve on this
+ * origin. `content.ts` only fills a hole — an outage, or an issue with
+ * nothing uploaded yet.
  *
  * Exported for the self-check in sanity.test.mts — no live dataset needed.
  */
+export const issuePage = (html: string, pdf?: string | null) => {
+  const src = html.split("?")[0];
+  if (!src.startsWith(`https://cdn.sanity.io/files/gkbg7i6n/`)) return html;
+  const q = new URLSearchParams({ src });
+  const file = pdf?.split("?")[0];
+  if (file?.startsWith(`https://cdn.sanity.io/files/gkbg7i6n/`)) q.set("pdf", file);
+  return `/api/issue?${q}`;
+};
+
 export const mapIssues = (rows: IssueRow[], locals: Issue[] = []): Issue[] =>
   rows.map((r) => {
     const local = locals.find((i) => i.volume === r.volume);
-    const html = local?.html ?? r.html;
+    const html = r.html ? issuePage(r.html, r.pdf) : (local?.html ?? null);
     // `?dl=` makes the CDN answer with Content-Disposition: attachment. The
     // <a download> attribute alone is ignored cross-origin, so without this
     // the PDF would open in a viewer instead of downloading. Same-origin
     // files in public/ do not need it.
-    const pdf = local?.pdf ?? (r.pdf ? `${r.pdf}?dl=` : null);
+    const pdf = r.pdf
+      ? `${r.pdf.split("?")[0]}?dl=`
+      : (local?.pdf ?? null);
     return {
       volume: r.volume,
       title: r.title ?? "",
       blurb: r.blurb ?? "",
-      cover: sized(r.cover, 900),
+      cover: sized(r.cover, 900) ?? local?.cover ?? null,
       html,
       pdf,
       date: stamp(r.publishedAt),

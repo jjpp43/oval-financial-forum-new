@@ -58,14 +58,14 @@ export const newsletterIssue = defineType({
     defineField({
       name: 'html',
       title: 'Issue (HTML)',
-      description: 'The file the Read issue button opens. An issue is not live without it.',
+      description: 'The file the Read issue button opens. An issue is not live without it. Replace this upload to change a published edition — no site deploy needed.',
       type: 'file',
       options: {accept: 'text/html'},
     }),
     defineField({
       name: 'pdf',
       title: 'Issue (PDF)',
-      description: 'The file the Download PDF button hands over.',
+      description: 'The file the Download PDF button hands over. Replace this upload to swap the download.',
       type: 'file',
       options: {accept: 'application/pdf'},
     }),

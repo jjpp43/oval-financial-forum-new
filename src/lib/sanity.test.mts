@@ -15,18 +15,23 @@ const issue = {
   publishedAt: "2026-07-19",
   dueMonth: null,
   cover: "https://cdn.sanity.io/images/x/production/abc-500x500.jpg",
-  html: "https://cdn.sanity.io/files/x/production/abc.html",
-  pdf: "https://cdn.sanity.io/files/x/production/abc.pdf",
+  html: "https://cdn.sanity.io/files/gkbg7i6n/production/abc.html",
+  pdf: "https://cdn.sanity.io/files/gkbg7i6n/production/abc.pdf",
 };
 
 const [out] = mapIssues([issue]);
 assert.equal(out.date, "Published : 07/19/2026");
 assert.equal(out.published, true);
 assert.equal(out.pdf, `${issue.pdf}?dl=`, "PDF needs ?dl= or it opens in a viewer");
+assert.equal(
+  out.html,
+  `/api/issue?src=${encodeURIComponent(issue.html)}&pdf=${encodeURIComponent(issue.pdf)}`,
+  "CDN HTML is opened through this origin so /fonts resolve",
+);
 assert.ok(out.cover?.endsWith("?w=900&auto=format"), "cover should be resized");
 
-// a matching content.ts row keeps the issue on this origin, so /fonts and
-// /img resolve. The CDN html url is what made localhost look broken.
+// content.ts is only the fallback — a matching local row must not hide a
+// Studio upload, or members could not replace an edition without a commit
 const [local] = mapIssues([issue], [
   {
     volume: 1,
@@ -40,9 +45,30 @@ const [local] = mapIssues([issue], [
     due: "",
   },
 ]);
-assert.equal(local.html, "/newsletter/2026/june-2026.html");
-assert.equal(local.pdf, "/newsletter/2026/june-2026.pdf");
+assert.equal(
+  local.html,
+  `/api/issue?src=${encodeURIComponent(issue.html)}&pdf=${encodeURIComponent(issue.pdf)}`,
+);
+assert.equal(local.pdf, `${issue.pdf}?dl=`);
 assert.equal(local.title, "June Edition", "CMS copy still wins");
+
+// nothing uploaded yet — the local files keep the section from going blank
+assert.equal(
+  mapIssues([{ ...issue, html: null, pdf: null }], [
+    {
+      volume: 1,
+      title: "",
+      blurb: "",
+      cover: null,
+      html: "/newsletter/2026/june-2026.html",
+      pdf: "/newsletter/2026/june-2026.pdf",
+      date: "",
+      published: true,
+      due: "",
+    },
+  ])[0].html,
+  "/newsletter/2026/june-2026.html",
+);
 
 // a date but nothing uploaded is not readable, so it stays a placeholder
 // rather than rendering a card that links nowhere

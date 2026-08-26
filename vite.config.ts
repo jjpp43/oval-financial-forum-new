@@ -36,6 +36,29 @@ function apiRoutes(mode: string): Plugin {
           },
         )
       })
+
+      server.middlewares.use('/api/issue', async (req, res) => {
+        const { default: handler } = await server.ssrLoadModule('/api/issue.ts')
+        await handler(
+          { method: req.method, url: req.originalUrl ?? req.url },
+          {
+            status(code: number) {
+              res.statusCode = code
+              return this
+            },
+            setHeader(name: string, value: string) {
+              res.setHeader(name, value)
+            },
+            send(body: string) {
+              res.end(body)
+            },
+            json(body: unknown) {
+              res.setHeader('content-type', 'application/json')
+              res.end(JSON.stringify(body))
+            },
+          },
+        )
+      })
     },
   }
 }

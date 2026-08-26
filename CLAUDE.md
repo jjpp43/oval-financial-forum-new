@@ -25,7 +25,8 @@ landing-page study. The project is no longer that.
   is its own project in this repo, `production-website/`
 
 Commands: `npm run dev`, `npm run build`, `npm run lint` (oxlint),
-`node api/subscribe.test.mts` and `node src/lib/sanity.test.mts` (self-checks).
+`node api/subscribe.test.mts`, `node api/issue.test.mts` and
+`node src/lib/sanity.test.mts` (self-checks).
 
 ## Layout
 
@@ -180,6 +181,8 @@ Gotchas:
   member drags the crop circle in the Studio instead.
 - `<a download>` is ignored cross-origin, so PDFs from the CDN get `?dl=`
   appended, which makes Sanity send `Content-Disposition: attachment`.
+- Issue HTML is opened through `GET /api/issue?src=`, same origin, so `/fonts`
+  and `/img` resolve. Only `cdn.sanity.io/files/gkbg7i6n/` URLs are allowed.
 - GROQ has no `trim()`. Trim in JS.
 - Data landing after mount changes section heights, which is what the
   ScrollTrigger refresh in `lib/anim.ts` exists for.
@@ -300,3 +303,4 @@ Append one line per session: date — area — what landed.
 - 2026-08-21 — apply — load prompt after the Stairs curtain: currently accepting applications, links to /apply
 - 2026-08-26 — newsletter — August edition styled on the June tokens, images extracted, fallback + Sanity seed
 - 2026-08-26 — team — LinkedIn and mail icons on /team, name left / icons right
+- 2026-08-26 — cms — Read issue opens the Sanity HTML through /api/issue, so Studio uploads go live without a commit
