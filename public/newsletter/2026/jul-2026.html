@@ -177,7 +177,9 @@
   .close-price { text-align: right; }
   .close-price__label { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--scarlet); }
   .close-price__val { font-family: var(--font-display); font-weight: 600; font-size: 30px; color: var(--ink); line-height: 1.05; letter-spacing: -0.01em; }
-  .close-price__chg { font-family: var(--font-mono); font-size: 11px; color: var(--gain); margin-top: 4px; }
+  .close-price__chg { font-family: var(--font-mono); font-size: 11px; margin-top: 4px; }
+  .close-price__chg.pos { color: var(--gain); }
+  .close-price__chg.neg { color: var(--scarlet); }
   .stat-row { display: grid; grid-template-columns: repeat(4, 1fr); }
   .stat-cell { padding: 15px 18px; border-right: 1px solid var(--rule-soft); }
   .stat-cell:last-child { border-right: none; }
@@ -617,7 +619,7 @@
           <div class="close-price">
             <div class="close-price__label">July Close</div>
             <div class="close-price__val">$308.91</div>
-            <div class="close-price__chg">+6.76% MTD</div>
+            <div class="close-price__chg pos">+6.76% MTD</div>
           </div>
         </div>
         <div class="stat-row" style="grid-template-columns: repeat(3, 1fr);">
