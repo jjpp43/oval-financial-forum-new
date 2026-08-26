@@ -73,6 +73,8 @@ export type Member = {
   bio: string;
   /** CSS object-position, so a non-square portrait crops where the CMS says. */
   focus?: string;
+  linkedin?: string;
+  email?: string;
 };
 
 type MemberRow = {
@@ -81,12 +83,16 @@ type MemberRow = {
   bio: string | null;
   photo: string | null;
   hotspot: { x: number; y: number } | null;
+  linkedin?: string | null;
+  email?: string | null;
 };
 
 const TEAM_QUERY = `*[_type == "teamMember" && defined(photo.asset)] | order(order asc) {
   name,
   role,
   bio,
+  linkedin,
+  email,
   "photo": photo.asset->url,
   "hotspot": photo.hotspot
 }`;
@@ -100,17 +106,28 @@ const focusFrom = (h: MemberRow["hotspot"]) =>
   h ? `${(h.x * 100).toFixed(1)}% ${(h.y * 100).toFixed(1)}%` : undefined;
 
 /** Exported for the self-check in sanity.test.mts — no live dataset needed. */
-export const mapMembers = (rows: MemberRow[]): Member[] =>
-  rows.map((r) => ({
-    name: r.name,
-    role: r.role ?? "",
-    bio: (r.bio ?? "").trim(),
-    photo: sized(r.photo, 600)!,
-    focus: focusFrom(r.hotspot),
-  }));
+export const mapMembers = (rows: MemberRow[], locals: Member[] = []): Member[] =>
+  rows.map((r) => {
+    const local = locals.find((m) => m.name === r.name);
+    return {
+      name: r.name,
+      role: r.role ?? "",
+      bio: (r.bio ?? "").trim(),
+      photo: sized(r.photo, 600)!,
+      focus: focusFrom(r.hotspot),
+      // CMS wins when the Studio has a value; content.ts fills the gap so
+      // /team icons work before the schema is deployed.
+      linkedin: r.linkedin || local?.linkedin,
+      email: r.email || local?.email,
+    };
+  });
 
 export function useTeam(fallback: Member[]): Member[] {
-  return useSanity<MemberRow, Member>(TEAM_QUERY, mapMembers, fallback);
+  return useSanity<MemberRow, Member>(
+    TEAM_QUERY,
+    (rows) => mapMembers(rows, fallback),
+    fallback,
+  );
 }
 
 /* ---- newsletter issues --------------------------------------------------- */

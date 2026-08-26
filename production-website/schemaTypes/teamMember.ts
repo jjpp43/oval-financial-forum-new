@@ -41,6 +41,19 @@ export const teamMember = defineType({
       rows: 5,
     }),
     defineField({
+      name: 'linkedin',
+      title: 'LinkedIn',
+      description: 'Profile URL. Shown as an icon on /team.',
+      type: 'url',
+    }),
+    defineField({
+      name: 'email',
+      title: 'Email',
+      description: 'Shown as a mail icon on /team. Usually an @osu.edu address.',
+      type: 'string',
+      validation: (rule) => rule.email(),
+    }),
+    defineField({
       name: 'order',
       title: 'Display order',
       description: 'Lower numbers come first. Use 10, 20, 30… to leave gaps.',

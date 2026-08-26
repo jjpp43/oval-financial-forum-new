@@ -62,8 +62,8 @@ const htmlBytes = Buffer.from(
     .replaceAll('url("/fonts/', `url("${ORIGIN}/fonts/`)
     .replaceAll('src="/img/', `src="${ORIGIN}/img/`)
     .replaceAll(
-      'href="aug-2026.pdf"',
-      `href="${ORIGIN}/newsletter/2026/aug-2026.pdf"`,
+      'href="jul-2026.pdf"',
+      `href="${ORIGIN}/newsletter/2026/jul-2026.pdf"`,
     ),
 );
 

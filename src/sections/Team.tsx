@@ -55,6 +55,60 @@ function edges(col: number, cols: number) {
 }
 
 /**
+ * LinkedIn + mail icons. Live in the caption row with the name, so the hover
+ * indent moves them together. Kept out of the overlay button — nested <a>
+ * inside <button> is invalid.
+ */
+const LINKEDIN =
+  "M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.225 0z";
+
+function Links({ member, open }: { member: Member; open: boolean }) {
+  if (!member.linkedin && !member.email) return null;
+  const tone = open ? "text-white" : "text-scarlet";
+  const hit =
+    "grid size-8 place-items-center transition-opacity duration-200 hover:opacity-70";
+  return (
+    <div className={`flex shrink-0 items-center ${tone}`}>
+      {member.linkedin && (
+        <a
+          href={member.linkedin}
+          target="_blank"
+          rel="noreferrer"
+          aria-label={`${member.name} on LinkedIn`}
+          className={hit}
+        >
+          <svg
+            viewBox="0 0 24 24"
+            className="h-4 w-4"
+            fill="currentColor"
+            aria-hidden
+          >
+            <path d={LINKEDIN} />
+          </svg>
+        </a>
+      )}
+      {member.email && (
+        <a
+          href={`mailto:${member.email}`}
+          aria-label={`Email ${member.name}`}
+          className={hit}
+        >
+          <svg
+            viewBox="0 0 24 24"
+            className="h-4 w-4"
+            fill="currentColor"
+            aria-hidden
+          >
+            <path d="M1.5 8.67v8.58a3 3 0 003 3h15a3 3 0 003-3V8.67l-8.928 5.493a3 3 0 01-3.144 0L1.5 8.67z" />
+            <path d="M22.5 6.908V6.75a3 3 0 00-3-3h-15a3 3 0 00-3 3v.158l9.714 5.978a1.5 1.5 0 001.572 0L22.5 6.908z" />
+          </svg>
+        </a>
+      )}
+    </div>
+  );
+}
+
+/**
  * One member cell. `large` is the /team variant (full-width 3:4 portrait,
  * clickable, opens the bio strip); without it you get the home page's small
  * square thumb beside the name.
@@ -70,43 +124,45 @@ function Card({
   open?: boolean;
   onOpen?: () => void;
 }) {
-  const body = (
+  const hasLinks = Boolean(large && (member.linkedin || member.email));
+  // /team: extra padding on both sides, same 8px as the home row's pl-6.
+  // A left-only indent (or a translate) slides the photo and leaves the
+  // icons glued to the right; padding-inline tucks the whole stack in.
+  const pad = large
+    ? "relative flex flex-col gap-5 p-4 transition-[padding-inline] duration-200 group-hover:px-5"
+    : "flex items-stretch gap-5 p-4 transition-[padding-left] duration-200 group-hover:pl-6";
+
+  const photo = (
     <div
-      className={`flex p-4 transition-[padding-left] duration-200 group-hover:pl-6 ${
-        large ? "flex-col gap-5" : "items-stretch gap-5"
+      className={`shrink-0 overflow-hidden ${
+        large ? "aspect-3/4 w-full" : "aspect-square w-24 lg:w-28"
       }`}
     >
-      {/* home grid puts a 1:1 thumb beside the name; /team stacks a full
-          width 3:4 plate above it */}
-      <div
-        className={`shrink-0 overflow-hidden ${
-          large ? "aspect-3/4 w-full" : "aspect-square w-24 lg:w-28"
-        }`}
-      >
-        <img
-          src={member.photo}
-          alt={member.name}
-          className="h-full w-full object-cover"
-          style={{ objectPosition: member.focus ?? "center" }}
-        />
-      </div>
+      <img
+        src={member.photo}
+        alt={member.name}
+        className="h-full w-full object-cover"
+        style={{ objectPosition: member.focus ?? "center" }}
+      />
+    </div>
+  );
 
-      <div className="flex min-w-0 flex-col justify-center">
-        <h3
-          className={`text-body-l font-medium leading-tight transition-colors duration-200 ${
-            open ? "text-white" : "text-scarlet"
-          } ${large ? "" : "group-hover:text-white"}`}
-        >
-          {member.name}
-        </h3>
-        <p
-          className={`label text-label-s mt-2 transition-colors duration-200 ${
-            open ? "text-white/80" : "text-gray-dark-40"
-          } ${large ? "" : "group-hover:text-white/80"}`}
-        >
-          {member.role}
-        </p>
-      </div>
+  const identity = (
+    <div className={hasLinks && onOpen ? "pointer-events-none" : ""}>
+      <h3
+        className={`text-body-l font-medium leading-tight transition-colors duration-200 ${
+          open ? "text-white" : "text-scarlet"
+        } ${large ? "" : "group-hover:text-white"}`}
+      >
+        {member.name}
+      </h3>
+      <p
+        className={`label text-label-s mt-2 transition-colors duration-200 ${
+          open ? "text-white/80" : "text-gray-dark-40"
+        } ${large ? "" : "group-hover:text-white/80"}`}
+      >
+        {member.role}
+      </p>
     </div>
   );
 
@@ -118,7 +174,39 @@ function Card({
     large ? "cursor-pointer" : "hover:bg-scarlet"
   } ${open ? "bg-scarlet" : ""}`;
 
-  // only the full team page opens a bio, so only it becomes a control
+  // /team: name, title, and icons share one row inside the padded column, so
+  // the hover indent moves them together. An overlay button opens the bio —
+  // the icons sit above it, because an <a> inside a <button> is invalid.
+  if (large) {
+    return (
+      <div className={shell}>
+        <div className={pad}>
+          {onOpen && (
+            <button
+              type="button"
+              onClick={onOpen}
+              aria-expanded={open}
+              aria-label={`${member.name}, ${member.role}`}
+              className="absolute inset-0 z-[1]"
+            />
+          )}
+          {photo}
+          <div className="relative z-10 flex min-w-0 items-start justify-between gap-3">
+            <div className="min-w-0">{identity}</div>
+            {hasLinks && <Links member={member} open={open} />}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const homeBody = (
+    <div className={pad}>
+      {photo}
+      <div className="flex min-w-0 flex-col justify-center">{identity}</div>
+    </div>
+  );
+
   return onOpen ? (
     <button
       type="button"
@@ -126,10 +214,10 @@ function Card({
       aria-expanded={open}
       className={shell}
     >
-      {body}
+      {homeBody}
     </button>
   ) : (
-    <article className={shell}>{body}</article>
+    <article className={shell}>{homeBody}</article>
   );
 }
 

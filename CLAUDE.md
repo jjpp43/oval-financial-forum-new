@@ -299,3 +299,4 @@ Append one line per session: date — area — what landed.
 - 2026-08-16 — apply — timeline rebuilt as a vertical grey graph; scarlet fill grows with elapsed dates, nodes stay on every stop
 - 2026-08-21 — apply — load prompt after the Stairs curtain: currently accepting applications, links to /apply
 - 2026-08-26 — newsletter — August edition styled on the June tokens, images extracted, fallback + Sanity seed
+- 2026-08-26 — team — LinkedIn and mail icons on /team, name left / icons right

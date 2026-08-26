@@ -89,4 +89,17 @@ assert.equal(mapped.focus, "50.0% 18.0%");
 assert.equal(mapMembers([{ ...member, hotspot: null }])[0].focus, undefined);
 assert.equal(mapMembers([{ ...member, role: null, bio: null }])[0].role, "");
 
+const [withLinks] = mapMembers([member], [
+  {
+    name: "Evan Tercek",
+    role: "President",
+    photo: "/team/Evan_Tercek.jpeg",
+    bio: "",
+    linkedin: "https://www.linkedin.com/in/evantercek/",
+    email: "tercek.1@osu.edu",
+  },
+]);
+assert.equal(withLinks.linkedin, "https://www.linkedin.com/in/evantercek/");
+assert.equal(withLinks.email, "tercek.1@osu.edu");
+
 console.log("sanity mapping ok");

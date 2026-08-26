@@ -129,12 +129,12 @@ export const issues: Issue[] = [
   },
   {
     volume: 2,
-    title: "August Edition",
+    title: "July Edition",
     blurb:
       "AI valuations wobbled, Brent crude topped $100, and the Fed held for a fifth session while financials led the Dow.",
     cover: "/img/aug.jpg",
-    html: "/newsletter/2026/aug-2026.html",
-    pdf: "/newsletter/2026/aug-2026.pdf",
+    html: "/newsletter/2026/jul-2026.html",
+    pdf: "/newsletter/2026/jul-2026.pdf",
     date: "Published : 08/26/2026",
     published: true,
     due: "",
@@ -151,15 +151,15 @@ export const team = {
     // An empty bio hides the "Show bio" control for that member.
     // `focus` sets the square crop's focal point (CSS object-position).
     // Only needed for non-square source images; square ones ignore it.
-    { name: "Evan Tercek", role: "President", photo: "/team/Evan_Tercek.jpeg", bio: "Evan is a first-year accounting student at the Fisher College of Business from Cleveland, Ohio, with interests in entrepreneurship, wealth management, and corporate finance. Outside of the forum, he enjoys golf, running, and Bibibop.", focus: "center 18%" },
-    { name: "William Alt", role: "Editor-in-Chief", photo: "/team/William_Alt.jpeg", bio: "Will is a first-year finance and accounting student at the Fisher College of Business from Cincinnati, Ohio, with interests in wealth management and corporate finance.  Outside of the forum, he enjoys guitar, baseball, and lifting." },
-    { name: "Charlie Hahn", role: "Senior VP, Operations", photo: "/team/Charlie_Hahn.jpeg", bio: "Charlie is a first-year finance student at the Fisher College of Business from Allentown, Pennsylvania, with interests in banking.  Outside of the forum, he enjoys baseball, Philadelphia sports, working out, and traveling." },
-    { name: "Benjamin Schwartz", role: "VP, New Member Development", photo: "/team/Benjamin_Schwartz.jpeg", bio: "Benjamin is a first-year finance student at the Fisher College of Business from Sudbury, Massachusetts, with a minor in business analytics. His professional interests include consulting, corporate finance, and entrepreneurship.  Outside of the forum, he enjoys fitness, food, sports, traveling, and music." },
-    { name: "Evie Schwartz", role: "VP, New Member Development", photo: "/team/Evie_Schwartz.jpeg", bio: "Evie is a first-year transfer student studying finance at the Fisher College of Business from Sudbury, Massachusetts, with interests in private equity and corporate finance.  Outside of the forum, she enjoys basketball, concerts, and traveling." },
-    { name: "Charlie Slate", role: "VP, Marketing", photo: "/team/Charlie_Slate.jpeg", bio: "Charlie is a first-year marketing student at the Fisher College of Business from Boston, Massachusetts, with interests in entrepreneurship.  Outside of the forum, he enjoys hockey, pickleball, and reading." },
-    { name: "George Bradbury", role: "VP, Finance & Strategy", photo: "/team/George_Bradbury.jpeg", bio: "George is a first-year finance and economics student at the Fisher College of Business from West Chester, Ohio, with a minor in history and membership in the Dean's Leadership Academy. His professional interests include law and fiscal policy.  Outside of the forum, he enjoys photography, water polo, tennis, rock music, and traveling." },
-    { name: "Benjamin Bury", role: "VP, Copy & Standards", photo: "/team/Benjamin_Bury.jpeg", bio: "Benjamin is a first-year accounting student at the Fisher College of Business from Toledo, Ohio, with interests in wealth management.  Outside of the forum, he enjoys exercising and spending time outdoors." },
-    { name: "Junna Park", role: "Technology Lead", photo: "/team/Junna_Park.jpeg", bio: "Junna is a rising senior computer science major at the College of Engineering from South Korea, with interests in entrepreneurship and AI.  Outside of the forum, he enjoys doing hackathons, judo, and watching the UFC.", focus: "center 90%" },
+    { name: "Evan Tercek", role: "President", photo: "/team/Evan_Tercek.jpeg", bio: "Evan is a first-year accounting student at the Fisher College of Business from Cleveland, Ohio, with interests in entrepreneurship, wealth management, and corporate finance. Outside of the forum, he enjoys golf, running, and Bibibop.", focus: "center 18%", linkedin: "https://www.linkedin.com/in/evantercek/", email: "tercek.1@osu.edu" },
+    { name: "William Alt", role: "Editor-in-Chief", photo: "/team/William_Alt.jpeg", bio: "Will is a first-year finance and accounting student at the Fisher College of Business from Cincinnati, Ohio, with interests in wealth management and corporate finance.  Outside of the forum, he enjoys guitar, baseball, and lifting.", linkedin: "https://www.linkedin.com/in/william-alt-ba15b2383/", email: "alt.101@osu.edu" },
+    { name: "Charlie Hahn", role: "Senior VP, Operations", photo: "/team/Charlie_Hahn.jpeg", bio: "Charlie is a first-year finance student at the Fisher College of Business from Allentown, Pennsylvania, with interests in banking.  Outside of the forum, he enjoys baseball, Philadelphia sports, working out, and traveling.", linkedin: "https://www.linkedin.com/in/charlie-hahn007/", email: "hahn.482@osu.edu" },
+    { name: "Benjamin Schwartz", role: "VP, New Member Development", photo: "/team/Benjamin_Schwartz.jpeg", bio: "Benjamin is a first-year finance student at the Fisher College of Business from Sudbury, Massachusetts, with a minor in business analytics. His professional interests include consulting, corporate finance, and entrepreneurship.  Outside of the forum, he enjoys fitness, food, sports, traveling, and music.", linkedin: "https://www.linkedin.com/in/benschwartz01776/", email: "schwartz.2429@osu.edu" },
+    { name: "Evie Schwartz", role: "VP, New Member Development", photo: "/team/Evie_Schwartz.jpeg", bio: "Evie is a first-year transfer student studying finance at the Fisher College of Business from Sudbury, Massachusetts, with interests in private equity and corporate finance.  Outside of the forum, she enjoys basketball, concerts, and traveling.", linkedin: "https://www.linkedin.com/in/evieschwartz/", email: "schwartz.2527@osu.edu" },
+    { name: "Charlie Slate", role: "VP, Marketing", photo: "/team/Charlie_Slate.jpeg", bio: "Charlie is a first-year marketing student at the Fisher College of Business from Boston, Massachusetts, with interests in entrepreneurship.  Outside of the forum, he enjoys hockey, pickleball, and reading.", linkedin: "https://www.linkedin.com/in/charlesmslate/", email: "slate.45@osu.edu" },
+    { name: "George Bradbury", role: "VP, Finance & Strategy", photo: "/team/George_Bradbury.jpeg", bio: "George is a first-year finance and economics student at the Fisher College of Business from West Chester, Ohio, with a minor in history and membership in the Dean's Leadership Academy. His professional interests include law and fiscal policy.  Outside of the forum, he enjoys photography, water polo, tennis, rock music, and traveling.", linkedin: "https://www.linkedin.com/in/georgewbradbury/", email: "bradbury.61@osu.edu" },
+    { name: "Benjamin Bury", role: "VP, Copy & Standards", photo: "/team/Benjamin_Bury.jpeg", bio: "Benjamin is a first-year accounting student at the Fisher College of Business from Toledo, Ohio, with interests in wealth management.  Outside of the forum, he enjoys exercising and spending time outdoors.", linkedin: "https://www.linkedin.com/in/benjamin-bury-0648a6354/", email: "bury.43@osu.edu" },
+    { name: "Junna Park", role: "Technology Lead", photo: "/team/Junna_Park.jpeg", bio: "Junna is a rising senior computer science major at the College of Engineering from South Korea, with interests in entrepreneurship and AI.  Outside of the forum, he enjoys doing hackathons, judo, and watching the UFC.", focus: "center 90%", linkedin: "https://www.linkedin.com/in/junnapark3636/", email: "park.3636@osu.edu" },
   ],
 };
 
