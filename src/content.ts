@@ -215,9 +215,9 @@ export const apply = {
         location: "Enarson 258",
       },
       {
-        at: "2026-09-01T20:30",
+        at: "2026-09-02T20:30",
         month: "September",
-        day: "1",
+        day: "2",
         weekday: "Wednesday",
         time: "8:30-9:30 PM",
         title: "Info session II",
