@@ -119,7 +119,7 @@ const [withLinks] = mapMembers([member], [
   {
     name: "Evan Tercek",
     role: "President",
-    photo: "/team/Evan_Tercek.jpeg",
+    photo: "/team/Evan_Tercek_compressed.png",
     bio: "",
     linkedin: "https://www.linkedin.com/in/evantercek/",
     email: "tercek.1@osu.edu",
