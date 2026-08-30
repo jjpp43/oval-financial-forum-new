@@ -1,7 +1,10 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import Duotone from "./Duotone";
 import { curtainGone, splitChars, splitLines } from "../lib/anim";
+
+/** Same cut as Tailwind `lg` — PageHead's padding and copy grid flip here too. */
+const LG = "(min-width: 1024px)";
 
 /**
  * Scarlet masthead every sub-page opens with. Sits under the fixed nav, so
@@ -16,16 +19,34 @@ export default function PageHead({
   headline,
   intro,
   bg,
+  bgDesktop,
 }: {
   eyebrow: string;
   headline: string;
   intro: string;
   /** optional banner photo; shown as-is under a scarlet wash */
   bg?: string;
+  /** from `lg` up; replaces `bg` and skips the dither plate */
+  bgDesktop?: string;
 }) {
   const root = useRef<HTMLElement>(null);
   const copy = useRef<HTMLDivElement>(null);
   const title = useRef<HTMLHeadingElement>(null);
+  const [desktop, setDesktop] = useState(
+    () => typeof window !== "undefined" && window.matchMedia(LG).matches,
+  );
+
+  useEffect(() => {
+    if (!bgDesktop) return;
+    const mq = window.matchMedia(LG);
+    const sync = () => setDesktop(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, [bgDesktop]);
+
+  const desktopPlate = Boolean(bgDesktop && desktop);
+  const src = desktopPlate ? bgDesktop : bg;
 
   useEffect(() => {
     const el = root.current;
@@ -97,19 +118,22 @@ export default function PageHead({
 
   return (
     <header ref={root} className="relative isolate bg-scarlet text-white">
-      {bg && (
+      {src && (
         <div className="absolute inset-0 -z-10">
           <img
-            src={bg}
+            src={src}
             alt=""
             aria-hidden="true"
             className="size-full object-cover"
           />
           {/* same dithered plate as the hero, held at low opacity — texture
-              over the photo instead of replacing it */}
-          <div className="absolute inset-0 opacity-50">
-            <Duotone src={bg} gamma={2.2} dither ditherWidth={440} />
-          </div>
+              over the photo instead of replacing it. The desktop /team
+              portrait is already a finished frame, so it skips this. */}
+          {!desktopPlate && (
+            <div className="absolute inset-0 opacity-50">
+              <Duotone src={src} gamma={2.2} dither ditherWidth={440} />
+            </div>
+          )}
 
           {/* scarlet wash keeps the photo legible while white type holds AA */}
           <div className="absolute inset-0 bg-scarlet/65 mix-blend-multiply" />

@@ -15,6 +15,7 @@ export default function TeamPage() {
         headline={team.headline}
         intro={studio.tagline}
         bg="/img/teamBanner.jpg"
+        bgDesktop="/img/teamBanner_desktop.png"
       />
 
       {/* same grid as the home page, without its own heading block. The apply
