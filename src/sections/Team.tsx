@@ -142,7 +142,12 @@ function Card({
         src={member.photo}
         alt={member.name}
         className="h-full w-full object-cover"
-        style={{ objectPosition: member.focus ?? "center" }}
+        // /team is already 3:4, so a Studio hotspot (or center) is fine.
+        // Home thumbs are square: pin to the top so a 3:4 portrait keeps
+        // the face instead of slicing through it.
+        style={{
+          objectPosition: large ? (member.focus ?? "center") : "center top",
+        }}
       />
     </div>
   );
