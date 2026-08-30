@@ -1,7 +1,7 @@
 import { Fragment, useEffect, useRef, useState } from "react";
 import { team } from "../content";
 import { useCharReveal } from "../lib/anim";
-import { useTeam, type Member } from "../lib/sanity";
+import { useTeam, portraitSrc, type Member } from "../lib/sanity";
 
 /** Column count of the grid, mirroring the Tailwind breakpoints below. */
 const readCols = (bare: boolean) =>
@@ -117,11 +117,14 @@ function Card({
   member,
   large = false,
   open = false,
+  priority = false,
   onOpen,
 }: {
   member: Member;
   large?: boolean;
   open?: boolean;
+  /** First row on /team — fetch now, not when the user scrolls. */
+  priority?: boolean;
   onOpen?: () => void;
 }) {
   const hasLinks = Boolean(large && (member.linkedin || member.email));
@@ -139,8 +142,13 @@ function Card({
       }`}
     >
       <img
-        src={member.photo}
+        src={portraitSrc(member.photo, large ? 1080 : 400)}
         alt={member.name}
+        width={large ? 1080 : 112}
+        height={large ? 1440 : 112}
+        loading={priority ? "eager" : "lazy"}
+        decoding="async"
+        fetchPriority={priority ? "high" : "low"}
         className="h-full w-full object-cover"
         // /team is already 3:4, so a Studio hotspot (or center) is fine.
         // Home thumbs are square: pin to the top so a 3:4 portrait keeps
@@ -327,6 +335,7 @@ export default function Team({ bare = false }: { bare?: boolean }) {
                   key={m.name}
                   member={m}
                   large={bare}
+                  priority={bare && r === 0}
                   open={openIndex === i}
                   onOpen={
                     bare && m.bio

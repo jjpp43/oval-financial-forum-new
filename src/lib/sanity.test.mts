@@ -106,7 +106,7 @@ const member = {
 
 const [mapped] = mapMembers([member]);
 assert.equal(mapped.bio, "Studies accounting.");
-assert.ok(mapped.photo.endsWith("?w=1920&auto=format"));
+assert.ok(mapped.photo.endsWith("?w=1080&auto=format"));
 // the Studio's crop circle becomes the CSS object-position, so a tall portrait
 // keeps the face in frame without a hand-tuned value in the site's code
 assert.equal(mapped.focus, "50.0% 18.0%");
@@ -119,7 +119,7 @@ const [withLinks] = mapMembers([member], [
   {
     name: "Evan Tercek",
     role: "President",
-    photo: "/team/Evan_Tercek_compressed.png",
+    photo: "/team/Evan_Tercek.jpg",
     bio: "",
     linkedin: "https://www.linkedin.com/in/evantercek/",
     email: "tercek.1@osu.edu",

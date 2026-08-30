@@ -26,6 +26,19 @@ const API = `https://${PROJECT}.apicdn.sanity.io/v2024-01-01/data/query/${DATASE
 const sized = (url: string | null, w: number) =>
   url ? `${url}?w=${w}&auto=format` : null;
 
+/** Point a Sanity image at the width the card actually paints. Local files pass through. */
+export function portraitSrc(url: string, w: number) {
+  if (!url.includes("cdn.sanity.io/images/")) return url;
+  try {
+    const u = new URL(url);
+    u.searchParams.set("w", String(w));
+    u.searchParams.set("auto", "format");
+    return u.toString();
+  } catch {
+    return url;
+  }
+}
+
 /**
  * Runs one GROQ query and maps the rows. Keeps `fallback` until the response
  * arrives, and ignores an empty result so an unpopulated type never blanks a
@@ -113,11 +126,9 @@ export const mapMembers = (rows: MemberRow[], locals: Member[] = []): Member[] =
       name: r.name,
       role: r.role ?? "",
       bio: (r.bio ?? "").trim(),
-      // 1920 is the source width. Cards crop a landscape plate into a tall
-      // frame, so only about half of that width is on screen; 600 left the
-      // crop looking soft on a retina display. Sanity will not upscale a
-      // smaller original.
-      photo: sized(r.photo, 1920)!,
+      // Uploads are 1080×1440. Home thumbs override this down to 400 in
+      // Team.tsx. Sanity will not upscale a smaller file.
+      photo: sized(r.photo, 1080)!,
       focus: focusFrom(r.hotspot),
       // CMS wins when the Studio has a value; content.ts fills the gap so
       // /team icons work before the schema is deployed.
