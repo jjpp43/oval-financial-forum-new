@@ -113,7 +113,11 @@ export const mapMembers = (rows: MemberRow[], locals: Member[] = []): Member[] =
       name: r.name,
       role: r.role ?? "",
       bio: (r.bio ?? "").trim(),
-      photo: sized(r.photo, 600)!,
+      // 1920 is the source width. Cards crop a landscape plate into a tall
+      // frame, so only about half of that width is on screen; 600 left the
+      // crop looking soft on a retina display. Sanity will not upscale a
+      // smaller original.
+      photo: sized(r.photo, 1920)!,
       focus: focusFrom(r.hotspot),
       // CMS wins when the Studio has a value; content.ts fills the gap so
       // /team icons work before the schema is deployed.
