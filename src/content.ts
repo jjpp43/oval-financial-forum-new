@@ -187,10 +187,10 @@ export const apply = {
   eyebrow: "Join us",
   headline: "Write with us.",
   intro:
-    "Applications for our founding member class open this August.",
+    "Applications for our founding member class are open!",
   formUrl:
-    "https://docs.google.com/forms/d/e/1FAIpQLSe4dwRvRjGtOnbNGcZaib9ZM0bpgEYIWZfXRPyZJbOeTDzKjQ/viewform",
-  cta: "Fill out our interest form",
+    "https://docs.google.com/forms/d/e/1FAIpQLScA51ye4rN35GOJEGl5MH6aIeoTBr5MHduAvtUC7ZCsRg4Tyg/viewform?pli=1",
+  cta: "Fill out our application",
   prompt: {
     headline: "Applications are open for Fall 2026.",
     dismiss: "Close",
