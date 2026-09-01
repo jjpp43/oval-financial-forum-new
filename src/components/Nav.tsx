@@ -1,7 +1,12 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { nav, studio } from "../content";
+import { apply, nav, studio } from "../content";
 import { track } from "../lib/analytics";
+
+const applyHref = apply.formUrl || `mailto:${studio.email}`;
+const applyExt = apply.formUrl
+  ? { target: "_blank" as const, rel: "noreferrer" }
+  : {};
 
 /** OFF mark — inlined from public/img/LOGO.svg so it can take currentColor. */
 export function Mark({ className = "" }: { className?: string }) {
@@ -69,8 +74,9 @@ export default function Nav() {
         {/* white grows past the chip to both edges of the bar — the header's
             py-4 is exactly the distance it has to cover */}
         {/* below md it lives at the foot of the drawer instead */}
-        <Link
-          to="/apply"
+        <a
+          href={applyHref}
+          {...applyExt}
           onClick={() => track("apply_clicked", { where: "bar" })}
           className="label text-label-s group relative hidden bg-white px-5 py-2 text-scarlet md:block"
         >
@@ -92,7 +98,7 @@ export default function Nav() {
               <path d="M1 6h9M6.5 2.5 10 6l-3.5 3.5" />
             </svg>
           </span>
-        </Link>
+        </a>
 
         {/* the centred links have nowhere to sit below md, so they move in here */}
         <button
@@ -136,8 +142,9 @@ export default function Nav() {
 
           {/* the Apply chip, moved in — inverted so it still reads as the
               one action among the routes */}
-          <Link
-            to="/apply"
+          <a
+            href={applyHref}
+            {...applyExt}
             onClick={() => {
               setOpen(false);
               track("apply_clicked", { where: "drawer" });
@@ -146,7 +153,7 @@ export default function Nav() {
             className="label text-label-s border-t border-white/20 bg-white px-6 py-4 text-scarlet"
           >
             Apply
-          </Link>
+          </a>
         </nav>
       </div>
     </header>
