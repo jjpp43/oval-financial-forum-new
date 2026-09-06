@@ -231,6 +231,8 @@ export const apply = {
         time: "7-8 PM",
         title: "Make-up session",
         location: "Virtual",
+        href: "https://teams.microsoft.com/dl/launcher/launcher.html?url=%2F_%23%2Fmeet%2F286670112537435%3Fp%3DRwYNVRSEHoJeU9gAZr%26anon%3Dtrue&type=meet&deeplinkId=f5dfdd76-c015-44b1-a0e2-336370cc695e&directDl=true&msLaunch=true&enableMobilePage=true&suppressPrompt=true",
+        cta: "Join the meeting",
       },
       {
         at: "2026-09-07T23:59",

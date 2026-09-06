@@ -176,6 +176,19 @@ export default function Apply() {
                     </svg>
                     {e.location}
                   </p>
+                  {"href" in e && e.href && (
+                    <a
+                      href={e.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      onClick={() =>
+                        track("makeup_clicked", { where: "apply" })
+                      }
+                      className="label text-label-s mt-4 inline-block bg-scarlet px-5 py-3 text-white transition-opacity duration-200 hover:opacity-80"
+                    >
+                      {"cta" in e && e.cta ? e.cta : "Join"}
+                    </a>
+                  )}
                 </div>
               </li>
             );
