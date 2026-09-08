@@ -12,7 +12,7 @@
  *   issues    → the editions themselves, shared by that row and /archive
  *   team      → HOME section 6 + the /team grid, and every bio
  *   archive   → /archive masthead
- *   apply     → /apply masthead, points, recruitment timeline, CTA, load prompt
+ *   apply     → /apply masthead, points, recruitment timeline, CTA
  *   contact   → footer subscribe hint
  *
  * `issues` and `team.members` are the two entries here that are only
@@ -187,14 +187,10 @@ export const apply = {
   eyebrow: "Join us",
   headline: "Write with us.",
   intro:
-    "Applications for our founding member class are open!",
+    "Applications for fall 2026 are currently closed",
   formUrl:
     "https://docs.google.com/forms/d/e/1FAIpQLScA51ye4rN35GOJEGl5MH6aIeoTBr5MHduAvtUC7ZCsRg4Tyg/viewform?pli=1",
   cta: "Fill out our application",
-  prompt: {
-    headline: "Applications are open for Fall 2026.",
-    dismiss: "Close",
-  },
   points: [
     {
       title: "Who we look for",
