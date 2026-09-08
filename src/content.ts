@@ -12,7 +12,7 @@
  *   issues    → the editions themselves, shared by that row and /archive
  *   team      → HOME section 6 + the /team grid, and every bio
  *   archive   → /archive masthead
- *   apply     → /apply masthead, points, recruitment timeline, CTA
+ *   apply     → /apply masthead, points, recruitment timeline
  *   contact   → footer subscribe hint
  *
  * `issues` and `team.members` are the two entries here that are only
@@ -180,17 +180,13 @@ export const archive = {
 };
 
 /* ---- /apply -------------------------------------------------------------
- * `formUrl` is the Apply button's href — the Google Form's share link
- * (the /viewform URL, not the embed). Empty falls back to mailto.
+ * Masthead, who we look for, and the recruitment timeline.
  * ------------------------------------------------------------------------- */
 export const apply = {
   eyebrow: "Join us",
   headline: "Write with us.",
   intro:
     "Applications for fall 2026 are currently closed",
-  formUrl:
-    "https://docs.google.com/forms/d/e/1FAIpQLScA51ye4rN35GOJEGl5MH6aIeoTBr5MHduAvtUC7ZCsRg4Tyg/viewform?pli=1",
-  cta: "Fill out our application",
   points: [
     {
       title: "Who we look for",
@@ -227,8 +223,6 @@ export const apply = {
         time: "7-8 PM",
         title: "Make-up session",
         location: "Virtual",
-        href: "https://teams.microsoft.com/dl/launcher/launcher.html?url=%2F_%23%2Fmeet%2F286670112537435%3Fp%3DRwYNVRSEHoJeU9gAZr%26anon%3Dtrue&type=meet&deeplinkId=f5dfdd76-c015-44b1-a0e2-336370cc695e&directDl=true&msLaunch=true&enableMobilePage=true&suppressPrompt=true",
-        cta: "Join the meeting",
       },
       {
         at: "2026-09-07T23:59",

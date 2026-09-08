@@ -1,14 +1,13 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import PageHead from "../components/PageHead";
-import { apply, studio } from "../content";
+import { apply } from "../content";
 import { splitChars } from "../lib/anim";
-import { track } from "../lib/analytics";
 
 /* =============================================================================
  * ROUTE /apply — "Join Us" in the nav
- * Masthead, then one 12-col band: who we look for on the left (note + Apply
- * button), a vertical timeline on the right. Copy: `apply` in content.ts.
+ * Masthead, then one 12-col band: who we look for on the left, a vertical
+ * timeline on the right. Copy: `apply` in content.ts.
  * ========================================================================== */
 export default function Apply() {
   const timeline = useRef<HTMLElement>(null);
@@ -113,16 +112,6 @@ export default function Apply() {
               )}
             </div>
           ))}
-          <a
-            href={apply.formUrl || `mailto:${studio.email}`}
-            {...(apply.formUrl
-              ? { target: "_blank", rel: "noreferrer" }
-              : {})}
-            onClick={() => track("apply_clicked", { where: "page" })}
-            className="label text-label-s mt-8 block w-full bg-scarlet px-5 py-4 text-center text-white transition-opacity duration-200 hover:opacity-80 lg:inline-block lg:w-auto"
-          >
-            {apply.cta}
-          </a>
         </div>
 
         <ol
@@ -176,19 +165,6 @@ export default function Apply() {
                     </svg>
                     {e.location}
                   </p>
-                  {"href" in e && e.href && (
-                    <a
-                      href={e.href}
-                      target="_blank"
-                      rel="noreferrer"
-                      onClick={() =>
-                        track("makeup_clicked", { where: "apply" })
-                      }
-                      className="label text-label-s mt-4 inline-block bg-scarlet px-5 py-3 text-white transition-opacity duration-200 hover:opacity-80"
-                    >
-                      {"cta" in e && e.cta ? e.cta : "Join"}
-                    </a>
-                  )}
                 </div>
               </li>
             );
