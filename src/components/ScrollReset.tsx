@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation, type Location } from "react-router-dom";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { armCurtain, curtainGone, liftCurtain } from "../lib/anim";
+import { armCurtain, curtainGone, jumpToTop, liftCurtain } from "../lib/anim";
 import { coverStairs, revealStairs } from "./stairsGate";
 
 /**
@@ -40,7 +40,7 @@ export function useShownLocation(): Location {
       if (reduced) {
         shownRef.current = next;
         setShown(next);
-        window.scrollTo(0, 0);
+        jumpToTop();
         ScrollTrigger.refresh();
         return;
       }
@@ -50,11 +50,12 @@ export function useShownLocation(): Location {
       if (dead) return;
       shownRef.current = next;
       setShown(next);
-      window.scrollTo(0, 0);
+      jumpToTop();
       await new Promise<void>((r) =>
         requestAnimationFrame(() => requestAnimationFrame(() => r())),
       );
       if (dead) return;
+      jumpToTop();
       ScrollTrigger.refresh();
       await revealStairs();
       if (dead) return;

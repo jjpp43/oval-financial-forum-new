@@ -11,7 +11,7 @@ gsap.registerPlugin(ScrollTrigger, ScrambleTextPlugin);
  *   splitWords / splitChars / splitLines  rebuild an element for animation
  *   useWordReveal / useCharReveal / useLineReveal / useRise  scroll reveals
  *   curtainGone / liftCurtain / armCurtain  load + route curtain handshake
- *   useLenis                              smooth scroll, wired to GSAP
+ *   useLenis / jumpToTop                  smooth scroll, wired to GSAP
  * Every hook early-returns under prefers-reduced-motion.
  * No `will-change` anywhere: GSAP's default force3D:"auto" promotes an element
  * for the length of its tween and drops back to a 2D transform on completion.
@@ -301,29 +301,41 @@ function useScrollRefresh() {
   }, []);
 }
 
+let lenis: Lenis | null = null;
+
+/** Jump to the top of the document. Lenis owns the scroll, so native
+ *  `window.scrollTo` alone leaves the previous route's offset in place. */
+export function jumpToTop() {
+  lenis?.scrollTo(0, { immediate: true, force: true });
+  window.scrollTo(0, 0);
+}
+
 /** Lenis smooth scroll, driven by GSAP's ticker so ScrollTrigger stays in sync. */
 export function useLenis() {
   useScrollRefresh();
 
   useEffect(() => {
+    history.scrollRestoration = "manual";
     if (reduced()) return;
     // long coast after each wheel notch — `duration` is seconds to settle,
     // `wheelMultiplier` the distance one notch asks for. Use `lerp` instead of
     // `duration` if you ever want catch-up physics rather than a timed ease.
-    const lenis = new Lenis({
+    const instance = new Lenis({
       duration: 1.6,
       wheelMultiplier: 0.9,
       smoothWheel: true,
     });
+    lenis = instance;
 
-    lenis.on("scroll", ScrollTrigger.update);
-    const raf = (time: number) => lenis.raf(time * 1000);
+    instance.on("scroll", ScrollTrigger.update);
+    const raf = (time: number) => instance.raf(time * 1000);
     gsap.ticker.add(raf);
     gsap.ticker.lagSmoothing(0);
 
     return () => {
       gsap.ticker.remove(raf);
-      lenis.destroy();
+      instance.destroy();
+      if (lenis === instance) lenis = null;
     };
   }, []);
 }
