@@ -10,7 +10,7 @@
  *   approach  → HOME section 4, the four tilted step cards
  *   work      → HOME section 5, "Monthly Newsletter" issue row
  *   issues    → the editions themselves, shared by that row and /archive
- *   team      → HOME section 6 + the /team grid, and every bio
+ *   team      → HOME section 6 + the /team grid, group photo, and every bio
  *   archive   → /archive masthead
  *   apply     → /apply masthead, points, recruitment timeline
  *   contact   → footer subscribe hint
@@ -36,6 +36,15 @@ export const nav = [
   { label: "Archive", href: "/archive" },
   { label: "Team", href: "/team" },
   { label: "Join Us", href: "/apply" },
+];
+
+export const homeSections = [
+  { id: "top", label: "Forum", inverse: true },
+  { id: "intro", label: "Who we are", inverse: true },
+  { id: "services", label: "We present", inverse: false },
+  { id: "approach", label: "Our process", inverse: false },
+  { id: "work", label: "Newsletter", inverse: false },
+  { id: "team", label: "Team", inverse: false },
 ];
 
 export const hero = {
@@ -146,6 +155,12 @@ export const issues: Issue[] = [
 export const team = {
   eyebrow: "Who runs it",
   headline: "Meet the team",
+  hero: "/team/team_hero.png",
+  heroAlt: "Members of the Oval Financial Forum",
+  founding: {
+    headline: "Founding Executive Board",
+    detail: "The eager executive board of the student newsletter.",
+  },
   // 9 members fills the 3x3 grid exactly. Add or remove freely — the grid
   // reflows; it just stops being a clean 3x3.
   members: [

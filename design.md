@@ -230,6 +230,7 @@ early.
 |------|---------|
 | `components/Nav.tsx` | fixed scarlet bar: crosshair `Mark` + wordmark, centred route links, white Apply button |
 | `components/Stairs.tsx` | load-in curtain; resolves `curtainGone` when it clears |
+| `components/ScrollSpine.tsx` | home-only xl progress rail: six section ticks, moving square, active folio label |
 | `components/ScrollReset.tsx` | jumps to top and refreshes ScrollTrigger on route change |
 | `components/PageHead.tsx` | scarlet masthead every sub-page opens with. Optional `bg` photo under a dither plate and two scarlet washes |
 | `components/NewsletterField.tsx` | the subscribe field, shared by hero and footer. `inputFill` tints the box (hero uses `bg-scarlet/50`) |

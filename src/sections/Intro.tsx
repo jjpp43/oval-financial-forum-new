@@ -132,7 +132,7 @@ export default function Intro() {
   }, []);
 
   return (
-    <section ref={root} className="relative overflow-hidden">
+    <section ref={root} id="intro" className="relative overflow-hidden">
       {/* solid body, copy sits top-right */}
       <div className="grid-page bg-scarlet px-6 pt-4 text-white lg:px-15 lg:pt-8 lg:pb-4">
         <p

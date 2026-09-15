@@ -1,4 +1,5 @@
 import { Fragment, useEffect, useRef, useState } from "react";
+import gsap from "gsap";
 import { team } from "../content";
 import { useCharReveal } from "../lib/anim";
 import { useTeam, portraitSrc, type Member } from "../lib/sanity";
@@ -293,14 +294,56 @@ function Strip({
 /* =============================================================================
  * HOME · section 6 of 6 — TEAM   ·   and the body of /team
  * The member grid. `bare` is the /team variant: it drops the headline (the
- * page has its own masthead), goes to 5 columns, and makes each card open a
- * bio strip under its row. Copy: `team.members` in content.ts.
+ * page has its own masthead), shows the group photo, goes to 5 columns, and
+ * makes each card open a bio strip under its row. Copy: `team` in content.ts.
  * ========================================================================== */
 export default function Team({ bare = false }: { bare?: boolean }) {
   const headline = useCharReveal<HTMLHeadingElement>();
+  const heroClip = useRef<HTMLDivElement>(null);
+  const heroPlate = useRef<HTMLImageElement>(null);
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const cols = useColumns(bare);
   const members = useTeam(team.members);
+
+  // the founding photo is full-width in a window a little shorter than the
+  // file, so only the top and bottom crop. Down-scroll translates it up
+  // inside that window — no scale, or the sides get clipped too.
+  // Clip aspect is fileWidth / (fileHeight * 0.92). Change both when the
+  // asset's pixel size changes; width/height on the <img> do not size this box.
+  useEffect(() => {
+    if (!bare) return;
+    const clip = heroClip.current;
+    const plate = heroPlate.current;
+    if (!clip || !plate) return;
+
+    const leftover = () => clip.offsetHeight - plate.offsetHeight;
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      gsap.set(plate, { y: () => leftover() / 2 });
+      return () => gsap.set(plate, { clearProps: "transform" });
+    }
+
+    const tween = gsap.fromTo(
+      plate,
+      { y: 0 },
+      {
+        y: leftover,
+        ease: "none",
+        scrollTrigger: {
+          trigger: clip,
+          start: "top bottom",
+          end: "bottom top",
+          scrub: 0.5,
+          invalidateOnRefresh: true,
+        },
+      },
+    );
+
+    return () => {
+      tween.scrollTrigger?.kill();
+      tween.kill();
+    };
+  }, [bare]);
 
   // one strip per row; the open card's row is the only one with a height
   const rows: Member[][] = [];
@@ -320,6 +363,33 @@ export default function Team({ bare = false }: { bare?: boolean }) {
           {team.headline}
         </h2>
       </div>
+
+      {bare && (
+        <div className="mb-16 grid grid-cols-2 lg:mb-24 lg:grid-cols-5">
+          <div className="col-span-2 pb-8 lg:pb-0 lg:pr-10">
+            <h2 className="text-display-l font-bold">
+              {team.founding.headline}
+            </h2>
+            <p className="text-body-s mt-4 max-w-[36ch] text-gray-dark-40">
+              {team.founding.detail}
+            </p>
+          </div>
+          <div
+            ref={heroClip}
+            className="relative col-span-2 aspect-[2048/1006] overflow-hidden lg:col-span-3"
+          >
+            <img
+              ref={heroPlate}
+              src={team.hero}
+              alt={team.heroAlt}
+              width={2048}
+              height={1094}
+              decoding="async"
+              className="absolute top-0 left-0 w-full max-w-none"
+            />
+          </div>
+        </div>
+      )}
 
       <div
         className={`grid border-b border-scarlet/20 md:grid-cols-2 ${

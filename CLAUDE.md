@@ -39,7 +39,7 @@ src/
   lib/analytics.ts   PostHog — lazy init, track(), per-route pageviews
   lib/sanity.ts      useTeam / useIssues, the GROQ queries, row mapping
   lib/sanity.test.mts  mapping self-check, no network
-  components/        Nav, Stairs, ScrollReset, PageHead, NewsletterField, Duotone, Seo
+  components/        Nav, Stairs, ScrollSpine, ScrollReset, PageHead, NewsletterField, Duotone, Seo
   sections/          Hero, Intro, Services, Approach, Work, Team, Footer
   pages/             Archive, TeamPage, Apply
 api/

@@ -13,6 +13,7 @@ import Archive from "./pages/Archive";
 import TeamPage from "./pages/TeamPage";
 import Apply from "./pages/Apply";
 import Seo from "./components/Seo";
+import ScrollSpine from "./components/ScrollSpine";
 import { useLenis } from "./lib/anim";
 import { useAnalytics } from "./lib/analytics";
 
@@ -23,6 +24,7 @@ import { useAnalytics } from "./lib/analytics";
 function Home() {
   return (
     <main>
+      <ScrollSpine />
       {/* section order mirrors the donor: dithered hero, blue statement
           second, then services / approach / work / team */}
       <Hero />
