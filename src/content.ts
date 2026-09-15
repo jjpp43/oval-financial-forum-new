@@ -57,10 +57,10 @@ export const hero = {
 
 // Blue full-bleed statement — second section, sets the whole tone.
 export const intro = {
-  eyebrow: "Who we are",
+  eyebrow: "Who we are · 01",
   statement:
-    "An environment of OSU students driven to learn macroeconomics and geopolitics.",
-  note: "No AI written material is used for our newsletter.",
+    "A student-led forum for markets, macroeconomics, and geopolitics.",
+  note: "Original research, written and edited by our members.",
 };
 
 export const services = {

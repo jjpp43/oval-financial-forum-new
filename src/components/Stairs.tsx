@@ -1,43 +1,87 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { liftCurtain } from "../lib/anim";
+import { setStairsGate } from "./stairsGate";
 
 const PANELS = 6;
 
 /**
- * Intro curtain. Panels cover the viewport, then lift in a staggered
- * staircase to reveal the page — the donor site's transition idiom,
- * rebuilt as a load-in rather than a route change.
+ * Intro curtain, then a shorter reprise on each in-app route.
+ * Panels stay mounted after load (parked above the viewport) so the route
+ * swap can drop them without remounting. The wordmark is load-only.
  */
 export default function Stairs() {
   const root = useRef<HTMLDivElement>(null);
-  const [gone, setGone] = useState(false);
 
   useEffect(() => {
+    const el = root.current;
+    if (!el) return;
+    const panels = el.querySelectorAll<HTMLElement>(".stair");
+
+    const covered = () =>
+      Math.abs(Number(gsap.getProperty(panels[0], "yPercent"))) < 1;
+
+    const cover = () => {
+      el.style.pointerEvents = "auto";
+      if (covered()) return Promise.resolve();
+      return new Promise<void>((resolve) => {
+        gsap.to(panels, {
+          yPercent: 0,
+          duration: 0.32,
+          ease: "power3.inOut",
+          stagger: 0.035,
+          overwrite: true,
+          onComplete: () => resolve(),
+          onInterrupt: () => resolve(),
+        });
+      });
+    };
+
+    const reveal = () =>
+      new Promise<void>((resolve) => {
+        gsap.to(panels, {
+          yPercent: -100,
+          duration: 0.4,
+          ease: "power3.inOut",
+          stagger: 0.035,
+          overwrite: true,
+          onComplete: () => {
+            el.style.pointerEvents = "none";
+            resolve();
+          },
+          onInterrupt: () => resolve(),
+        });
+      });
+
     const reduced = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
     if (reduced) {
-      setGone(true);
+      gsap.set(panels, { yPercent: -100 });
       liftCurtain();
-      return;
+      setStairsGate({
+        cover: () => Promise.resolve(),
+        reveal: () => Promise.resolve(),
+      });
+      return () => {
+        setStairsGate(null);
+      };
     }
 
-    const panels = root.current!.querySelectorAll(".stair");
     const tl = gsap.timeline({
       onComplete: () => {
-        setGone(true);
         liftCurtain();
+        setStairsGate({ cover, reveal });
       },
     });
 
-    tl.to(root.current!.querySelector(".stairs-mark"), {
+    tl.to(el.querySelector(".stairs-mark"), {
       autoAlpha: 1,
       duration: 0.4,
       ease: "power2.out",
     })
       .to(
-        root.current!.querySelector(".stairs-mark"),
+        el.querySelector(".stairs-mark"),
         { autoAlpha: 0, duration: 0.3, ease: "power2.in" },
         "+=0.35",
       )
@@ -50,10 +94,9 @@ export default function Stairs() {
 
     return () => {
       tl.kill();
+      setStairsGate(null);
     };
   }, []);
-
-  if (gone) return null;
 
   return (
     <div

@@ -66,8 +66,8 @@ export default function PageHead({
 
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-    // hide the words now, not on play — a route change has no curtain to
-    // cover the gap between mount and the timeline starting
+    // hide the words now, not on play — the gap between mount and the
+    // timeline starting sits behind the stairs (load or route reprise)
     gsap.set(chars, { autoAlpha: 0 });
 
     // paused, but the fromTo start values render now — the panel is parked
@@ -95,9 +95,8 @@ export default function PageHead({
         { yPercent: 110 },
         { yPercent: 0, duration: 0.6, ease: "expo.out", stagger: 0.05 },
       )
-      // a route change has no curtain over this, so the page body cannot wait
-      // for the banner to finish — it starts rising while the lines are still
-      // wiping. The whole sequence lands ~1.1s in rather than ~2.7s.
+      // the body starts rising while the lines are still wiping so the
+      // sequence after the curtain lands ~1.1s in rather than ~2.7s.
       .fromTo(
         below,
         { y: 24, autoAlpha: 0 },

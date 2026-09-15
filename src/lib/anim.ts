@@ -10,7 +10,7 @@ gsap.registerPlugin(ScrollTrigger, ScrambleTextPlugin);
  * MOTION TOOLKIT — every reveal on the site comes from here.
  *   splitWords / splitChars / splitLines  rebuild an element for animation
  *   useWordReveal / useCharReveal / useLineReveal / useRise  scroll reveals
- *   curtainGone / liftCurtain             load-curtain handshake
+ *   curtainGone / liftCurtain / armCurtain  load + route curtain handshake
  *   useLenis                              smooth scroll, wired to GSAP
  * Every hook early-returns under prefers-reduced-motion.
  * No `will-change` anywhere: GSAP's default force3D:"auto" promotes an element
@@ -21,14 +21,20 @@ gsap.registerPlugin(ScrollTrigger, ScrambleTextPlugin);
 
 let lift: () => void;
 /**
- * Resolves when the load curtain is off the screen. Anything that animates
+ * Resolves when the current curtain is off the screen. Anything that animates
  * above the fold waits on this, or it plays out of sight behind the panels.
- * Later route changes see it already resolved and start immediately.
+ * Load arms it once; each in-app route calls `armCurtain()` so Hero / PageHead
+ * wait for that reprise the same way they wait for first paint.
  */
-export const curtainGone = new Promise<void>((resolve) => {
+export let curtainGone = new Promise<void>((resolve) => {
   lift = resolve;
 });
 export const liftCurtain = () => lift();
+export function armCurtain() {
+  curtainGone = new Promise<void>((resolve) => {
+    lift = resolve;
+  });
+}
 
 const reduced = () =>
   typeof window !== "undefined" &&

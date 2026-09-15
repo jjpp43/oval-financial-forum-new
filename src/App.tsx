@@ -1,7 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import Nav from "./components/Nav";
 import Stairs from "./components/Stairs";
-import ScrollReset from "./components/ScrollReset";
+import { useShownLocation } from "./components/ScrollReset";
 import Hero from "./sections/Hero";
 import Intro from "./sections/Intro";
 import Services from "./sections/Services";
@@ -37,10 +37,29 @@ function Home() {
   );
 }
 
-/** Renders nothing — it is only here to run the hook inside the router. */
-function Analytics() {
+function Shell() {
   useAnalytics();
-  return null;
+  const shown = useShownLocation();
+
+  return (
+    <>
+      {/* curtain covers the viewport during load and each in-app route;
+          the page renders underneath so a GSAP failure can never leave
+          a blank screen */}
+      <Stairs />
+      <Nav />
+      <Seo />
+      <Routes location={shown}>
+        <Route path="/" element={<Home />} />
+        <Route path="/archive" element={<Archive />} />
+        <Route path="/team" element={<TeamPage />} />
+        <Route path="/apply" element={<Apply />} />
+        {/* unknown paths redirect so they are not indexed as a second home */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+      <Footer />
+    </>
+  );
 }
 
 /* =============================================================================
@@ -52,22 +71,7 @@ export default function App() {
 
   return (
     <BrowserRouter>
-      {/* curtain covers the viewport during load; page renders underneath so
-          a GSAP failure can never leave a blank screen */}
-      <Stairs />
-      <Nav />
-      <ScrollReset />
-      <Analytics />
-      <Seo />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/archive" element={<Archive />} />
-        <Route path="/team" element={<TeamPage />} />
-        <Route path="/apply" element={<Apply />} />
-        {/* unknown paths redirect so they are not indexed as a second home */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-      <Footer />
+      <Shell />
     </BrowserRouter>
   );
 }

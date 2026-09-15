@@ -308,3 +308,4 @@ Append one line per session: date — area — what landed.
 - 2026-08-26 — team — LinkedIn and mail icons on /team, name left / icons right
 - 2026-08-26 — cms — Read issue opens the Sanity HTML through /api/issue, so Studio uploads go live without a commit
 - 2026-08-26 — seo — per-route titles, sitemap, robots, JSON-LD; home title names OSU finance club
+- 2026-09-14 — motion — stairs route reprise; /team photo parallax; Intro two-stage stairs; desktop home scroll spine
