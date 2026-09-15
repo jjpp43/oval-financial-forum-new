@@ -376,7 +376,7 @@ export default function Team({ bare = false }: { bare?: boolean }) {
           </div>
           <div
             ref={heroClip}
-            className="relative col-span-2 aspect-[2048/1006] overflow-hidden lg:col-span-3"
+            className="relative col-span-2 aspect-[2048/985] overflow-hidden lg:col-span-3"
           >
             <img
               ref={heroPlate}

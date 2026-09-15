@@ -54,6 +54,10 @@
   --text-display-l--line-height: 0.9;
   --text-display-l--letter-spacing: -0.02em;
 
+  --text-display-ml: clamp(2.25rem, 1.59722vw + 1.375rem, 6.3125rem);
+  --text-display-ml--line-height: 0.92;
+  --text-display-ml--letter-spacing: -0.0175em;
+
   --text-display-m: clamp(2rem, 1.11111vw + 1.25rem, 4.5rem);
   --text-display-m--line-height: 0.94;
   --text-display-m--letter-spacing: -0.015em;
@@ -164,6 +168,15 @@
 .line-split {
   margin-bottom: -0.1em;
   padding-bottom: 0.1em;
+}
+
+/* SplitText mask: "lines" clones each line into overflow:clip wrappers
+   (class + "-mask"). Display leading is tighter than the glyph box, so
+   Cormorant's g/p would otherwise clip. Negative margin keeps the line
+   rhythm from growing. */
+.intro-line-mask {
+  padding-bottom: 0.22em;
+  margin-bottom: -0.22em;
 }
 
 /* char split — kerning off so per-glyph transforms don't reflow */

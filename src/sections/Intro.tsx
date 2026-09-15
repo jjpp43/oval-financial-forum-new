@@ -6,10 +6,7 @@ gsap.registerPlugin(SplitText);
 import { intro } from "../content";
 
 /** Six equal 1/6-width steps, matching the splash screen's six columns. */
-const STAIR_WIDTHS = Array.from(
-  { length: 6 },
-  (_, i) => ((6 - i) / 6) * 100,
-);
+const STAIR_WIDTHS = Array.from({ length: 6 }, (_, i) => ((6 - i) / 6) * 100);
 /** Use 101 instead to make the bars enter from the right. */
 const STAIR_FROM = -101;
 
@@ -71,7 +68,10 @@ export default function Intro() {
       )
         .fromTo(
           split.lines,
-          { yPercent: 110 },
+          // 140, not 110: the line masks are padded so descenders aren't
+          // clipped, so the parked state has to travel that extra height
+          // or the letter tops show through before the wipe.
+          { yPercent: 140 },
           {
             yPercent: 0,
             duration: 0.8,
@@ -141,15 +141,13 @@ export default function Intro() {
       id="intro"
       className="relative overflow-hidden bg-scarlet text-white"
     >
-      <div className="grid-page px-6 pt-16 pb-14 lg:px-15 lg:pt-24 lg:pb-20">
-        <p
-          className="intro-eyebrow label text-label-s col-span-6 lg:col-span-2"
-        >
+      <div className="grid-page px-6 pb-14 lg:px-15 lg:pt-8 lg:pb-16">
+        <p className="intro-eyebrow label text-label-s col-span-6 lg:col-span-2">
           {intro.eyebrow}
         </p>
 
         <div className="col-span-6 mt-10 lg:col-span-10 lg:col-start-3 lg:mt-0">
-          <h2 className="intro-statement text-display-l max-w-[18ch] font-semibold">
+          <h2 className="intro-statement text-display-ml max-w-[18ch] font-semibold">
             {intro.statement}
           </h2>
 

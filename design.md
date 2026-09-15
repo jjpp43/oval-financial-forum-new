@@ -110,6 +110,7 @@ headlines scale with the screen, body copy never does.
 | `--text-hero` | `clamp(3.25rem, 8vw + 0.5rem, 10rem)` | 0.9375 | −0.01em |
 | `--text-display-xl` | `clamp(3.5rem, 3.8835vw + 2rem, 18.75rem)` | 0.83 | −0.02em |
 | `--text-display-l` | `clamp(2.5rem, 2.08333vw + 1.5rem, 8.125rem)` | 0.9 | −0.02em |
+| `--text-display-ml` | `clamp(2.25rem, 1.59722vw + 1.375rem, 6.3125rem)` | 0.92 | −0.0175em |
 | `--text-display-m` | `clamp(2rem, 1.11111vw + 1.25rem, 4.5rem)` | 0.94 | −0.015em |
 | `--text-heading` | `1.875rem` | 1.15 | −0.005em |
 | `--text-body-l` | `1.375rem` | 1.5 | 0 |
