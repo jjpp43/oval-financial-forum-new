@@ -200,13 +200,13 @@ export default function Services() {
               >
                 <Duotone
                   src={p.src}
-                  gamma={1.7}
-                  white={1}
+                  gamma={1.3}
+                  white={1.1}
                   dither
                   // plates draw at ~230px: dithering at 240 puts one dot on
                   // one pixel. At 600 the browser downscales 1-bit art, and
                   // that interference is what reads as harsh.
-                  ditherWidth={880}
+                  ditherWidth={460}
                 />
               </div>
             ))}
