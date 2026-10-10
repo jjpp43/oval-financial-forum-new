@@ -210,7 +210,8 @@ export const apply = {
     },
   ],
   timeline: {
-    headline: "Timeline",
+    headline: "Next cycle",
+    next: "Recruitment opens again in Spring 2027.",
     events: [
       {
         at: "2026-08-31T19:00",

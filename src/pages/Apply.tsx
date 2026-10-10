@@ -6,8 +6,9 @@ import { splitChars } from "../lib/anim";
 
 /* =============================================================================
  * ROUTE /apply — "Join Us" in the nav
- * Masthead, then one 12-col band: who we look for on the left, a vertical
- * timeline on the right. Copy: `apply` in content.ts.
+ * Masthead, then one 12-col band: who we look for on the left, next-cycle
+ * copy on the right (the recruitment graph is commented out). Copy: `apply`
+ * in content.ts.
  * ========================================================================== */
 export default function Apply() {
   const timeline = useRef<HTMLElement>(null);
@@ -16,6 +17,9 @@ export default function Apply() {
     const el = timeline.current;
     if (!el) return;
     const heading = el.querySelector<HTMLElement>(".timeline-title");
+    if (!heading) return;
+
+    /* Graph draw is parked with the timeline until the next cycle.
     const track = el.querySelector<HTMLElement>(".timeline-track");
     const list = el.querySelector<HTMLElement>("ol");
     if (!heading || !track || !list) return;
@@ -38,11 +42,11 @@ export default function Apply() {
     layout();
     const ro = new ResizeObserver(layout);
     ro.observe(list);
+    */
 
     const chars = splitChars(heading);
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      track.style.transform = "scaleY(1)";
-      return () => ro.disconnect();
+      return;
     }
 
     const reveal = gsap.fromTo(
@@ -58,7 +62,7 @@ export default function Apply() {
       },
     );
 
-    const draw = gsap.fromTo(
+    /* const draw = gsap.fromTo(
       track,
       { scaleY: 0 },
       {
@@ -68,14 +72,11 @@ export default function Apply() {
         transformOrigin: "50% 0%",
         scrollTrigger: { trigger: el, start: "top 70%", once: true },
       },
-    );
+    ); */
 
     return () => {
       reveal.scrollTrigger?.kill();
       reveal.kill();
-      draw.scrollTrigger?.kill();
-      draw.kill();
-      ro.disconnect();
     };
   }, []);
 
@@ -114,6 +115,7 @@ export default function Apply() {
           ))}
         </div>
 
+        {/*
         <ol
           aria-label={apply.timeline.headline}
           className="relative col-span-6 mt-20 lg:col-span-6 lg:col-start-7 lg:mt-0"
@@ -170,6 +172,14 @@ export default function Apply() {
             );
           })}
         </ol>
+        */}
+
+        <p
+          aria-label={apply.timeline.next}
+          className="text-heading col-span-6 mt-20 lg:col-start-7 lg:mt-0"
+        >
+          {apply.timeline.next}
+        </p>
       </section>
     </main>
   );
