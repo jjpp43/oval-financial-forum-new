@@ -10,6 +10,7 @@ import Work from "./sections/Work";
 import Team from "./sections/Team";
 import Footer from "./sections/Footer";
 import Archive from "./pages/Archive";
+import Network from "./pages/Network";
 import TeamPage from "./pages/TeamPage";
 import Apply from "./pages/Apply";
 import Seo from "./components/Seo";
@@ -52,6 +53,7 @@ function Shell() {
       <Routes location={shown}>
         <Route path="/" element={<Home />} />
         <Route path="/archive" element={<Archive />} />
+        <Route path="/network" element={<Network />} />
         <Route path="/team" element={<TeamPage />} />
         <Route path="/apply" element={<Apply />} />
         {/* unknown paths redirect so they are not indexed as a second home */}

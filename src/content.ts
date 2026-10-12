@@ -12,6 +12,7 @@
  *   issues    → the editions themselves, shared by that row and /archive
  *   team      → HOME section 6 + the /team grid, group photo, and every bio
  *   archive   → /archive masthead
+ *   network   → /network masthead and connection rows
  *   apply     → /apply masthead, points, recruitment timeline
  *   contact   → footer subscribe hint
  *
@@ -34,6 +35,7 @@ export const studio = {
 
 export const nav = [
   { label: "Archive", href: "/archive" },
+  { label: "Our Network", href: "/network" },
   { label: "Team", href: "/team" },
   { label: "Join Us", href: "/apply" },
 ];
@@ -194,6 +196,32 @@ export const archive = {
     "Every issue we have published, free to read. New editions land each month.",
 };
 
+/* ---- /network -----------------------------------------------------------
+ * Photos, a name, a meta line, optional link. Adding a connection is a row here.
+ * ------------------------------------------------------------------------- */
+export const network = {
+  eyebrow: "Connections",
+  headline: "Our Network",
+  intro:
+    "The firms and people around the forum.",
+  entries: [
+    {
+      title: "North Shore Group",
+      meta: "Morgan Stanley",
+      covers: [
+        "/img/network/north-shore-talk.jpg",
+        "/img/network/north-shore-group.jpg",
+      ],
+    },
+  ] as Array<{
+    title: string;
+    meta: string;
+    covers?: string[];
+    href?: string;
+    cta?: string;
+  }>,
+};
+
 /* ---- /apply -------------------------------------------------------------
  * Masthead, who we look for, and the recruitment timeline.
  * ------------------------------------------------------------------------- */
@@ -287,6 +315,11 @@ export const seo = {
       title: "Newsletter Archive | Oval Financial Forum",
       description:
         "Read every Oval Financial Forum edition. A monthly financial newsletter written by Ohio State students.",
+    },
+    "/network": {
+      title: "Our Network | Oval Financial Forum",
+      description:
+        "The firms, alumni, and people around Oval Financial Forum, Ohio State’s student finance club.",
     },
     "/team": {
       title: "The Team | Oval Financial Forum",
