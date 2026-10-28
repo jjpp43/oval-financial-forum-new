@@ -5,7 +5,7 @@ import { apply } from "../content";
 import { splitChars } from "../lib/anim";
 
 /* =============================================================================
- * ROUTE /apply — "Join Us" in the nav
+ * ROUTE /apply — the Apply button in the nav
  * Masthead, then one 12-col band: who we look for on the left, next-cycle
  * copy on the right (the recruitment graph is commented out). Copy: `apply`
  * in content.ts.

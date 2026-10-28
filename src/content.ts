@@ -37,7 +37,6 @@ export const nav = [
   { label: "Archive", href: "/archive" },
   { label: "Our Network", href: "/network" },
   { label: "Team", href: "/team" },
-  { label: "Join Us", href: "/apply" },
 ];
 
 export const homeSections = [
@@ -131,7 +130,7 @@ export const issues: Issue[] = [
     volume: 1,
     title: "June Edition",
     blurb:
-      "The Fed's third hold of the year, what the futures market is pricing, and why the labour data keeps contradicting itself.",
+      "The Fed's third hold of the year, what the futures market is pricing, and why the labor data keeps contradicting itself.",
     cover: "/img/june.jpg",
     // both files live in public/newsletter/; in Sanity they are uploads
     html: "/newsletter/2026/june-2026.html",
@@ -149,6 +148,18 @@ export const issues: Issue[] = [
     html: "/newsletter/2026/jul-2026.html",
     pdf: "/newsletter/2026/jul-2026.pdf",
     date: "Published : 08/26/2026",
+    published: true,
+    due: "",
+  },
+  {
+    volume: 4,
+    title: "September Edition",
+    blurb:
+      "The Fed hiked 25 basis points, Brent crude topped $110, and the 30-year yield hit a 24-year high while the Nasdaq still gained.",
+    cover: "/img/sep-2026.jpg",
+    html: "/newsletter/2026/sep-2026.html",
+    pdf: "/newsletter/2026/sep-2026.pdf",
+    date: "Published : 10/13/2026",
     published: true,
     due: "",
   },
