@@ -43,9 +43,9 @@ function Card({
 export default function Work() {
   const root = useRef<HTMLElement>(null);
   const issues = useIssues(fallback);
-  // the row is the tail of the archive — the newest four editions, oldest of
-  // them first, so the placeholder plate stays on the right
-  const shown = issues.slice(-4);
+  // the row is the newest four editions, latest first, so the most recent
+  // issue starts on the left
+  const shown = issues.slice(-4).reverse();
 
   useEffect(() => {
     const el = root.current;
